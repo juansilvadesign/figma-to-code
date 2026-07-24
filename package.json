@@ -1,0 +1,20 @@
+{
+  "name": "figma-to-code",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Figma file → portable OpenDesign design-system package. The Figma-source twin of ai-website-cloner-template.",
+  "scripts": {
+    "extract": "tsx scripts/extract-figma-tokens.ts",
+    "emit": "tsx scripts/emit-design-system.ts",
+    "validate": "tsx scripts/validate-design-system.ts"
+  },
+  "devDependencies": {
+    "tsx": "^4.20.3",
+    "typescript": "^5.9.2"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "license": "MIT"
+}

@@ -1,0 +1,8 @@
+node_modules/
+*.log
+
+# Raw MCP responses cached during extraction. Keep the notes and the derived
+# artifacts; do not commit large raw dumps or anything with a Figma token in it.
+docs/research/**/*.raw.json
+.env
+.env.*
