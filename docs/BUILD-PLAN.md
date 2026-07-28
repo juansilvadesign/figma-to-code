@@ -156,9 +156,11 @@ Before touching Figma at all, prove this project can produce a guard-green packa
 The workspace's own hard-won lesson (`instagram-figma-moodboard` gotchas #11–#14): **guessing
 costs commits.** Probe before designing the extractor.
 
-Answer, against one real file you own — start with the **PsiAtiva LP's Figma source** if it exists,
-because the cloner already produced a known-good `design-systems/psiativa/` from the *live site*,
-which gives a rare **ground-truth diff target**:
+Answer against the **SYD landing-page Figma file** first (decided 2026-07-28). It has an owned,
+human-designed desktop/mobile source plus the existing human-authored Next.js implementation
+(`zokuWebDesign/SYD-Next`), giving this project a rare end-to-end comparison target: Figma is the
+visual-intent source and the Next.js page is an independent implementation/behavior reference.
+Do not feed that code into extraction; compare against it only after emission.
 
 - [ ] Does the file use variables at all? How many collections, and what modes per collection?
 - [ ] What exactly does `get_variable_defs` return — resolved values, or aliases needing a second hop?
