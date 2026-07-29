@@ -9,8 +9,36 @@
 > **Re-baselined 2026-07-28.** The original plan was written before the local
 > [`talk-to-figma-fork`](../talk-to-figma-fork/) had a trustworthy read layer and
 > before [`ai-website-cloner-template`](../ai-website-cloner-template/) shipped its
-> OpenDesign emitter, validator, Astro target, and visual-QA workflow. Those are now
-> inputs to this project, not future dependencies.
+> OpenDesign emitter, validator, Astro target, and visual-QA workflow. The fork is
+> now a pinned external tool dependency; the cloner is a pinned reuse baseline.
+
+## Project boundary — load-bearing
+
+`figma-to-code` and `talk-to-figma-fork` are separate products:
+
+| This repository owns | [`talk-to-figma-fork`](../talk-to-figma-fork/) owns |
+| --- | --- |
+| Read-only capture plan and immutable evidence bundle | MCP schemas and result contracts |
+| Payload normalization and fork-version adapters | MCP server, relay, Figma plugin, and connection lifecycle |
+| Figma evidence → OpenDesign token/component mapping | Generic Figma reads, writes, exports, progress, and errors |
+| OpenDesign emission and validation | Its own regression fixtures, packaging, and releases |
+| Optional Astro generation and visual QA | No knowledge of this capture schema, OpenDesign, or generated code |
+
+Dependency flows one way:
+
+```text
+figma-to-code ──versioned read-only MCP calls──▶ talk-to-figma-fork ──▶ Figma
+```
+
+Hard rules:
+
+- Never import the fork's `src/`, plugin code, or internal helpers into this project.
+- Never patch/reimplement a missing generic Figma read inside this repository.
+- If capture exposes a tool gap, implement and verify the smallest generic change in
+  the fork, rebuild/version it there, then update the pin and adapter here.
+- The fork never imports this project, its capture manifests, OpenDesign, or Astro.
+- This pipeline never calls the fork's setters, creators, deletes, or write-oriented
+  prompts. A future Code → Figma workflow would be a third project.
 
 ## Two levels of done — do not conflate them
 
@@ -22,13 +50,14 @@
   the validated package, builds cleanly, and has final 1440px/390px visual evidence.
 
 The project itself is still a scaffold at `0.0.0`: all three scripts are stubs and
-throw intentionally. A mature sibling dependency is not shipped functionality here.
+throw intentionally. A mature external tool dependency is not shipped functionality
+in this repository.
 
 ## Planning frame
 
-- **Outcome:** authorized Figma source → evidence-backed OpenDesign system →
-  optional Astro implementation, with no guessed tokens and no paid Figma MCP
-  dependency.
+- **Outcome:** authorized Figma source → read-only capture through a pinned independent
+  MCP tool → evidence-backed OpenDesign system → optional Astro implementation, with
+  no guessed tokens and no paid official Figma MCP dependency.
 - **Capacity constraint:** one maintainer using the existing local workspace,
   local Figma plugin/relay, and checked-in tooling. Do not add a hosted service or
   paid plan to make the MVP work.
@@ -38,29 +67,39 @@ throw intentionally. A mature sibling dependency is not shipped functionality he
   targets, automation, and fidelity features when they threaten the next useful
   release.
 
-## Pinned reuse baselines
+## Pinned dependency and reuse baselines
 
-| Dependency | Baseline inspected 2026-07-28 | Reuse here |
-| --- | --- | --- |
-| [`talk-to-figma-fork`](../talk-to-figma-fork/) | `956a6af` | Default free/local capture lane: `get_pages`, bounded `get_document_info`, `set_current_page`, `get_variables`, `get_styles`, scoped/summary `get_local_components`, `get_node_info`, `get_node_variables`, `get_reactions`, and `export_node_as_image` |
-| [`ai-website-cloner-template`](../ai-website-cloner-template/) | `b7b4dda` (`0.4.0`) | Vendored emitter/validator, committed Astro scaffold, design-system-first build order, component-spec workflow, static-first rules, and 1440px/390px visual QA |
-| [`open-design`](../../skills/open-design/) | `3447f60a3` | Live token schema and guard/rendering contracts; currently 56 slots / 26 A1, but code must discover this rather than encode it |
+| Project | Relationship | Baseline inspected 2026-07-28 | Contract used here |
+| --- | --- | --- | --- |
+| [`talk-to-figma-fork`](../talk-to-figma-fork/) | **Independent runtime dependency** | `956a6af` | Read-only MCP tools: `get_pages`, bounded `get_document_info`, `set_current_page`, `get_variables`, `get_styles`, scoped/summary `get_local_components`, `get_node_info`, `get_node_variables`, `get_reactions`, and `export_node_as_image` |
+| [`ai-website-cloner-template`](../ai-website-cloner-template/) | **Vendored generic-code/workflow baseline** | `b7b4dda` (`0.4.0`) | Emitter/validator, Astro scaffold, design-system-first order, component specs, static-first rules, and 1440px/390px QA |
+| [`open-design`](../../skills/open-design/) | **Schema/validation dependency** | `3447f60a3` | Live token schema and guard/rendering contracts; code discovers the contract rather than encoding the observed 56/26 counts |
 
-**Reuse rule:** copy generic code from a named commit, record provenance, and test
-parity. Never copy the sibling cloner's current working tree wholesale: it may contain
-uncommitted, brand-specific clone work. Do not import across sibling repositories at
-runtime; this project must remain independently usable.
+**Fork dependency rule:** invoke the built fork as an MCP process and treat replies as
+external versioned payloads. Do not copy or import its server/plugin implementation.
+Record the fork commit/version, server bundle hash, plugin identity/API, and capability
+fingerprint in every capture manifest. Until the fork exposes a formal runtime
+fingerprint, record the measurable pieces explicitly.
+
+**Vendored reuse rule:** copy generic cloner code only from a named commit, record
+provenance, and test parity. Never copy its current working tree wholesale: it may
+contain uncommitted, brand-specific work.
 
 **Runtime rule:** the published `cursor-talk-to-figma-mcp@latest` does not contain the
 fork's read-layer work. Live extraction uses the fork's built `dist/server.js`, its DEV
-plugin, and its local relay—not the npm package.
+plugin, and its local relay—not the npm package. Preflight the expected runtime before
+capture and fail closed on a mismatch.
+
+**Scheduling rule:** the fork maintains its own roadmap. This project does not wait for
+unrelated fork testing, distribution, or authoring milestones; it upgrades the pin only
+for a required read fix or a deliberately accepted compatible release.
 
 ## Benefit-delivering release sequence
 
 | Release | Value shipped | Riskiest assumption retired |
 | --- | --- | --- |
 | **R0 — Proven local loop** | A known-good source artifact emits and validates inside this repository | The reusable emitter/validator and OpenDesign paths still work at this repo depth |
-| **R1 — Importer MVP** | One real Figma file becomes a reproducible, guard-green OpenDesign package | The fork exposes enough declared and measured evidence to satisfy the live schema honestly |
+| **R1 — Importer MVP** | One real Figma file becomes a reproducible, guard-green OpenDesign package | The pinned independent fork contract exposes enough declared and measured evidence to satisfy the live schema honestly |
 | **R2 — Astro page MVP** | One selected Figma page/frame family becomes compiling, static-first Astro with visual evidence | The cloner's page-building workflow transfers from browser evidence to Figma evidence |
 | **R3 — Generalized release** | A second unrelated file succeeds and the project is documented/releasable | The resolver is not merely a one-file collection of overrides |
 
@@ -74,9 +113,12 @@ only the next release. Later releases stay coarse until the preceding checkpoint
 - [x] **Project seam chosen:** Figma extraction writes the same
   `source/tokens.source.json` contract the website cloner consumes.
 - [x] **Destination chosen:** OpenDesign rich package; its own validator is the
-  acceptance gate.
-- [x] **Primary read lane chosen:** the local `talk-to-figma` fork, eliminating the
-  original official-MCP call-budget blocker for MVP.
+      acceptance gate.
+- [x] **Dependency boundary chosen:** `talk-to-figma-fork` remains an independent MCP
+      tool. This project consumes its pinned read contract and owns all capture,
+      normalization, OpenDesign, and code-generation behavior.
+- [x] **Primary read lane chosen:** the pinned local fork runtime, eliminating the
+      original official-MCP call-budget blocker for MVP without importing fork source.
 - [x] **Downstream reuse now exists:** the cloner has shipped the generic emitter,
   validator, Astro foundation, static-first build guidance, and visual-QA contract.
 - [x] **First live fixture chosen — SYD (2026-07-28).** Its landing page has an
@@ -106,6 +148,9 @@ Nothing executable in **this** project is done yet.
 
 **Do not start the extractor before R0 is green.** Otherwise a downstream integration
 failure and a Figma-mapping failure become indistinguishable.
+
+**R0 is independent of the fork runtime.** It vendors only the cloner's generic
+emitter/validator and does not open Figma or change `talk-to-figma-fork`.
 
 ---
 
@@ -163,8 +208,9 @@ docs/research/<slug>/
 ```
 
 - [ ] Version `capture-manifest.json`; record file/document identity, source node
-      IDs, selected pages/frames, tool name, fork commit, capture time, payload
-      hashes, and authorization/provenance notes.
+      IDs, selected pages/frames, tool name, fork commit/version, server bundle hash,
+      plugin identity/API, capability fingerprint (when available), capture time,
+      payload hashes, and authorization/provenance notes.
 - [ ] Keep original Figma node IDs in the manifest; sanitize `:` only in filenames.
 - [ ] Define raw-versus-derived ownership: `raw/` is immutable evidence;
       normalization, mappings, and generated output are reproducible derivatives.
@@ -179,6 +225,12 @@ Document and execute this read-only sequence:
 
 - [ ] Preflight the fork's DEV plugin, local relay, built MCP server, and channel.
       Never silently fall back to npm or the rate-limited official MCP.
+- [ ] Compare the connected runtime identity/capabilities with the pinned expectation
+      before the first document read; fail closed on a mismatch. Until the fork ships
+      a handshake, verify commit, `dist` hash, plugin manifest/name, and tool inventory
+      explicitly.
+- [ ] Invoke the fork only through MCP tool calls. Do not import its TypeScript,
+      `code.js`, bundled server modules, or internal helper functions.
 - [ ] `get_pages({includeChildCount:true})` to establish honest document scope.
 - [ ] For selected pages, use `set_current_page` then bounded
       `get_document_info`; preserve pagination/coverage fields.
@@ -195,6 +247,8 @@ Document and execute this read-only sequence:
       limitations instead of treating an empty result as proof of no behavior.
 - [ ] Save each reply once and prove the rest of R1 runs offline without another MCP
       call.
+- [ ] Preserve the raw fork replies unchanged; normalize them into separate typed
+      artifacts so additive fork fields do not rewrite the evidence.
 
 ### 1.3 Measure the remaining read gap
 
@@ -207,15 +261,22 @@ filtered node shape may still omit values needed for structural tokens.
 - [ ] Check whether exact text line-height/letter-spacing, effect values, auto-layout
       padding/gaps, image/vector assets, and breakpoint relationships survive the
       captured shapes.
-- [ ] If a required fact is absent, add the smallest additive read-field/tool change
-      to `talk-to-figma-fork`, verify it there, pin the new commit here, and re-capture.
-      Do not compensate with guesses or a hidden official-MCP call.
+- [ ] If a required fact is absent, stop and write the smallest generic capability
+      request against `talk-to-figma-fork`.
+- [ ] Implement the field/tool, its generic fixture, contract test, docs, and rebuilt
+      `dist/` **in the fork repository**—never as a private patch here.
+- [ ] Update this project's fork pin and payload adapter only after the fork change is
+      independently verified; re-capture only the affected replies.
+- [ ] Do not compensate with guesses, copied fork internals, or a hidden official-MCP
+      call.
 
 ### 1.4 Implement the pure offline extractor
 
 - [ ] Replace the stub with a pure transform:
       `--capture docs/research/<slug>/capture-manifest.json` →
       `design-systems/<slug>/source/tokens.source.json`.
+- [ ] Normalize versioned raw MCP replies through an explicit fork-adapter boundary;
+      extraction logic consumes the normalized types, not fork implementation details.
 - [ ] Load OpenDesign's `TOKEN_SCHEMA` at runtime; derive mandatory/optional slots
       from it and never encode the observed 56/26 counts.
 - [ ] Implement name resolution in explicit stages: exact map → normalized
@@ -254,9 +315,10 @@ filtered node shape may still omit values needed for structural tokens.
       validation oracle. Treat semantic differences as findings, not automatic
       failures.
 
-**R1 acceptance:** from one cached real capture, a clean offline run emits a complete
-OpenDesign rich package and the validator passes. Every authored value traces to a
-variable, style, node, measurement, or explicit override.
+**R1 acceptance:** one clean capture made exclusively through the pinned independent
+fork interface replays offline into a complete, guard-green OpenDesign package. Every
+authored value traces to a variable, style, node, measurement, or explicit override;
+no fork source is copied into this repository.
 
 ---
 
@@ -297,9 +359,11 @@ Keep coarse until R2 is complete:
 - [ ] Quantify override use, unresolved evidence, confidence split, and capture cost
       for both fixtures.
 - [ ] Turn both captures into offline regression fixtures, sanitized as required.
-- [ ] Reconcile stale claims in `README.md`, `docs/BUILD-PLAN.md`,
+- [ ] Reconcile stale claims in `AGENTS.md`, `README.md`, `docs/BUILD-PLAN.md`,
       `docs/EXTRACTION-GUIDE.md`, the project skill, the idea note, and
       [`knowledge/skills/CONTEXT.md`](../../skills/CONTEXT.md).
+- [ ] Publish the supported fork commit/version and runtime fingerprint alongside the
+      importer release; changing that pin requires a fresh capture compatibility pass.
 - [ ] Add CI for install, typecheck/tests, fixture emission, OpenDesign validation,
       and the Astro build when applicable.
 - [ ] Publish the first documented version only after both unrelated files pass.
@@ -308,6 +372,12 @@ Keep coarse until R2 is complete:
 
 - [ ] **Read-only Figma operation.** This pipeline never calls setters, creators,
       delete tools, or write-oriented prompts.
+- [ ] **Independent tool boundary.** The fork is invoked only through its MCP
+      interface; no fork source/plugin helpers are imported or copied here.
+- [ ] **Consumer-owned adaptation.** Raw replies remain immutable and versioned;
+      fork-specific normalization is isolated from token resolution/emission.
+- [ ] **Generic gaps land upstream in the fork.** This repository never carries a
+      private Figma-tool implementation.
 - [ ] **No invented evidence.** Missing is an error or schema fallback, never a
       plausible-looking value.
 - [ ] **No false negatives from partial reads.** Preserve `supported`, `complete`,
@@ -335,11 +405,16 @@ Keep coarse until R2 is complete:
       or infer only the unambiguous responsive/brand cases?
 - [ ] **Astro reuse shape:** vendor a minimal template into this repo, or add a
       reproducible scaffold script sourced from the cloner baseline?
+- [ ] **Fork compatibility fingerprint:** what exact runtime fields can be verified at
+      `956a6af`, and when can this project require the fork's planned formal
+      `get_runtime_info`/capability handshake?
+- [ ] **Fork adapter policy:** support one strict runtime pin for MVP, or retain an
+      adapter for the immediately previous pin after the first upgrade?
 
 ## Inputs needed only when their phase starts
 
-- **R1 live capture:** the SYD Figma file open in the fork's DEV plugin and the
-  connected channel name.
+- **R1 live capture:** the SYD Figma file open in the independently running fork DEV
+  plugin, the connected channel name, and the verified pinned runtime identity.
 - **R3 generalization:** a second unrelated authorized file.
 - **Any calendar commitment:** a deadline/capacity decision; until then the project
   remains backlog-paced and scope-open.
