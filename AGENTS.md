@@ -6,7 +6,10 @@ A **design-system-first** Figma importer. Point it at a Figma file; it extracts 
 
 The Figma twin of [`../ai-website-cloner-template/`](../ai-website-cloner-template/). Both feed the **same** emitter through the **same** intermediate contract (`source/tokens.source.json`); only extraction differs.
 
-**Status:** scaffolded 2026-07-24. Contracts and stubs only — no working code. Read [`docs/BUILD-PLAN.md`](docs/BUILD-PLAN.md) before writing any.
+**Status:** R0 shipped 2026-07-31. Emit + validate are executable and proven
+offline; extraction remains a throwing stub. Open [`TASKS.md`](TASKS.md) first for
+the live implementation state, then use [`docs/BUILD-PLAN.md`](docs/BUILD-PLAN.md)
+for the original rationale and contracts.
 
 ## Non-negotiables
 
@@ -32,8 +35,11 @@ npx tsx scripts/validate-design-system.ts --brand <slug>
 
 ## Repo facts that bite
 
-- This project is **tracked directly by the notes repo** — unlike `ai-website-cloner-template`, it is *not* a git submodule. No separate origin, no submodule pointer to bump.
-- Because it lives inside the notes repo, `--od-root`'s default relative path (`../../../skills/open-design`) resolves correctly. If this project is ever extracted to its own repo, that path breaks — pass `--od-root` explicitly.
+- This project is a git submodule checked out under the notes workspace. Keep
+  project changes and any eventual parent pointer update as separate git concerns.
+- At this checkout depth, `--od-root`'s default relative path
+  (`../../../skills/open-design`) resolves correctly. If this project is moved,
+  pass `--od-root` explicitly.
 - `design-systems/**` is emitted content and `scripts/**` is tsx tooling; keep both out of any app-level tsconfig/eslint program if one is added later (the cloner had to do exactly this to keep CI green).
 
 @docs/EXTRACTION-GUIDE.md

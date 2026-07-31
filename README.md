@@ -12,7 +12,11 @@ Figma   ──▶ Figma MCP extraction  ───┘        the shared contract
 
 The cloner infers tokens from `getComputedStyle()` — lossy, requires clustering. Figma **declares** them as variables and styles. Same destination, better input, different extraction problem.
 
-> **Status: scaffolded 2026-07-24 — not yet built.** Directories, contracts, and stubs exist; no working code. The build plan is [`docs/BUILD-PLAN.md`](docs/BUILD-PLAN.md); start at Milestone 1.
+> **Status: R0 downstream loop shipped 2026-07-31.** Emit + validate work from a
+> clean install against the committed offline fixture. Figma capture/extraction
+> remains unbuilt, so the Importer MVP is not shipped. Follow
+> [`TASKS.md`](TASKS.md) for current work; use
+> [`docs/BUILD-PLAN.md`](docs/BUILD-PLAN.md) for the original rationale.
 
 ## Scope (v1)
 
@@ -20,20 +24,22 @@ The cloner infers tokens from `getComputedStyle()` — lossy, requires clusterin
 
 **Out (deliberately):** building an Astro page from it. That is the cloner's Milestone D — a *page builder that reads the design system*, shared by both sources once it exists. Until then, `../../skills/figma-to-astro/` remains the hand-driven path from frame to `.astro`.
 
-## Quick start (once built)
+## Quick start
 
 ```bash
-npx tsx scripts/extract-figma-tokens.ts --file <figma-file-key> --brand <slug>   # → source/tokens.source.json
-npx tsx scripts/emit-design-system.ts   --brand <slug> --name "<Name>"           # → design-systems/<slug>/
-npx tsx scripts/validate-design-system.ts --brand <slug>                         # acceptance gate
+nvm use
+npm ci
+npm run check:r0
 ```
 
-Or drive the whole thing conversationally with the `/figma-to-design-system` skill in [`.claude/skills/`](.claude/skills/figma-to-design-system/SKILL.md).
+`scripts/extract-figma-tokens.ts` still throws intentionally. Its capture contract
+and implementation are tracked under R1 in [`TASKS.md`](TASKS.md).
 
 ## Prerequisites
 
-- Node 22+ and `npx tsx` (no monorepo install needed — the validator imports OpenDesign's pure-TS contracts directly).
-- A Figma MCP available. **Which one is a live design decision** — see [`docs/BUILD-PLAN.md`](docs/BUILD-PLAN.md) § Risk 1 (the official `figma-mcp` is rate-limited; the `talk-to-figma` fork is free but write-first).
+- Node 24.18.0 (`.nvmrc`) and npm 11.16.0 (`packageManager`).
+- For future R1 capture, the pinned local `talk-to-figma-fork` runtime and DEV
+  plugin—not the published npm package. See [`TASKS.md`](TASKS.md).
 - `knowledge/skills/open-design/` present — it supplies the 56-slot `TOKEN_SCHEMA` and the derived-file renderers, read at build time. **Never hardcode the slot list.**
 
 ## Project structure

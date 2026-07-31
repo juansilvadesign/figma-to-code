@@ -49,9 +49,10 @@ Hard rules:
   family from that same capture and produce a static-first Astro page that consumes
   the validated package, builds cleanly, and has final 1440px/390px visual evidence.
 
-The project itself is still a scaffold at `0.0.0`: all three scripts are stubs and
-throw intentionally. A mature external tool dependency is not shipped functionality
-in this repository.
+The package remains at `0.0.0`, but R0 is now executable: the emitter and validator
+run locally against the committed compatibility fixture. The Figma extractor remains
+an intentional throwing stub, so neither the Importer MVP nor Astro page MVP has
+shipped.
 
 ## Planning frame
 
@@ -127,30 +128,30 @@ only the next release. Later releases stay coarse until the preceding checkpoint
   intent and an implementation reference for end-to-end comparison.
 - [x] **Scaffold exists:** package metadata, extraction guide, build plan, skill, and
   explicit throwing stubs were committed in `6d74f8f`.
+- [x] **R0 shipped — proven local loop (2026-07-31).** The vendored scripts have no
+  functional delta from `b7b4dda`; a Node 24 clean install re-emits the committed
+  PsiAtiva compatibility fixture and passes OpenDesign at package quality 100.
+  Evidence: [`docs/research/r0-build-note.md`](docs/research/r0-build-note.md).
 
-Nothing executable in **this** project is done yet.
+The remaining executable stub is `scripts/extract-figma-tokens.ts`.
 
-## ▶ Next session — start here (R0 only)
+## ▶ Next session — start here (R1.1 only)
 
-1. **Do not open Figma yet.** R0 proves the downstream loop without spending operator
-   time or creating a capture.
-2. Vendor `scripts/emit-design-system.ts` and
-   `scripts/validate-design-system.ts` from the cloner's committed `b7b4dda`
-   baseline. Record the source commit and copy date in both headers.
-3. Bring over a committed, known-good OpenDesign fixture (the cloner's tracked
-   `design-systems/psiativa/` package is the **offline R0 compatibility fixture only**),
-   re-emit it here, and run the local validator. SYD remains the first live Figma
-   fixture in R1.
-4. Reconcile Node/package scripts only as required by the measured run. The cloner
-   is now Node 24; do not preserve this scaffold's Node 22 claim by assumption.
-5. Stop R0 only when emit → validate passes from this repository and the vendored
-   scripts no longer contain stub throws.
+1. **Do not open Figma yet.** Freeze the capture contract and privacy rules before
+   producing the first live SYD evidence bundle.
+2. Version `capture-manifest.json` and define types/schemas for the manifest, raw
+   payload envelope, coverage metadata, hashes, runtime identity, and overrides.
+3. Define immutable `raw/` versus reproducible derived ownership, safe node-ID
+   filenames, authorization notes, and gitignore defaults for private copy/assets.
+4. Build offline fixture tests for each pinned fork reply shape the extractor will
+   consume. Treat fork payloads as external contracts; do not import fork source.
+5. Stop R1.1 when malformed/incomplete bundles fail clearly and a valid synthetic
+   bundle can be loaded offline. Live MCP capture begins only in R1.2.
 
-**Do not start the extractor before R0 is green.** Otherwise a downstream integration
-failure and a Figma-mapping failure become indistinguishable.
-
-**R0 is independent of the fork runtime.** It vendors only the cloner's generic
-emitter/validator and does not open Figma or change `talk-to-figma-fork`.
+**R0 retrospective:** the source-agnostic emitter/validator transferred with zero
+functional changes, the pinned OpenDesign schema currently resolves 56 slots, and the
+compatibility fixture passes all 15 quality checks. The next riskiest assumption is
+capture integrity, so R1 starts with the evidence contract rather than live calls.
 
 ---
 
@@ -158,31 +159,32 @@ emitter/validator and does not open Figma or change `talk-to-figma-fork`.
 
 ### 0.1 Vendor the proven generic code
 
-- [ ] Copy the cloner's committed emitter and validator from baseline `b7b4dda`;
+- [x] Copy the cloner's committed emitter and validator from baseline `b7b4dda`;
       preserve behavior and add provenance only.
-- [ ] Diff both vendored files against that commit and record any intentional delta.
+- [x] Diff both vendored files against that commit and record any intentional delta.
       Expected functional delta: none.
-- [ ] Make `npm run emit`, `npm run validate`, and a script typecheck work from a
+- [x] Make `npm run emit`, `npm run validate`, and a script typecheck work from a
       clean install.
-- [ ] Pin the runtime/dependency baseline with a lockfile; do not leave only
+- [x] Pin the runtime/dependency baseline with a lockfile; do not leave only
       floating lower bounds.
 
 ### 0.2 Prove the whole downstream contract
 
-- [ ] Install a known-good package fixture without relying on sibling uncommitted
+- [x] Install a known-good package fixture without relying on sibling uncommitted
       files.
-- [ ] Re-emit `tokens.css`, `design-tokens.json`, `tailwind-v4.css`,
+- [x] Re-emit `tokens.css`, `design-tokens.json`, `tailwind-v4.css`,
       `components.manifest.json`, `manifest.json`, and
       `source/token-contract.report.json`.
-- [ ] Run the validator against the re-emitted package and save the exact command
+- [x] Run the validator against the re-emitted package and save the exact command
       and result in the R0 build note.
-- [ ] Confirm `--od-root` works both by default in this workspace and when passed
+- [x] Confirm `--od-root` works both by default in this workspace and when passed
       explicitly.
-- [ ] Confirm an intentionally missing A1 token fails with a useful token list.
-- [ ] Confirm an undeclared `var(--…)` in `components.html` fails validation.
+- [x] Confirm an intentionally missing A1 token fails with a useful token list.
+- [x] Confirm an undeclared `var(--…)` in `components.html` fails validation.
 
-**R0 acceptance:** a fresh checkout can install, re-emit the fixture, typecheck the
-scripts, and pass the OpenDesign validator without touching Figma.
+**R0 acceptance — passed 2026-07-31:** a fresh checkout can install, re-emit the
+fixture, typecheck the scripts, and pass the OpenDesign validator without touching
+Figma. See [`docs/research/r0-build-note.md`](docs/research/r0-build-note.md).
 
 ---
 
