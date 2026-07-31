@@ -1,8 +1,17 @@
 node_modules/
 *.log
 
-# Raw MCP responses cached during extraction. Keep the notes and the derived
-# artifacts; do not commit large raw dumps or anything with a Figma token in it.
+# Live capture bundles are private-local by default. The manifest itself carries
+# document identity and the raw/screenshot/override files may contain client copy,
+# assets, variable names, or node ids. Authorized sanitized regression fixtures
+# live under tests/fixtures/captures/ instead.
+docs/research/*/capture-manifest.json
+docs/research/*/slot-overrides.json
+docs/research/*/raw/
+docs/research/*/screenshots/
+docs/research/*/normalized/
+
+# Legacy raw-response naming.
 docs/research/**/*.raw.json
 .env
 .env.*
