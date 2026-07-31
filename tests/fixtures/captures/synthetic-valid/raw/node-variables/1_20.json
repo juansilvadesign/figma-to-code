@@ -1,0 +1,28 @@
+{
+  "nodeId": "1:20",
+  "supported": true,
+  "complete": true,
+  "nodeCount": 1,
+  "bindingCount": 2,
+  "bindings": [
+    {
+      "property": "fills",
+      "variableId": "VariableID:1:1",
+      "variableName": "Color/Background",
+      "value": "#ffffff",
+      "resolutionStatus": "resolved"
+    },
+    {
+      "property": "paddingLeft",
+      "variableId": "VariableID:1:4",
+      "variableName": "Spacing/Section",
+      "value": 20,
+      "resolutionStatus": "resolved"
+    }
+  ],
+  "styleCount": 0,
+  "styles": [],
+  "unresolvedVariables": 0,
+  "unresolvedStyles": 0,
+  "limitations": []
+}

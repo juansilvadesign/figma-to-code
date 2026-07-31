@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "figma-to-code/slot-overrides/v1",
+  "modeMap": {
+    "Brand/Light": "light",
+    "Brand/Dark": "dark"
+  },
+  "slots": {},
+  "notes": [
+    "Synthetic fixture intentionally needs no slot overrides."
+  ]
+}

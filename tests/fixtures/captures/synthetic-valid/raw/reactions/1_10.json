@@ -1,0 +1,24 @@
+{
+  "nodeId": "1:10",
+  "reactionCount": 1,
+  "reactions": [
+    {
+      "sourceNodeId": "1:10",
+      "trigger": {
+        "type": "ON_CLICK"
+      },
+      "action": {
+        "type": "CHANGE_TO",
+        "destinationId": "1:11",
+        "transition": {
+          "type": "SMART_ANIMATE",
+          "duration": 0.3
+        }
+      }
+    }
+  ],
+  "complete": true,
+  "limitations": [
+    "An empty result would not prove the absence of unsupported prototype behavior."
+  ]
+}

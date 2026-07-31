@@ -1,0 +1,42 @@
+{
+  "summary": true,
+  "count": 2,
+  "families": [
+    {
+      "name": "Button",
+      "count": 1
+    },
+    {
+      "name": "Card",
+      "count": 1
+    }
+  ],
+  "authoringSessions": [
+    {
+      "prefix": "1",
+      "count": 2,
+      "topFamilies": [
+        {
+          "name": "Button",
+          "count": 1
+        },
+        {
+          "name": "Card",
+          "count": 1
+        }
+      ]
+    }
+  ],
+  "coverage": {
+    "scope": "selected_pages",
+    "complete": true,
+    "pagesTotal": 1,
+    "pagesRequested": 1,
+    "pagesScanned": 1,
+    "pagesSkipped": [],
+    "pagesNotFound": [],
+    "limitations": [
+      "Scoped to 1 requested page; counts are not a document total."
+    ]
+  }
+}

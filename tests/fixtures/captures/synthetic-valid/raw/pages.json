@@ -1,0 +1,14 @@
+{
+  "scope": "document",
+  "pageCount": 1,
+  "pages": [
+    {
+      "id": "1:1",
+      "name": "Landing",
+      "childCount": 2
+    }
+  ],
+  "complete": true,
+  "limitations": [],
+  "additiveFixtureField": "unknown fork fields remain allowed"
+}

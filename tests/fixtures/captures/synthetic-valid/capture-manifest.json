@@ -1,0 +1,416 @@
+{
+  "$schema": "../../../../schemas/capture-manifest.schema.json",
+  "schemaVersion": "figma-to-code/capture-manifest/v1",
+  "captureId": "synthetic-r1-contract",
+  "brand": "synthetic-r1",
+  "capturedAt": "2026-07-31T12:00:00.000Z",
+  "source": {
+    "kind": "figma",
+    "fileKey": "synthetic-file-key",
+    "documentId": "synthetic-document-id",
+    "documentName": "Synthetic Landing Page",
+    "selectedPageIds": [
+      "1:1"
+    ],
+    "selectedNodes": [
+      {
+        "id": "1:10",
+        "name": "Landing / Desktop",
+        "pageId": "1:1",
+        "purposes": [
+          "desktop-frame",
+          "interactive-root",
+          "token-measurement"
+        ]
+      },
+      {
+        "id": "1:20",
+        "name": "Landing / Mobile",
+        "pageId": "1:1",
+        "purposes": [
+          "mobile-frame",
+          "token-measurement"
+        ]
+      }
+    ]
+  },
+  "authorization": {
+    "status": "authorized",
+    "basis": "synthetic",
+    "capturedBy": "figma-to-code contract test",
+    "containsPrivateContent": false,
+    "commitPolicy": "sanitized-fixture",
+    "notes": "Entirely synthetic; safe to commit and not evidence from a real Figma file."
+  },
+  "provenance": {
+    "captureMethod": "read-only-local-mcp",
+    "operator": "synthetic-fixture-builder",
+    "notes": [
+      "Payload shapes mirror public guarantees documented at fork commit 956a6af.",
+      "Capability input-schema hashes are deterministic synthetic stand-ins, not live runtime evidence."
+    ]
+  },
+  "runtime": {
+    "provider": "talk-to-figma-fork",
+    "forkCommit": "956a6afcec72f8ccd025b46475de8e2474786e36",
+    "packageVersion": "0.3.5",
+    "serverBundleSha256": "d8cf09aad16559b618884616aca3b927ca495c86a7048992d3ad1ab192a5422c",
+    "connection": {
+      "relay": "local-websocket",
+      "channel": "synthetic-channel"
+    },
+    "plugin": {
+      "name": "Talk to Figma (fork)",
+      "id": "1485687494525374295",
+      "api": "1.0.0",
+      "documentAccess": "dynamic-page",
+      "manifestSha256": "6c7e43e9a3d2abfbcd809d8adb9174f89d2b1fd3a1a00800b4f30946adab3738",
+      "codeSha256": "4188c501dd2f15502a00c10df7c7c5069dde5c2b1345165d82da64810c5955fe"
+    },
+    "capabilityFingerprint": {
+      "algorithm": "sha256",
+      "scope": "required-read-tools",
+      "value": "3a16d7c5e0d5d20fdfc758b447e8b0ee7ee7bc5178006b17f7b108046dfc2a3e",
+      "tools": [
+        {
+          "name": "export_node_as_image",
+          "inputSchemaSha256": "a31ae89b6ee62187fd35d1e5d238633fa1cbde451c413a561dc918b04177cec0"
+        },
+        {
+          "name": "get_document_info",
+          "inputSchemaSha256": "e5dae9082d42f7bd30e1246cac0dafd91bbd7343efc9f02143e1c0f462f17f7d"
+        },
+        {
+          "name": "get_local_components",
+          "inputSchemaSha256": "4ddba88af3b102073e7db8f9dff967e40245e3b71c4d257efa034b030dd733e8"
+        },
+        {
+          "name": "get_node_info",
+          "inputSchemaSha256": "0bb78db78cf3c467eb62c4fe3b5a92d8d453b1087df50185532393837b3567b5"
+        },
+        {
+          "name": "get_node_variables",
+          "inputSchemaSha256": "5ba2af73ca1ca54a7c8d821ffbe862451109c3294d1fa7b6f94c0ac21439c247"
+        },
+        {
+          "name": "get_pages",
+          "inputSchemaSha256": "365f76c655cb240adbd661a2ec70bf21fb399264b54e1365d3ab1d445059bff0"
+        },
+        {
+          "name": "get_reactions",
+          "inputSchemaSha256": "789ee0d523bcb5c85aac7d7d43f06251015247fdac7cfeed583841b084111bf6"
+        },
+        {
+          "name": "get_styles",
+          "inputSchemaSha256": "f0bd6257d77fa1a505cffdf01553c37c10a8bdb41eec4f6fe7aa38717453061c"
+        },
+        {
+          "name": "get_variables",
+          "inputSchemaSha256": "063d799ca333251bb816ed7ae953fdf58bd3347ea6330172b6ce0689c5b802bd"
+        },
+        {
+          "name": "set_current_page",
+          "inputSchemaSha256": "3bf3661eacce8d05935df2bc3d4db14ff50db6c580758f9c4a90b65bec16a556"
+        }
+      ]
+    }
+  },
+  "artifacts": [
+    {
+      "id": "pages",
+      "role": "pages",
+      "path": "raw/pages.json",
+      "mediaType": "application/json",
+      "sha256": "9550c433fea4ce1c33a92a242452f7a286c5a163e7336d9c51231f01f64d162b",
+      "bytes": 245,
+      "capturedAt": "2026-07-31T12:00:01.000Z",
+      "toolCall": {
+        "name": "get_pages",
+        "arguments": {
+          "includeChildCount": true
+        }
+      },
+      "coverage": {
+        "scope": "document",
+        "complete": true,
+        "limitations": []
+      }
+    },
+    {
+      "id": "document",
+      "role": "document",
+      "path": "raw/document.json",
+      "mediaType": "application/json",
+      "sha256": "ca787de919181e45e759f1da8a67b829f0d46c7b7075cddc55c1b4a07901a512",
+      "bytes": 738,
+      "capturedAt": "2026-07-31T12:00:02.000Z",
+      "pageId": "1:1",
+      "toolCall": {
+        "name": "get_document_info",
+        "arguments": {
+          "summary": true,
+          "limit": 100,
+          "offset": 0
+        }
+      },
+      "coverage": {
+        "scope": "current-page",
+        "complete": true,
+        "limitations": []
+      }
+    },
+    {
+      "id": "variables",
+      "role": "variables",
+      "path": "raw/variables.json",
+      "mediaType": "application/json",
+      "sha256": "a9a124d4335653de5e7c0951e74a0a3047a44e68f848ced62ad5bbb25c51dd75",
+      "bytes": 1321,
+      "capturedAt": "2026-07-31T12:00:03.000Z",
+      "toolCall": {
+        "name": "get_variables",
+        "arguments": {}
+      },
+      "coverage": {
+        "scope": "document",
+        "complete": true,
+        "supported": true,
+        "limitations": []
+      }
+    },
+    {
+      "id": "styles",
+      "role": "styles",
+      "path": "raw/styles.json",
+      "mediaType": "application/json",
+      "sha256": "74d227b3297d4d5b1ff464957e747893f6029c6f9a65224da939bf172f90fdf1",
+      "bytes": 312,
+      "capturedAt": "2026-07-31T12:00:04.000Z",
+      "toolCall": {
+        "name": "get_styles",
+        "arguments": {}
+      },
+      "coverage": {
+        "scope": "document",
+        "complete": true,
+        "supported": true,
+        "limitations": []
+      }
+    },
+    {
+      "id": "components",
+      "role": "components",
+      "path": "raw/components.json",
+      "mediaType": "application/json",
+      "sha256": "fd8b9a781f087318271465ff551c2263b21ec2c8b0116b658e65d7e862a4ac99",
+      "bytes": 699,
+      "capturedAt": "2026-07-31T12:00:05.000Z",
+      "toolCall": {
+        "name": "get_local_components",
+        "arguments": {
+          "summary": true,
+          "pages": [
+            "1:1"
+          ],
+          "timeBudgetMs": 120000
+        }
+      },
+      "coverage": {
+        "scope": "selected-pages",
+        "complete": true,
+        "limitations": [
+          "Scoped to 1 requested page; counts are not a document total."
+        ]
+      }
+    },
+    {
+      "id": "node-1-10",
+      "role": "node",
+      "path": "raw/nodes/1_10.json",
+      "mediaType": "application/json",
+      "sha256": "9d2837a61cde657cb6d0980f6432379ab0c6aff3794c8e021b42adc546a07fb6",
+      "bytes": 616,
+      "capturedAt": "2026-07-31T12:00:06.000Z",
+      "nodeId": "1:10",
+      "pageId": "1:1",
+      "toolCall": {
+        "name": "get_node_info",
+        "arguments": {
+          "nodeId": "1:10"
+        }
+      },
+      "coverage": {
+        "scope": "node",
+        "complete": true,
+        "limitations": []
+      }
+    },
+    {
+      "id": "node-variables-1-10",
+      "role": "node-variables",
+      "path": "raw/node-variables/1_10.json",
+      "mediaType": "application/json",
+      "sha256": "991a3e0a81a18a320d5358982b24c234154be15a923d5d8291d5e59b36b0423c",
+      "bytes": 791,
+      "capturedAt": "2026-07-31T12:00:07.000Z",
+      "nodeId": "1:10",
+      "pageId": "1:1",
+      "toolCall": {
+        "name": "get_node_variables",
+        "arguments": {
+          "nodeId": "1:10"
+        }
+      },
+      "coverage": {
+        "scope": "node-subtree",
+        "complete": true,
+        "supported": true,
+        "limitations": []
+      }
+    },
+    {
+      "id": "reactions-1-10",
+      "role": "reactions",
+      "path": "raw/reactions/1_10.json",
+      "mediaType": "application/json",
+      "sha256": "63a37883b9af51ae3b31d98d3acc1a55ae3cb196dfd5e5b4440fd6ab8a83a958",
+      "bytes": 476,
+      "capturedAt": "2026-07-31T12:00:08.000Z",
+      "nodeId": "1:10",
+      "pageId": "1:1",
+      "toolCall": {
+        "name": "get_reactions",
+        "arguments": {
+          "nodeId": "1:10"
+        }
+      },
+      "coverage": {
+        "scope": "node-subtree",
+        "complete": true,
+        "limitations": [
+          "An empty result would not prove the absence of unsupported prototype behavior."
+        ]
+      }
+    },
+    {
+      "id": "image-export-1-10",
+      "role": "image-export",
+      "path": "raw/exports/1_10.json",
+      "mediaType": "application/json",
+      "sha256": "518330d3d7b72bc582be18bad167ba3e8923b1e0ec3ae9a44986dcca0d15ec56",
+      "bytes": 296,
+      "capturedAt": "2026-07-31T12:00:09.000Z",
+      "nodeId": "1:10",
+      "pageId": "1:1",
+      "toolCall": {
+        "name": "export_node_as_image",
+        "arguments": {
+          "nodeId": "1:10",
+          "format": "SVG"
+        }
+      },
+      "coverage": {
+        "scope": "node",
+        "complete": true,
+        "limitations": []
+      }
+    },
+    {
+      "id": "screenshot-1-10",
+      "role": "screenshot",
+      "path": "screenshots/1_10.svg",
+      "mediaType": "image/svg+xml",
+      "sha256": "9e08467670dd9953d8179b555e5bf4d289a509b4f370549c15689ea9f7f40025",
+      "bytes": 121,
+      "capturedAt": "2026-07-31T12:00:10.000Z",
+      "nodeId": "1:10",
+      "pageId": "1:1",
+      "derivedFromArtifactId": "image-export-1-10"
+    },
+    {
+      "id": "node-1-20",
+      "role": "node",
+      "path": "raw/nodes/1_20.json",
+      "mediaType": "application/json",
+      "sha256": "19193636bf769cf649a5028ac036fee3c24d95daf9748b276afdd45789c57593",
+      "bytes": 614,
+      "capturedAt": "2026-07-31T12:00:11.000Z",
+      "nodeId": "1:20",
+      "pageId": "1:1",
+      "toolCall": {
+        "name": "get_node_info",
+        "arguments": {
+          "nodeId": "1:20"
+        }
+      },
+      "coverage": {
+        "scope": "node",
+        "complete": true,
+        "limitations": []
+      }
+    },
+    {
+      "id": "node-variables-1-20",
+      "role": "node-variables",
+      "path": "raw/node-variables/1_20.json",
+      "mediaType": "application/json",
+      "sha256": "da31e091d18911009adba081e9fae525aae7887563b26bf3c95ec771615796f3",
+      "bytes": 596,
+      "capturedAt": "2026-07-31T12:00:12.000Z",
+      "nodeId": "1:20",
+      "pageId": "1:1",
+      "toolCall": {
+        "name": "get_node_variables",
+        "arguments": {
+          "nodeId": "1:20"
+        }
+      },
+      "coverage": {
+        "scope": "node-subtree",
+        "complete": true,
+        "supported": true,
+        "limitations": []
+      }
+    },
+    {
+      "id": "image-export-1-20",
+      "role": "image-export",
+      "path": "raw/exports/1_20.json",
+      "mediaType": "application/json",
+      "sha256": "f50bee0ba6ebcad23fd6b9051d7fe0662bdca87720585100b3507332150cce80",
+      "bytes": 292,
+      "capturedAt": "2026-07-31T12:00:13.000Z",
+      "nodeId": "1:20",
+      "pageId": "1:1",
+      "toolCall": {
+        "name": "export_node_as_image",
+        "arguments": {
+          "nodeId": "1:20",
+          "format": "SVG"
+        }
+      },
+      "coverage": {
+        "scope": "node",
+        "complete": true,
+        "limitations": []
+      }
+    },
+    {
+      "id": "screenshot-1-20",
+      "role": "screenshot",
+      "path": "screenshots/1_20.svg",
+      "mediaType": "image/svg+xml",
+      "sha256": "e1555602727538ca7ad03a93c9654f76135b668789abe86850c56e9d8f98a975",
+      "bytes": 119,
+      "capturedAt": "2026-07-31T12:00:14.000Z",
+      "nodeId": "1:20",
+      "pageId": "1:1",
+      "derivedFromArtifactId": "image-export-1-20"
+    }
+  ],
+  "overrides": {
+    "path": "slot-overrides.json",
+    "sha256": "733e7e95c6dc9c280153a404045853fbfd12853d67f6ea656683c962c2117a28",
+    "bytes": 226
+  }
+}

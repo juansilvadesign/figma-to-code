@@ -1,0 +1,37 @@
+{
+  "nodeId": "1:10",
+  "supported": true,
+  "complete": true,
+  "nodeCount": 1,
+  "bindingCount": 2,
+  "bindings": [
+    {
+      "property": "fills",
+      "variableId": "VariableID:1:1",
+      "variableName": "Color/Background",
+      "value": "#ffffff",
+      "resolutionStatus": "resolved"
+    },
+    {
+      "property": "itemSpacing",
+      "variableId": "VariableID:1:4",
+      "variableName": "Spacing/Section",
+      "value": 120,
+      "resolutionStatus": "resolved"
+    }
+  ],
+  "styleCount": 1,
+  "styles": [
+    {
+      "property": "textStyleId",
+      "styleId": "S:1",
+      "styleName": "Display/Hero",
+      "styleType": "TEXT",
+      "remote": false,
+      "resolutionStatus": "resolved"
+    }
+  ],
+  "unresolvedVariables": 0,
+  "unresolvedStyles": 0,
+  "limitations": []
+}

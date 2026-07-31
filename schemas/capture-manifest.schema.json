@@ -1,0 +1,516 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://figma-to-code.local/schemas/capture-manifest.schema.json",
+  "title": "Figma-to-Code Immutable Capture Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schemaVersion",
+    "captureId",
+    "brand",
+    "capturedAt",
+    "source",
+    "authorization",
+    "provenance",
+    "runtime",
+    "artifacts",
+    "overrides"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "schemaVersion": {
+      "const": "figma-to-code/capture-manifest/v1"
+    },
+    "captureId": {
+      "$ref": "#/$defs/slug"
+    },
+    "brand": {
+      "$ref": "#/$defs/slug"
+    },
+    "capturedAt": {
+      "$ref": "#/$defs/timestamp"
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "fileKey",
+        "documentId",
+        "documentName",
+        "selectedPageIds",
+        "selectedNodes"
+      ],
+      "properties": {
+        "kind": {
+          "const": "figma"
+        },
+        "fileKey": {
+          "type": "string",
+          "minLength": 1
+        },
+        "documentId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "documentName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "selectedPageIds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/nodeId"
+          }
+        },
+        "selectedNodes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/selectedNode"
+          }
+        }
+      }
+    },
+    "authorization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "basis",
+        "capturedBy",
+        "containsPrivateContent",
+        "commitPolicy",
+        "notes"
+      ],
+      "properties": {
+        "status": {
+          "const": "authorized"
+        },
+        "basis": {
+          "enum": [
+            "owned",
+            "client-approved",
+            "licensed",
+            "synthetic"
+          ]
+        },
+        "capturedBy": {
+          "type": "string",
+          "minLength": 1
+        },
+        "containsPrivateContent": {
+          "type": "boolean"
+        },
+        "commitPolicy": {
+          "enum": [
+            "private-local",
+            "sanitized-fixture"
+          ]
+        },
+        "notes": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "captureMethod",
+        "operator",
+        "notes"
+      ],
+      "properties": {
+        "captureMethod": {
+          "const": "read-only-local-mcp"
+        },
+        "operator": {
+          "type": "string",
+          "minLength": 1
+        },
+        "notes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "runtime": {
+      "$ref": "#/$defs/runtime"
+    },
+    "artifacts": {
+      "type": "array",
+      "minItems": 9,
+      "items": {
+        "$ref": "#/$defs/artifact"
+      }
+    },
+    "overrides": {
+      "$ref": "#/$defs/integrityFile"
+    }
+  },
+  "$defs": {
+    "slug": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "Z$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "relativePath": {
+      "type": "string",
+      "minLength": 1,
+      "not": {
+        "pattern": "(^/|\\\\|(^|/)\\.\\.(/|$))"
+      }
+    },
+    "nodeId": {
+      "type": "string",
+      "minLength": 1,
+      "not": {
+        "pattern": "[/\\\\]"
+      }
+    },
+    "selectedNode": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "pageId",
+        "purposes"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/nodeId"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "pageId": {
+          "$ref": "#/$defs/nodeId"
+        },
+        "purposes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "desktop-frame",
+              "mobile-frame",
+              "interactive-root",
+              "token-measurement"
+            ]
+          }
+        }
+      }
+    },
+    "runtime": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provider",
+        "forkCommit",
+        "packageVersion",
+        "serverBundleSha256",
+        "connection",
+        "plugin",
+        "capabilityFingerprint"
+      ],
+      "properties": {
+        "provider": {
+          "const": "talk-to-figma-fork"
+        },
+        "forkCommit": {
+          "const": "956a6afcec72f8ccd025b46475de8e2474786e36"
+        },
+        "packageVersion": {
+          "const": "0.3.5"
+        },
+        "serverBundleSha256": {
+          "const": "d8cf09aad16559b618884616aca3b927ca495c86a7048992d3ad1ab192a5422c"
+        },
+        "connection": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "relay",
+            "channel"
+          ],
+          "properties": {
+            "relay": {
+              "const": "local-websocket"
+            },
+            "channel": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "plugin": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "name",
+            "id",
+            "api",
+            "documentAccess",
+            "manifestSha256",
+            "codeSha256"
+          ],
+          "properties": {
+            "name": {
+              "const": "Talk to Figma (fork)"
+            },
+            "id": {
+              "const": "1485687494525374295"
+            },
+            "api": {
+              "const": "1.0.0"
+            },
+            "documentAccess": {
+              "const": "dynamic-page"
+            },
+            "manifestSha256": {
+              "const": "6c7e43e9a3d2abfbcd809d8adb9174f89d2b1fd3a1a00800b4f30946adab3738"
+            },
+            "codeSha256": {
+              "const": "4188c501dd2f15502a00c10df7c7c5069dde5c2b1345165d82da64810c5955fe"
+            }
+          }
+        },
+        "capabilityFingerprint": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "algorithm",
+            "scope",
+            "value",
+            "tools"
+          ],
+          "properties": {
+            "algorithm": {
+              "const": "sha256"
+            },
+            "scope": {
+              "const": "required-read-tools"
+            },
+            "value": {
+              "$ref": "#/$defs/sha256"
+            },
+            "tools": {
+              "type": "array",
+              "minItems": 10,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "name",
+                  "inputSchemaSha256"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "inputSchemaSha256": {
+                    "$ref": "#/$defs/sha256"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scope",
+        "complete",
+        "limitations"
+      ],
+      "properties": {
+        "scope": {
+          "enum": [
+            "document",
+            "current-page",
+            "selected-pages",
+            "node",
+            "node-subtree"
+          ]
+        },
+        "complete": {
+          "type": "boolean"
+        },
+        "supported": {
+          "type": "boolean"
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "toolCall": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "arguments"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "arguments": {
+          "type": "object"
+        }
+      }
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "role",
+        "path",
+        "mediaType",
+        "sha256",
+        "bytes",
+        "capturedAt"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "role": {
+          "enum": [
+            "pages",
+            "document",
+            "variables",
+            "styles",
+            "components",
+            "node",
+            "node-variables",
+            "reactions",
+            "image-export",
+            "screenshot"
+          ]
+        },
+        "path": {
+          "$ref": "#/$defs/relativePath"
+        },
+        "mediaType": {
+          "enum": [
+            "application/json",
+            "text/plain",
+            "image/png",
+            "image/jpeg",
+            "image/svg+xml"
+          ]
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "capturedAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "nodeId": {
+          "$ref": "#/$defs/nodeId"
+        },
+        "pageId": {
+          "$ref": "#/$defs/nodeId"
+        },
+        "toolCall": {
+          "$ref": "#/$defs/toolCall"
+        },
+        "coverage": {
+          "$ref": "#/$defs/coverage"
+        },
+        "derivedFromArtifactId": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "role": {
+                "const": "screenshot"
+              }
+            },
+            "required": [
+              "role"
+            ]
+          },
+          "then": {
+            "required": [
+              "nodeId",
+              "derivedFromArtifactId"
+            ],
+            "not": {
+              "required": [
+                "toolCall"
+              ]
+            }
+          },
+          "else": {
+            "required": [
+              "toolCall",
+              "coverage"
+            ]
+          }
+        }
+      ]
+    },
+    "integrityFile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256",
+        "bytes"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/relativePath"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    }
+  }
+}

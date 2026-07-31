@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://figma-to-code.local/schemas/slot-overrides.schema.json",
+  "title": "Figma-to-Code Per-Capture Slot Overrides",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "modeMap",
+    "slots",
+    "notes"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "figma-to-code/slot-overrides/v1"
+    },
+    "modeMap": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "slots": {
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^--[A-Za-z0-9_-]+$"
+      },
+      "additionalProperties": true
+    },
+    "notes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  }
+}

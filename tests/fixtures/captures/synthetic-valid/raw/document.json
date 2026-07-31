@@ -1,0 +1,46 @@
+{
+  "scope": "current_page",
+  "currentPage": {
+    "id": "1:1",
+    "name": "Landing",
+    "childCount": 2,
+    "children": [
+      {
+        "id": "1:10",
+        "name": "Landing / Desktop",
+        "type": "FRAME"
+      },
+      {
+        "id": "1:20",
+        "name": "Landing / Mobile",
+        "type": "FRAME"
+      }
+    ]
+  },
+  "pages": [
+    {
+      "id": "1:1",
+      "name": "Landing",
+      "childCount": 2
+    }
+  ],
+  "pageCount": 1,
+  "childrenTruncated": false,
+  "pagination": {
+    "limit": 100,
+    "offset": 0,
+    "returned": 2,
+    "hasMore": false
+  },
+  "childTypes": {
+    "FRAME": 2
+  },
+  "childFamilies": [
+    {
+      "name": "Landing",
+      "count": 2
+    }
+  ],
+  "complete": true,
+  "limitations": []
+}

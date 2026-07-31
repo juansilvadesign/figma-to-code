@@ -1,0 +1,36 @@
+{
+  "id": "1:10",
+  "name": "Landing / Desktop",
+  "type": "FRAME",
+  "absoluteBoundingBox": {
+    "x": 0,
+    "y": 0,
+    "width": 1440,
+    "height": 900
+  },
+  "layoutMode": "VERTICAL",
+  "itemSpacing": 32,
+  "paddingLeft": 32,
+  "paddingRight": 32,
+  "boundVariables": {
+    "fills": [
+      {
+        "id": "VariableID:1:1",
+        "name": "Color/Background"
+      }
+    ]
+  },
+  "fills": [
+    {
+      "type": "SOLID",
+      "color": "#ffffff",
+      "boundVariables": {
+        "color": {
+          "id": "VariableID:1:1",
+          "name": "Color/Background"
+        }
+      }
+    }
+  ],
+  "children": []
+}

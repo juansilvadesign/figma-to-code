@@ -1,0 +1,20 @@
+{
+  "supported": true,
+  "complete": true,
+  "count": 2,
+  "styles": [
+    {
+      "id": "S:1",
+      "name": "Display/Hero",
+      "type": "TEXT",
+      "remote": false
+    },
+    {
+      "id": "S:2",
+      "name": "Shadow/Raised",
+      "type": "EFFECT",
+      "remote": false
+    }
+  ],
+  "limitations": []
+}
