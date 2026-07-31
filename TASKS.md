@@ -72,7 +72,7 @@ page MVP has shipped.
 
 | Project | Relationship | Baseline inspected 2026-07-28 | Contract used here |
 | --- | --- | --- | --- |
-| [`talk-to-figma-fork`](../talk-to-figma-fork/) | **Independent runtime dependency** | `956a6af` | Read-only MCP tools: `get_pages`, bounded `get_document_info`, `set_current_page`, `get_variables`, `get_styles`, scoped/summary `get_local_components`, `get_node_info`, `get_node_variables`, `get_reactions`, and `export_node_as_image` |
+| [`talk-to-figma-fork`](../talk-to-figma-fork/) | **Independent runtime dependency** | `3546719` (was `956a6af`; docs-only advance verified 2026-07-31) | Read-only MCP tools: `get_pages`, bounded `get_document_info`, `set_current_page`, `get_variables`, `get_styles`, scoped/summary `get_local_components`, `get_node_info`, `get_node_variables`, `get_reactions`, and `export_node_as_image` |
 | [`ai-website-cloner-template`](../ai-website-cloner-template/) | **Vendored generic-code/workflow baseline** | `b7b4dda` (`0.4.0`) | Emitter/validator, Astro scaffold, design-system-first order, component specs, static-first rules, and 1440px/390px QA |
 | [`open-design`](../../skills/open-design/) | **Schema/validation dependency** | `3447f60a3` | Live token schema and guard/rendering contracts; code discovers the contract rather than encoding the observed 56/26 counts |
 

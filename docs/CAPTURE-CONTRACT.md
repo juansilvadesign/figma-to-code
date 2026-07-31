@@ -109,13 +109,21 @@ R1 uses a strict runtime pin:
 
 | Item | Expected |
 | --- | --- |
-| Fork commit | `956a6afcec72f8ccd025b46475de8e2474786e36` |
+| Fork commit | `35467196397fdcecb8bd26c3e2c8f331ec6db0ce` |
 | Package version | `0.3.5` |
 | `dist/server.js` SHA-256 | `d8cf09aad16559b618884616aca3b927ca495c86a7048992d3ad1ab192a5422c` |
 | Plugin | `Talk to Figma (fork)` / `1485687494525374295` |
 | Plugin API | `1.0.0`, `documentAccess: dynamic-page` |
 | Plugin manifest SHA-256 | `6c7e43e9a3d2abfbcd809d8adb9174f89d2b1fd3a1a00800b4f30946adab3738` |
 | Plugin `code.js` SHA-256 | `4188c501dd2f15502a00c10df7c7c5069dde5c2b1345165d82da64810c5955fe` |
+
+**Pin advanced 956a6af → 3546719 on 2026-07-31**, as a deliberately accepted
+compatible release rather than a read fix. R1.2 preflight found the connected
+runtime two commits ahead of the R1.1 pin; `956a6af` is a verified ancestor of
+`3546719` and the delta is `ROADMAP.md` plus `TASKS.md` only — 506 insertions, no
+deletions, and no change to `src/`, `dist/`, or the plugin. Every hash in the table
+above is byte-identical across the two commits, so the executable contract R1.1
+froze is unchanged. Only the commit identifier moved.
 
 Until the fork exposes a formal runtime handshake, R1.2 must list the MCP tools,
 canonicalize each required tool's complete `inputSchema` by recursively sorting
