@@ -49,10 +49,10 @@ Hard rules:
   family from that same capture and produce a static-first Astro page that consumes
   the validated package, builds cleanly, and has final 1440px/390px visual evidence.
 
-The package remains at `0.0.0`, but R0 is now executable: the emitter and validator
-run locally against the committed compatibility fixture. The Figma extractor remains
-an intentional throwing stub, so neither the Importer MVP nor Astro page MVP has
-shipped.
+The package remains at `0.0.0`, but R0 is executable and R1.1's immutable capture
+contract is frozen with offline tests. The Figma extractor remains an intentional
+throwing stub and no live capture exists yet, so neither the Importer MVP nor Astro
+page MVP has shipped.
 
 ## Planning frame
 
@@ -132,26 +132,44 @@ only the next release. Later releases stay coarse until the preceding checkpoint
   functional delta from `b7b4dda`; a Node 24 clean install re-emits the committed
   PsiAtiva compatibility fixture and passes OpenDesign at package quality 100.
   Evidence: [`docs/research/r0-build-note.md`](docs/research/r0-build-note.md).
+- [x] **R1.1 shipped — immutable capture contract (2026-07-31).** Strict runtime,
+  identity, coverage, hash, path, authorization, and payload boundaries load a
+  sanitized synthetic bundle fully offline; 25 positive/negative checks pass.
+  Evidence:
+  [`docs/research/r1-capture-contract-note.md`](docs/research/r1-capture-contract-note.md).
 
 The remaining executable stub is `scripts/extract-figma-tokens.ts`.
 
-## ▶ Next session — start here (R1.1 only)
+## ▶ Next session — operator-assisted R1.2
 
-1. **Do not open Figma yet.** Freeze the capture contract and privacy rules before
-   producing the first live SYD evidence bundle.
-2. Version `capture-manifest.json` and define types/schemas for the manifest, raw
-   payload envelope, coverage metadata, hashes, runtime identity, and overrides.
-3. Define immutable `raw/` versus reproducible derived ownership, safe node-ID
-   filenames, authorization notes, and gitignore defaults for private copy/assets.
-4. Build offline fixture tests for each pinned fork reply shape the extractor will
-   consume. Treat fork payloads as external contracts; do not import fork source.
-5. Stop R1.1 when malformed/incomplete bundles fail clearly and a valid synthetic
-   bundle can be loaded offline. Live MCP capture begins only in R1.2.
+Required input: the authorized SYD Figma file open in the fork DEV plugin, the local
+relay running, and the connected channel name.
+
+1. **Preflight before the first document read.** Verify the exact fork commit,
+   `dist/server.js` hash, plugin name/id/API/code hash, local relay, and required MCP
+   tool inventory. Compute the canonical capability fingerprint and fail closed on
+   any mismatch.
+2. Create a `private-local` bundle under `docs/research/syd/`; confirm gitignore
+   catches its manifest, raw replies, screenshots, overrides, and normalized output.
+3. Capture through MCP only: pages → selected page context/document summaries →
+   variables → styles → scoped component summary → representative desktop/mobile
+   node info and node variables → reactions on interactive roots → raw exports and
+   decoded screenshots.
+4. Save each reply once without field changes, bind its byte count/SHA-256 into the
+   manifest, and run `loadCaptureBundle` offline.
+5. Stop R1.2 when the private bundle validates without another MCP call. Do not start
+   token resolution until R1.3 has measured whether the captured shapes contain every
+   structural fact the live OpenDesign schema requires.
 
 **R0 retrospective:** the source-agnostic emitter/validator transferred with zero
 functional changes, the pinned OpenDesign schema currently resolves 56 slots, and the
 compatibility fixture passes all 15 quality checks. The next riskiest assumption is
 capture integrity, so R1 starts with the evidence contract rather than live calls.
+
+**R1.1 retrospective:** the fork's public contracts are sufficient to freeze a
+fail-closed evidence envelope without importing its implementation. The remaining
+uncertainty is empirical payload sufficiency, so the next work is one private,
+single-pass SYD capture—not extractor heuristics.
 
 ---
 
@@ -197,7 +215,8 @@ Define one immutable capture bundle per source:
 ```text
 docs/research/<slug>/
   capture-manifest.json
-  raw/document.json
+  raw/document.json                       # one selected page
+  raw/documents/<safe-page-id>.json       # multi-page alternative
   raw/pages.json
   raw/variables.json
   raw/styles.json
@@ -205,21 +224,28 @@ docs/research/<slug>/
   raw/nodes/<safe-node-id>.json
   raw/node-variables/<safe-node-id>.json
   raw/reactions/<safe-node-id>.json
-  screenshots/<safe-node-id>.png
+  raw/exports/<safe-node-id>.json
+  screenshots/<safe-node-id>.<png|jpg|svg>
   slot-overrides.json
 ```
 
-- [ ] Version `capture-manifest.json`; record file/document identity, source node
+- [x] Version `capture-manifest.json`; record file/document identity, source node
       IDs, selected pages/frames, tool name, fork commit/version, server bundle hash,
       plugin identity/API, capability fingerprint (when available), capture time,
       payload hashes, and authorization/provenance notes.
-- [ ] Keep original Figma node IDs in the manifest; sanitize `:` only in filenames.
-- [ ] Define raw-versus-derived ownership: `raw/` is immutable evidence;
+- [x] Keep original Figma node IDs in the manifest; sanitize `:` only in filenames.
+- [x] Define raw-versus-derived ownership: `raw/` is immutable evidence;
       normalization, mappings, and generated output are reproducible derivatives.
-- [ ] Add schemas/types and fixture tests for every payload the extractor consumes.
-- [ ] Decide privacy defaults before committing a real client capture. Private raw
+- [x] Add schemas/types and fixture tests for every payload the extractor consumes.
+- [x] Decide privacy defaults before committing a real client capture. Private raw
       copy/content must be gitignored; only authorized, sanitized fixtures belong in
       version control.
+
+**R1.1 acceptance — passed 2026-07-31:** a clean install validates the versioned
+schemas and loads a complete sanitized synthetic bundle offline; malformed,
+incomplete, unsupported, tampered, unsafe, or runtime-mismatched variants fail
+clearly. See
+[`docs/research/r1-capture-contract-note.md`](docs/research/r1-capture-contract-note.md).
 
 ### 1.2 Capture through the local fork
 

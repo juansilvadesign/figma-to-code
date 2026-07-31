@@ -6,10 +6,11 @@ A **design-system-first** Figma importer. Point it at a Figma file; it extracts 
 
 The Figma twin of [`../ai-website-cloner-template/`](../ai-website-cloner-template/). Both feed the **same** emitter through the **same** intermediate contract (`source/tokens.source.json`); only extraction differs.
 
-**Status:** R0 shipped 2026-07-31. Emit + validate are executable and proven
-offline; extraction remains a throwing stub. Open [`TASKS.md`](TASKS.md) first for
-the live implementation state, then use [`docs/BUILD-PLAN.md`](docs/BUILD-PLAN.md)
-for the original rationale and contracts.
+**Status:** R0 and R1.1 shipped 2026-07-31. Emit + validate and the immutable
+capture-contract loader are proven offline; live capture has not happened and
+extraction remains a throwing stub. Open [`TASKS.md`](TASKS.md) first for the live
+implementation state, then use [`docs/BUILD-PLAN.md`](docs/BUILD-PLAN.md) for the
+original rationale and contracts.
 
 ## Non-negotiables
 
@@ -18,13 +19,15 @@ for the original rationale and contracts.
 3. **Never invent a token value.** Every entry in `tokens.source.json` carries a `confidence` (`high` | `derived` | `fallback`) and a `source` pointing at real evidence (variable path, style name, node id). An absent value is better than a guessed one — the emitter has schema fallbacks for exactly this.
 4. **Budget Figma MCP calls.** The official MCP is rate-limited (see `docs/BUILD-PLAN.md` § Risk 1). Extraction must be call-frugal: one metadata pass, one variables pass, then targeted reads. Never loop the MCP over nodes.
 5. **Acceptance is the guard, not a vibe.** A milestone is done when `validate-design-system.ts` passes — equivalent to `pnpm guard` + `pnpm typecheck` inside the OpenDesign repo.
+6. **Never rewrite capture evidence.** `raw/**` is immutable and hashed. Normalize into separate derived artifacts; if a reply must be called again, create a new capture.
 
 ## Commands
 
 ```bash
-npx tsx scripts/extract-figma-tokens.ts --file <key> --brand <slug>
-npx tsx scripts/emit-design-system.ts --brand <slug> --name "<Name>" --category "<Category>"
-npx tsx scripts/validate-design-system.ts --brand <slug>
+npm run check:r0
+npm run check:r1:contract
+npm run emit -- --brand <slug> --name "<Name>" --category "<Category>"
+npm run validate -- --brand <slug>
 ```
 
 ## Code style

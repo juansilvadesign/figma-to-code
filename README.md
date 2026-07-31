@@ -12,9 +12,9 @@ Figma   ──▶ Figma MCP extraction  ───┘        the shared contract
 
 The cloner infers tokens from `getComputedStyle()` — lossy, requires clustering. Figma **declares** them as variables and styles. Same destination, better input, different extraction problem.
 
-> **Status: R0 downstream loop shipped 2026-07-31.** Emit + validate work from a
-> clean install against the committed offline fixture. Figma capture/extraction
-> remains unbuilt, so the Importer MVP is not shipped. Follow
+> **Status: R0 + R1.1 shipped 2026-07-31.** Emit/validate and the immutable
+> capture-contract loader work from clean offline fixtures. No live Figma capture
+> or extractor exists yet, so the Importer MVP is not shipped. Follow
 > [`TASKS.md`](TASKS.md) for current work; use
 > [`docs/BUILD-PLAN.md`](docs/BUILD-PLAN.md) for the original rationale.
 
@@ -30,6 +30,7 @@ The cloner infers tokens from `getComputedStyle()` — lossy, requires clusterin
 nvm use
 npm ci
 npm run check:r0
+npm run check:r1:contract
 ```
 
 `scripts/extract-figma-tokens.ts` still throws intentionally. Its capture contract
@@ -46,6 +47,7 @@ and implementation are tracked under R1 in [`TASKS.md`](TASKS.md).
 
 ```
 docs/
+  CAPTURE-CONTRACT.md   # immutable evidence, runtime pin, privacy, R1.2 handoff
   BUILD-PLAN.md        # milestones, locked decisions, risks  ← read first
   EXTRACTION-GUIDE.md  # what to capture from Figma + the slot mapping table
   research/            # extraction artifacts land here
@@ -53,6 +55,11 @@ scripts/
   extract-figma-tokens.ts    # Figma → tokens.source.json   (NEW — the real work)
   emit-design-system.ts      # tokens.source.json → package  (vendored from the cloner)
   validate-design-system.ts  # acceptance gate               (vendored from the cloner)
+  lib/
+    capture-contract.ts      # manifest + cross-file integrity loader
+    fork-payload-contracts.ts # external reply-shape boundary
+schemas/               # versioned manifest + override JSON Schemas
+tests/fixtures/        # authorized sanitized offline fixtures only
 design-systems/        # emitted OpenDesign packages
 .claude/skills/figma-to-design-system/SKILL.md
 ```
