@@ -9,9 +9,11 @@
     "extract": "tsx scripts/extract-figma-tokens.ts",
     "emit": "tsx scripts/emit-design-system.ts",
     "validate": "tsx scripts/validate-design-system.ts",
-    "typecheck:scripts": "tsc --ignoreConfig --noEmit --strict --skipLibCheck --module NodeNext --moduleResolution NodeNext --target ES2022 --types node scripts/emit-design-system.ts scripts/validate-design-system.ts scripts/verify-r0-failures.ts",
+    "typecheck:scripts": "tsc --ignoreConfig --noEmit --strict --skipLibCheck --module NodeNext --moduleResolution NodeNext --target ES2022 --types node scripts/*.ts scripts/lib/*.ts",
     "test:r0:failures": "tsx scripts/verify-r0-failures.ts",
-    "check:r0": "npm run typecheck:scripts && npm run emit -- --brand psiativa --name PsiAtiva --category \"Health & Wellness\" --description \"Design system extracted from the PsiAtiva landing page — a warm, serif-forward teal + sage identity for a psychology-practice consultancy.\" && npm run validate -- --brand psiativa && npm run validate -- --brand psiativa --od-root ../../../skills/open-design && npm run test:r0:failures"
+    "test:capture-contract": "node --import tsx scripts/test-capture-contract.ts",
+    "check:r0": "npm run typecheck:scripts && npm run emit -- --brand psiativa --name PsiAtiva --category \"Health & Wellness\" --description \"Design system extracted from the PsiAtiva landing page — a warm, serif-forward teal + sage identity for a psychology-practice consultancy.\" && npm run validate -- --brand psiativa && npm run validate -- --brand psiativa --od-root ../../../skills/open-design && npm run test:r0:failures",
+    "check:r1:contract": "npm run typecheck:scripts && npm run test:capture-contract"
   },
   "devDependencies": {
     "@types/node": "^24.13.3",
