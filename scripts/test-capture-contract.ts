@@ -217,7 +217,7 @@ async function main(): Promise<void> {
       manifest.runtime.forkCommit = "0".repeat(40);
       parseCaptureManifest(manifest);
     },
-    /runtime\.forkCommit.*956a6af/s,
+    /runtime\.forkCommit.*3546719/s,
   );
 
   await expectFailure(

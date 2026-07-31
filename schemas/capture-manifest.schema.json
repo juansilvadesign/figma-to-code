@@ -238,7 +238,7 @@
           "const": "talk-to-figma-fork"
         },
         "forkCommit": {
-          "const": "956a6afcec72f8ccd025b46475de8e2474786e36"
+          "const": "35467196397fdcecb8bd26c3e2c8f331ec6db0ce"
         },
         "packageVersion": {
           "const": "0.3.5"

@@ -46,13 +46,13 @@
     "captureMethod": "read-only-local-mcp",
     "operator": "synthetic-fixture-builder",
     "notes": [
-      "Payload shapes mirror public guarantees documented at fork commit 956a6af.",
+      "Payload shapes mirror public guarantees documented at fork commit 956a6af, unchanged through the pinned 3546719 (docs-only delta).",
       "Capability input-schema hashes are deterministic synthetic stand-ins, not live runtime evidence."
     ]
   },
   "runtime": {
     "provider": "talk-to-figma-fork",
-    "forkCommit": "956a6afcec72f8ccd025b46475de8e2474786e36",
+    "forkCommit": "35467196397fdcecb8bd26c3e2c8f331ec6db0ce",
     "packageVersion": "0.3.5",
     "serverBundleSha256": "d8cf09aad16559b618884616aca3b927ca495c86a7048992d3ad1ab192a5422c",
     "connection": {
