@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PsiAtiva — Colors</title>
+  <style>
+    @import "../tokens.css";
+    body { background: var(--bg); color: var(--fg); font-family: var(--font-body); margin: 0; padding: var(--space-8); }
+    h1 { font-family: var(--font-display); font-size: var(--text-3xl); color: var(--fg-2); }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: var(--space-4); margin-top: var(--space-6); }
+    .swatch { border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
+    .chip { height: 88px; }
+    .meta { padding: var(--space-3); font-size: var(--text-sm); }
+    .meta code { font-family: var(--font-mono); color: var(--meta); }
+  </style>
+</head>
+<body>
+  <h1>Colors</h1>
+  <div class="grid">
+    <div class="swatch"><div class="chip" style="background:var(--bg)"></div><div class="meta"><strong>Canvas</strong><br><code>--bg</code></div></div>
+    <div class="swatch"><div class="chip" style="background:var(--surface)"></div><div class="meta"><strong>Surface</strong><br><code>--surface</code></div></div>
+    <div class="swatch"><div class="chip" style="background:var(--surface-warm)"></div><div class="meta"><strong>Surface warm</strong><br><code>--surface-warm</code></div></div>
+    <div class="swatch"><div class="chip" style="background:var(--fg)"></div><div class="meta"><strong>Ink</strong><br><code>--fg</code></div></div>
+    <div class="swatch"><div class="chip" style="background:var(--fg-2)"></div><div class="meta"><strong>Heading teal</strong><br><code>--fg-2</code></div></div>
+    <div class="swatch"><div class="chip" style="background:var(--muted)"></div><div class="meta"><strong>Muted</strong><br><code>--muted</code></div></div>
+    <div class="swatch"><div class="chip" style="background:var(--accent)"></div><div class="meta"><strong>Accent</strong><br><code>--accent</code></div></div>
+    <div class="swatch"><div class="chip" style="background:var(--accent-hover)"></div><div class="meta"><strong>Accent hover</strong><br><code>--accent-hover</code></div></div>
+    <div class="swatch"><div class="chip" style="background:var(--warn)"></div><div class="meta"><strong>Warn (amber)</strong><br><code>--warn</code></div></div>
+    <div class="swatch"><div class="chip" style="background:var(--success)"></div><div class="meta"><strong>Success</strong><br><code>--success</code></div></div>
+    <div class="swatch"><div class="chip" style="background:var(--danger)"></div><div class="meta"><strong>Danger (error only)</strong><br><code>--danger</code></div></div>
+  </div>
+</body>
+</html>

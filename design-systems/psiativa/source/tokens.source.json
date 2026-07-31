@@ -1,0 +1,91 @@
+{
+  "$schema": "clone-website extraction artifact — consumed by scripts/emit-design-system.ts",
+  "brand": "psiativa",
+  "name": "PsiAtiva",
+  "extraction": {
+    "target": "PsiAtiva landing page (owned)",
+    "sourcePath": "workspace/psiativa/projects/landing-page-v2",
+    "method": "authored-css-tokens",
+    "evidence": "src/styles/global.css :root (authored design tokens) + typographic scale from base h1–h4/body rules",
+    "note": "Only slots with a real or derived brand value are listed. The emitter fills unspecified A2 slots from the OpenDesign schema fallback and B-slot slots from their aliasTo sibling.",
+    "extractedAt": "2026-07-21"
+  },
+  "themes": {
+    "light": {
+      "--bg":            { "value": "#FAFFFF", "confidence": "high",    "reason": "--background: page canvas (near-white, faint cyan cast)", "source": "global.css:105" },
+      "--surface":       { "value": "#F0F7F4", "confidence": "high",    "reason": "--background-subtle: alt/section + lifted-card surface", "source": "global.css:106" },
+      "--surface-warm":  { "value": "#E4E6E3", "confidence": "high",    "reason": "--sage-bg: warmest sage surface tier", "source": "global.css:107" },
+
+      "--fg":            { "value": "#071113", "confidence": "high",    "reason": "--text-primary / --primary-darker: near-black body ink", "source": "global.css:110" },
+      "--fg-2":          { "value": "#1A4B51", "confidence": "high",    "reason": "--text-heading / --primary: deep teal used for headings + emphasis", "source": "global.css:112" },
+      "--muted":         { "value": "#4A4A4A", "confidence": "high",    "reason": "--text-secondary: secondary body copy", "source": "global.css:111" },
+      "--meta":          { "value": "#338E98", "confidence": "high",    "reason": "--secondary / --color-text-muted(light): tertiary teal metadata", "source": "global.css:98,182" },
+
+      "--border":        { "value": "rgba(26, 75, 81, 0.12)", "confidence": "high", "reason": "--color-border(light): teal-tinted hairline", "source": "global.css:183" },
+      "--border-soft":   { "value": "rgba(26, 75, 81, 0.06)", "confidence": "derived", "reason": "half-strength --color-border for inner row separators (matches .section-divider fade)", "source": "global.css:183,739" },
+
+      "--accent":        { "value": "#1A4B51", "confidence": "high",    "reason": "--primary / --btn-primary-bg: deep teal is the primary brand action color (gradient-brand origin, primary CTAs)", "source": "global.css:82,187" },
+      "--accent-on":     { "value": "#FAFFFF", "confidence": "high",    "reason": "--btn-primary-color: near-white text on the teal button", "source": "global.css:188" },
+      "--accent-hover":  { "value": "#266D74", "confidence": "high",    "reason": "--btn-primary-hover-bg: brand's actual primary hover", "source": "global.css:189" },
+      "--accent-active": { "value": "#112E31", "confidence": "derived", "reason": "--primary-dark: pressed/active state (one step below primary)", "source": "global.css:83" },
+
+      "--success":       { "value": "#1F802A", "confidence": "derived", "reason": "solid endpoint of --gradient-whatsapp (brand success/green)", "source": "global.css:157" },
+      "--warn":          { "value": "#F7C800", "confidence": "high",    "reason": "--yellow: brand highlight amber ('destaque amarelo, nunca vermelho')", "source": "global.css:118" },
+      "--danger":        { "value": "#B53333", "confidence": "derived", "reason": "restrained warm red — brand avoids alarm-red; functional-state only", "source": "brand rule global.css:117" },
+
+      "--font-display":  { "value": "\"New York\", Georgia, \"Times New Roman\", serif", "confidence": "high", "reason": "--font-display: New York for all headings", "source": "global.css:124" },
+      "--font-body":     { "value": "\"Lora\", Georgia, serif", "confidence": "high", "reason": "--font-body: Lora for reading copy", "source": "global.css:125" },
+
+      "--text-xs":   { "value": "12px", "confidence": "derived", "reason": "overline tier one step below the 14px section-label", "source": "global.css:349 (extrapolated)" },
+      "--text-sm":   { "value": "14px", "confidence": "high",    "reason": ".section-label / caption", "source": "global.css:349" },
+      "--text-base": { "value": "16px", "confidence": "high",    "reason": "body / p", "source": "global.css:301" },
+      "--text-lg":   { "value": "20px", "confidence": "high",    "reason": "h4 / large body", "source": "global.css:294" },
+      "--text-xl":   { "value": "22px", "confidence": "high",    "reason": "h3", "source": "global.css:289" },
+      "--text-2xl":  { "value": "28px", "confidence": "high",    "reason": "h2 (mobile) / small section title", "source": "global.css:761" },
+      "--text-3xl":  { "value": "36px", "confidence": "high",    "reason": "h2 (desktop) — section heading", "source": "global.css:283" },
+      "--text-4xl":  { "value": "68px", "confidence": "high",    "reason": "h1 — hero display", "source": "global.css:277" },
+
+      "--leading-body":     { "value": "1.6", "confidence": "high",    "reason": "html/body line-height", "source": "global.css:251" },
+      "--leading-tight":    { "value": "1.2", "confidence": "high",    "reason": "h1 81.6/68 = 1.2 heading leading", "source": "global.css:278" },
+      "--tracking-display": { "value": "-0.02em", "confidence": "high", "reason": "h1 -1.36px / 68px = -0.02em", "source": "global.css:279" },
+
+      "--section-y-desktop": { "value": "140px", "confidence": "high",    "reason": "--section-padding-lg", "source": "global.css:131" },
+      "--section-y-tablet":  { "value": "100px", "confidence": "high",    "reason": "--section-padding-sm", "source": "global.css:133" },
+      "--section-y-phone":   { "value": "72px",  "confidence": "derived", "reason": "reduced phone rhythm below the 100px tablet tier", "source": "global.css:131-133" },
+
+      "--radius-lg":  { "value": "16px", "confidence": "high", "reason": "--radius-card: featured containers/cards", "source": "global.css:139" },
+
+      "--elev-raised": { "value": "0 8px 32px rgba(26, 75, 81, 0.08)", "confidence": "high", "reason": ".glass-card:hover lift shadow (teal-tinted whisper)", "source": "global.css:377" },
+      "--focus-ring":  { "value": "0 0 0 3px rgba(26, 75, 81, 0.35)", "confidence": "derived", "reason": "teal focus halo (brand primary, ≈ shadcn focus proportion)", "source": "global.css:82" },
+
+      "--motion-base":   { "value": "300ms", "confidence": "high", "reason": "--transition-base is 300ms (slower than the 200ms schema default)", "source": "global.css:174" },
+      "--ease-standard": { "value": "cubic-bezier(0.16, 1, 0.3, 1)", "confidence": "high", "reason": "--ease-out: the brand's primary easing", "source": "global.css:171" },
+
+      "--container-max":            { "value": "1216px", "confidence": "high",    "reason": "--container-max", "source": "global.css:129" },
+      "--container-gutter-desktop": { "value": "32px",   "confidence": "high",    "reason": "--container-padding clamp max (2rem)", "source": "global.css:130" },
+      "--container-gutter-tablet":  { "value": "24px",   "confidence": "derived", "reason": "mid step of the container-padding clamp", "source": "global.css:130" },
+      "--container-gutter-phone":   { "value": "20px",   "confidence": "high",    "reason": "--container-padding clamp min (1.25rem)", "source": "global.css:130" }
+    },
+    "dark": {
+      "--bg":           { "value": "#1C2B2B", "confidence": "high",    "reason": "--color-bg(dark): --dark-green", "source": "global.css:207" },
+      "--surface":      { "value": "#112E31", "confidence": "high",    "reason": "--color-bg-alt(dark): --primary-dark", "source": "global.css:208" },
+      "--surface-warm": { "value": "#071113", "confidence": "derived", "reason": "--primary-darker: deepest dark surface", "source": "global.css:84" },
+      "--fg":           { "value": "#CDEAED", "confidence": "high",    "reason": "--color-text(dark): --light-blue", "source": "global.css:209" },
+      "--fg-2":         { "value": "#86CCD4", "confidence": "high",    "reason": "--color-text-secondary(dark)", "source": "global.css:210" },
+      "--muted":        { "value": "#86CCD4", "confidence": "high",    "reason": "--color-text-secondary(dark)", "source": "global.css:210" },
+      "--meta":         { "value": "#338E98", "confidence": "high",    "reason": "--color-text-muted(dark)", "source": "global.css:211" },
+      "--border":       { "value": "rgba(205, 234, 237, 0.1)",  "confidence": "high",    "reason": "--color-border(dark)", "source": "global.css:212" },
+      "--border-soft":  { "value": "rgba(205, 234, 237, 0.05)", "confidence": "derived", "reason": "half-strength dark border", "source": "global.css:212" },
+      "--accent":       { "value": "#CDEAED", "confidence": "high",    "reason": "--btn-primary-bg(dark): light-blue becomes the action color on dark", "source": "global.css:215" },
+      "--accent-on":    { "value": "#1A4B51", "confidence": "high",    "reason": "--btn-primary-color(dark): teal text on the light-blue button", "source": "global.css:216" }
+    }
+  },
+  "components": {
+    "inventory": [
+      "glass-card", "btn-primary-light", "btn-primary-dark", "btn-secondary-light",
+      "btn-nav-cta", "btn-footer-cta", "btn (legacy)", "btn-primary (legacy)", "btn-outline",
+      "section-label (overline)", "section-divider", "navbar", "footer"
+    ],
+    "notes": "Pill buttons (radius 80px) with a trailing icon-circle; glass cards (backdrop-blur + hairline border, hover lift); uppercase Source Serif UI labels; alternating light / dark-teal sections."
+  }
+}

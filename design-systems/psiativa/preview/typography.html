@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PsiAtiva — Typography</title>
+  <style>
+    @import "../tokens.css";
+    body { background: var(--bg); color: var(--fg); font-family: var(--font-body); line-height: var(--leading-body); margin: 0; padding: var(--space-8); }
+    .row { display: flex; align-items: baseline; gap: var(--space-6); border-bottom: 1px solid var(--border); padding: var(--space-4) 0; }
+    .row code { font-family: var(--font-mono); font-size: var(--text-sm); color: var(--meta); min-width: 8ch; }
+    .d { font-family: var(--font-display); color: var(--fg-2); line-height: var(--leading-tight); }
+  </style>
+</head>
+<body>
+  <div class="row"><code>4xl</code><span class="d" style="font-size:var(--text-4xl);letter-spacing:var(--tracking-display)">Hero display</span></div>
+  <div class="row"><code>3xl</code><span class="d" style="font-size:var(--text-3xl)">Section heading</span></div>
+  <div class="row"><code>2xl</code><span class="d" style="font-size:var(--text-2xl)">Subheading</span></div>
+  <div class="row"><code>xl</code><span class="d" style="font-size:var(--text-xl)">Card title</span></div>
+  <div class="row"><code>lg</code><span style="font-size:var(--text-lg)">Lead paragraph, set in Lora.</span></div>
+  <div class="row"><code>base</code><span style="font-size:var(--text-base)">Body text at 16px, the reading baseline.</span></div>
+  <div class="row"><code>sm</code><span style="font-size:var(--text-sm)">Caption and eyebrow tier.</span></div>
+  <div class="row"><code>xs</code><span style="font-size:var(--text-xs)">Smallest overline.</span></div>
+  <p style="margin-top:var(--space-8);color:var(--muted)">Display: New York (<code>--font-display</code>). Body: Lora (<code>--font-body</code>). Both serif.</p>
+</body>
+</html>

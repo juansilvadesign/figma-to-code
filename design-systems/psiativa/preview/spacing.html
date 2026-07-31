@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PsiAtiva — Spacing</title>
+  <style>
+    @import "../tokens.css";
+    body { background: var(--bg); color: var(--fg); font-family: var(--font-body); margin: 0; padding: var(--space-8); }
+    h1 { font-family: var(--font-display); font-size: var(--text-3xl); color: var(--fg-2); }
+    .row { display: flex; align-items: center; gap: var(--space-4); margin: var(--space-3) 0; }
+    .row code { font-family: var(--font-mono); font-size: var(--text-sm); color: var(--meta); min-width: 10ch; }
+    .bar { height: 16px; background: var(--accent); border-radius: var(--radius-sm); }
+    .section-rhythm { margin-top: var(--space-8); }
+    .radius-demo { display: flex; gap: var(--space-4); margin-top: var(--space-6); }
+    .radius-demo div { width: 96px; height: 64px; background: var(--surface); border: 1px solid var(--border); display: grid; place-items: center; font-size: var(--text-xs); color: var(--meta); }
+  </style>
+</head>
+<body>
+  <h1>Spacing &amp; radius</h1>
+  <div class="row"><code>--space-1</code><div class="bar" style="width:var(--space-1)"></div><span>4px</span></div>
+  <div class="row"><code>--space-2</code><div class="bar" style="width:var(--space-2)"></div><span>8px</span></div>
+  <div class="row"><code>--space-3</code><div class="bar" style="width:var(--space-3)"></div><span>12px</span></div>
+  <div class="row"><code>--space-4</code><div class="bar" style="width:var(--space-4)"></div><span>16px</span></div>
+  <div class="row"><code>--space-6</code><div class="bar" style="width:var(--space-6)"></div><span>24px</span></div>
+  <div class="row"><code>--space-8</code><div class="bar" style="width:var(--space-8)"></div><span>32px</span></div>
+  <div class="row"><code>--space-12</code><div class="bar" style="width:var(--space-12)"></div><span>48px</span></div>
+
+  <div class="section-rhythm">
+    <p style="color:var(--muted)">Section rhythm: <code>--section-y-desktop</code> 140px / tablet 100px / phone 72px. Container caps at <code>--container-max</code> 1216px.</p>
+  </div>
+
+  <div class="radius-demo">
+    <div style="border-radius:var(--radius-sm)">sm 8</div>
+    <div style="border-radius:var(--radius-md)">md 12</div>
+    <div style="border-radius:var(--radius-lg)">lg 16</div>
+    <div style="border-radius:var(--radius-pill)">pill</div>
+  </div>
+</body>
+</html>

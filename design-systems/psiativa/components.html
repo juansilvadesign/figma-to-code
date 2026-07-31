@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PsiAtiva — Component Fixtures</title>
+  <meta name="description" content="Token-wired component fixtures for the PsiAtiva design system: buttons, cards, badges, inputs, links, typography, and layout.">
+  <style>
+    @import "./tokens.css";
+
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--font-body);
+      line-height: var(--leading-body);
+      margin: 0;
+    }
+
+    .container {
+      max-width: var(--container-max);
+      margin: 0 auto;
+      padding-inline: var(--container-gutter-desktop);
+    }
+
+    section {
+      padding-block: var(--section-y-desktop);
+    }
+
+    nav {
+      display: flex;
+      gap: var(--space-6);
+      padding-block: var(--space-4);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .eyebrow {
+      font-family: var(--font-display);
+      font-size: var(--text-sm);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--meta);
+    }
+
+    h1 {
+      font-family: var(--font-display);
+      font-size: var(--text-4xl);
+      line-height: var(--leading-tight);
+      letter-spacing: var(--tracking-display);
+      color: var(--fg-2);
+    }
+
+    .lead {
+      font-size: var(--text-lg);
+      color: var(--muted);
+      max-width: 60ch;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3) var(--space-6);
+      border: none;
+      border-radius: var(--radius-pill);
+      font-family: var(--font-display);
+      cursor: pointer;
+      transition: background var(--motion-base) var(--ease-standard);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: var(--accent-on);
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-hover);
+    }
+
+    .btn-primary:active {
+      background: var(--accent-active);
+    }
+
+    .btn-secondary {
+      background: var(--surface);
+      color: var(--fg-2);
+      border: 1px solid var(--border);
+    }
+
+    .btn:focus-visible {
+      outline: none;
+      box-shadow: var(--focus-ring);
+    }
+
+    .btn .icon {
+      display: inline-grid;
+      place-items: center;
+      width: var(--space-8);
+      height: var(--space-8);
+      border-radius: var(--radius-pill);
+      background: var(--surface-warm);
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--elev-raised);
+      padding: var(--space-6);
+    }
+
+    .card-title {
+      font-family: var(--font-display);
+      font-size: var(--text-xl);
+      color: var(--fg-2);
+      margin: 0 0 var(--space-3);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: var(--space-1) var(--space-3);
+      border-radius: var(--radius-pill);
+      background: var(--surface-warm);
+      color: var(--meta);
+      font-size: var(--text-xs);
+    }
+
+    .tag {
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-sm);
+      color: var(--meta);
+    }
+
+    .link {
+      color: var(--accent);
+      text-decoration-color: var(--border);
+    }
+
+    .field {
+      display: grid;
+      gap: var(--space-2);
+    }
+
+    .field label {
+      color: var(--muted);
+      font-size: var(--text-sm);
+    }
+
+    .field input {
+      padding: var(--space-3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--font-body);
+    }
+
+    .field input:focus-visible {
+      outline: none;
+      box-shadow: var(--focus-ring);
+    }
+
+    .callout {
+      border-left: 4px solid var(--warn);
+      background: var(--surface);
+      color: var(--fg);
+      padding: var(--space-4) var(--space-6);
+      border-radius: var(--radius-sm);
+    }
+  </style>
+</head>
+<body>
+  <nav class="container">
+    <span class="eyebrow">PsiAtiva</span>
+    <a class="link" href="#work">Método</a>
+    <a class="link" href="#contact">Falar agora</a>
+  </nav>
+
+  <section class="container">
+    <p class="eyebrow">Agenda previsível</p>
+    <h1>Sua agenda, sem buracos.</h1>
+    <p class="lead">Um sistema calmo e clínico para clínicas de psicologia: menos faltas, mais constância.</p>
+
+    <p>
+      <a class="btn btn-primary" href="#contact">Começar <span class="icon" aria-hidden="true">&rarr;</span></a>
+      <button type="button" class="btn btn-secondary">Ver o método</button>
+    </p>
+
+    <div class="card">
+      <h3 class="card-title">Bloco de constância</h3>
+      <p><span class="badge">novo</span> <span class="badge tag">clínica</span></p>
+      <p>Cada semana com buraco na agenda é constância que não volta. O bloco recompõe o ritmo.</p>
+      <p><a class="link" href="#details">Entenda o bloco</a></p>
+    </div>
+
+    <form class="field">
+      <label for="whats">WhatsApp</label>
+      <input id="whats" name="whats" type="tel" placeholder="(00) 00000-0000">
+    </form>
+
+    <p class="callout">Amarelo é o destaque da marca. Nunca vermelho, exceto erro real.</p>
+  </section>
+</body>
+</html>

@@ -1,0 +1,109 @@
+/* PsiAtiva — tokens.css
+ * Emitted by scripts/emit-design-system.ts from source/tokens.source.json.
+ * Declares every OpenDesign TOKEN_SCHEMA slot (56). Edit the
+ * source artifact and re-emit; do not hand-edit derived files. */
+
+:root {
+  /* ─── Surface ─────────────────────────────────────────────────── */
+  --bg:                       #FAFFFF;
+  --surface:                  #F0F7F4;
+  --surface-warm:             #E4E6E3;
+
+  /* ─── Foreground ──────────────────────────────────────────────── */
+  --fg:                       #071113;
+  --fg-2:                     #1A4B51;
+  --muted:                    #4A4A4A;
+  --meta:                     #338E98;
+
+  /* ─── Border ──────────────────────────────────────────────────── */
+  --border:                   rgba(26, 75, 81, 0.12);
+  --border-soft:              rgba(26, 75, 81, 0.06);
+
+  /* ─── Accent ──────────────────────────────────────────────────── */
+  --accent:                   #1A4B51;
+  --accent-on:                #FAFFFF;
+  --accent-hover:             #266D74;
+  --accent-active:            #112E31;
+
+  /* ─── Semantic ────────────────────────────────────────────────── */
+  --success:                  #1F802A;
+  --warn:                     #F7C800;
+  --danger:                   #B53333;
+
+  /* ─── Typography — fonts ──────────────────────────────────────── */
+  --font-display:             "New York", Georgia, "Times New Roman", serif;
+  --font-body:                "Lora", Georgia, serif;
+  --font-mono:                ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Monaco, Consolas, monospace;
+
+  /* ─── Typography — scale ──────────────────────────────────────── */
+  --text-xs:                  12px;
+  --text-sm:                  14px;
+  --text-base:                16px;
+  --text-lg:                  20px;
+  --text-xl:                  22px;
+  --text-2xl:                 28px;
+  --text-3xl:                 36px;
+  --text-4xl:                 68px;
+
+  /* ─── Typography — leading & tracking ─────────────────────────── */
+  --leading-body:             1.6;
+  --leading-tight:            1.2;
+  --tracking-display:         -0.02em;
+
+  /* ─── Spacing ─────────────────────────────────────────────────── */
+  --space-1:                  4px;
+  --space-2:                  8px;
+  --space-3:                  12px;
+  --space-4:                  16px;
+  --space-5:                  20px;
+  --space-6:                  24px;
+  --space-8:                  32px;
+  --space-12:                 48px;
+
+  /* ─── Section rhythm ──────────────────────────────────────────── */
+  --section-y-desktop:        140px;
+  --section-y-tablet:         100px;
+  --section-y-phone:          72px;
+
+  /* ─── Radius ──────────────────────────────────────────────────── */
+  --radius-sm:                8px;
+  --radius-md:                12px;
+  --radius-lg:                16px;
+  --radius-pill:              9999px;
+
+  /* ─── Elevation ───────────────────────────────────────────────── */
+  --elev-flat:                none;
+  --elev-ring:                0 0 0 1px var(--border);
+  --elev-raised:              0 8px 32px rgba(26, 75, 81, 0.08);
+
+  /* ─── Focus ───────────────────────────────────────────────────── */
+  --focus-ring:               0 0 0 3px rgba(26, 75, 81, 0.35);
+
+  /* ─── Motion ──────────────────────────────────────────────────── */
+  --motion-fast:              150ms;
+  --motion-base:              300ms;
+  --ease-standard:            cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* ─── Layout ──────────────────────────────────────────────────── */
+  --container-max:            1216px;
+  --container-gutter-desktop: 32px;
+  --container-gutter-tablet:  24px;
+  --container-gutter-phone:   20px;
+}
+
+
+/* Dark theme — overrides only. The full :root contract above still applies;
+   these slots re-point when [data-theme="dark"] is set on a root ancestor. */
+[data-theme="dark"] {
+  --bg:           #1C2B2B;
+  --surface:      #112E31;
+  --surface-warm: #071113;
+  --fg:           #CDEAED;
+  --fg-2:         #86CCD4;
+  --muted:        #86CCD4;
+  --meta:         #338E98;
+  --border:       rgba(205, 234, 237, 0.1);
+  --border-soft:  rgba(205, 234, 237, 0.05);
+  --accent:       #CDEAED;
+  --accent-on:    #1A4B51;
+}

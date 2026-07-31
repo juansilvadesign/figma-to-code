@@ -1,0 +1,637 @@
+{
+  "schemaVersion": 1,
+  "format": "od-token-contract-report/v1",
+  "generatedAt": "2026-07-31T03:41:59.487Z",
+  "summary": {
+    "total": 56,
+    "byConfidence": {
+      "high": 33,
+      "derived": 8,
+      "fallback": 15
+    },
+    "byLayer": {
+      "A1-identity": 8,
+      "B-slot": 4,
+      "A2": 26,
+      "A1-structure": 18
+    }
+  },
+  "tokens": [
+    {
+      "name": "--bg",
+      "layer": "A1-identity",
+      "value": "#FAFFFF",
+      "confidence": "high",
+      "reason": "--background: page canvas (near-white, faint cyan cast)",
+      "sources": [
+        "global.css:105",
+        "tokens.css:8"
+      ]
+    },
+    {
+      "name": "--surface",
+      "layer": "A1-identity",
+      "value": "#F0F7F4",
+      "confidence": "high",
+      "reason": "--background-subtle: alt/section + lifted-card surface",
+      "sources": [
+        "global.css:106",
+        "tokens.css:9"
+      ]
+    },
+    {
+      "name": "--surface-warm",
+      "layer": "B-slot",
+      "value": "#E4E6E3",
+      "confidence": "high",
+      "reason": "--sage-bg: warmest sage surface tier",
+      "sources": [
+        "global.css:107",
+        "tokens.css:10"
+      ]
+    },
+    {
+      "name": "--fg",
+      "layer": "A1-identity",
+      "value": "#071113",
+      "confidence": "high",
+      "reason": "--text-primary / --primary-darker: near-black body ink",
+      "sources": [
+        "global.css:110",
+        "tokens.css:13"
+      ]
+    },
+    {
+      "name": "--fg-2",
+      "layer": "B-slot",
+      "value": "#1A4B51",
+      "confidence": "high",
+      "reason": "--text-heading / --primary: deep teal used for headings + emphasis",
+      "sources": [
+        "global.css:112",
+        "tokens.css:14"
+      ]
+    },
+    {
+      "name": "--muted",
+      "layer": "A1-identity",
+      "value": "#4A4A4A",
+      "confidence": "high",
+      "reason": "--text-secondary: secondary body copy",
+      "sources": [
+        "global.css:111",
+        "tokens.css:15"
+      ]
+    },
+    {
+      "name": "--meta",
+      "layer": "B-slot",
+      "value": "#338E98",
+      "confidence": "high",
+      "reason": "--secondary / --color-text-muted(light): tertiary teal metadata",
+      "sources": [
+        "global.css:98,182",
+        "tokens.css:16"
+      ]
+    },
+    {
+      "name": "--border",
+      "layer": "A1-identity",
+      "value": "rgba(26, 75, 81, 0.12)",
+      "confidence": "high",
+      "reason": "--color-border(light): teal-tinted hairline",
+      "sources": [
+        "global.css:183",
+        "tokens.css:19"
+      ]
+    },
+    {
+      "name": "--border-soft",
+      "layer": "B-slot",
+      "value": "rgba(26, 75, 81, 0.06)",
+      "confidence": "derived",
+      "reason": "half-strength --color-border for inner row separators (matches .section-divider fade)",
+      "sources": [
+        "global.css:183,739",
+        "tokens.css:20"
+      ]
+    },
+    {
+      "name": "--accent",
+      "layer": "A1-identity",
+      "value": "#1A4B51",
+      "confidence": "high",
+      "reason": "--primary / --btn-primary-bg: deep teal is the primary brand action color (gradient-brand origin, primary CTAs)",
+      "sources": [
+        "global.css:82,187",
+        "tokens.css:23"
+      ]
+    },
+    {
+      "name": "--accent-on",
+      "layer": "A2",
+      "value": "#FAFFFF",
+      "confidence": "high",
+      "reason": "--btn-primary-color: near-white text on the teal button",
+      "sources": [
+        "global.css:188",
+        "tokens.css:24"
+      ]
+    },
+    {
+      "name": "--accent-hover",
+      "layer": "A2",
+      "value": "#266D74",
+      "confidence": "high",
+      "reason": "--btn-primary-hover-bg: brand's actual primary hover",
+      "sources": [
+        "global.css:189",
+        "tokens.css:25"
+      ]
+    },
+    {
+      "name": "--accent-active",
+      "layer": "A2",
+      "value": "#112E31",
+      "confidence": "derived",
+      "reason": "--primary-dark: pressed/active state (one step below primary)",
+      "sources": [
+        "global.css:83",
+        "tokens.css:26"
+      ]
+    },
+    {
+      "name": "--success",
+      "layer": "A2",
+      "value": "#1F802A",
+      "confidence": "derived",
+      "reason": "solid endpoint of --gradient-whatsapp (brand success/green)",
+      "sources": [
+        "global.css:157",
+        "tokens.css:29"
+      ]
+    },
+    {
+      "name": "--warn",
+      "layer": "A2",
+      "value": "#F7C800",
+      "confidence": "high",
+      "reason": "--yellow: brand highlight amber ('destaque amarelo, nunca vermelho')",
+      "sources": [
+        "global.css:118",
+        "tokens.css:30"
+      ]
+    },
+    {
+      "name": "--danger",
+      "layer": "A2",
+      "value": "#B53333",
+      "confidence": "derived",
+      "reason": "restrained warm red — brand avoids alarm-red; functional-state only",
+      "sources": [
+        "brand rule global.css:117",
+        "tokens.css:31"
+      ]
+    },
+    {
+      "name": "--font-display",
+      "layer": "A1-identity",
+      "value": "\"New York\", Georgia, \"Times New Roman\", serif",
+      "confidence": "high",
+      "reason": "--font-display: New York for all headings",
+      "sources": [
+        "global.css:124",
+        "tokens.css:34"
+      ]
+    },
+    {
+      "name": "--font-body",
+      "layer": "A1-identity",
+      "value": "\"Lora\", Georgia, serif",
+      "confidence": "high",
+      "reason": "--font-body: Lora for reading copy",
+      "sources": [
+        "global.css:125",
+        "tokens.css:35"
+      ]
+    },
+    {
+      "name": "--font-mono",
+      "layer": "A2",
+      "value": "ui-monospace, \"SF Mono\", \"JetBrains Mono\", Menlo, Monaco, Consolas, monospace",
+      "confidence": "fallback",
+      "reason": "OpenDesign A2 default (Monospace font stack — used by kbd, code, tabular metrics.)",
+      "sources": [
+        "_schema/defaults.css",
+        "tokens.css:36"
+      ]
+    },
+    {
+      "name": "--text-xs",
+      "layer": "A1-structure",
+      "value": "12px",
+      "confidence": "derived",
+      "reason": "overline tier one step below the 14px section-label",
+      "sources": [
+        "global.css:349 (extrapolated)",
+        "tokens.css:39"
+      ]
+    },
+    {
+      "name": "--text-sm",
+      "layer": "A1-structure",
+      "value": "14px",
+      "confidence": "high",
+      "reason": ".section-label / caption",
+      "sources": [
+        "global.css:349",
+        "tokens.css:40"
+      ]
+    },
+    {
+      "name": "--text-base",
+      "layer": "A1-structure",
+      "value": "16px",
+      "confidence": "high",
+      "reason": "body / p",
+      "sources": [
+        "global.css:301",
+        "tokens.css:41"
+      ]
+    },
+    {
+      "name": "--text-lg",
+      "layer": "A1-structure",
+      "value": "20px",
+      "confidence": "high",
+      "reason": "h4 / large body",
+      "sources": [
+        "global.css:294",
+        "tokens.css:42"
+      ]
+    },
+    {
+      "name": "--text-xl",
+      "layer": "A1-structure",
+      "value": "22px",
+      "confidence": "high",
+      "reason": "h3",
+      "sources": [
+        "global.css:289",
+        "tokens.css:43"
+      ]
+    },
+    {
+      "name": "--text-2xl",
+      "layer": "A1-structure",
+      "value": "28px",
+      "confidence": "high",
+      "reason": "h2 (mobile) / small section title",
+      "sources": [
+        "global.css:761",
+        "tokens.css:44"
+      ]
+    },
+    {
+      "name": "--text-3xl",
+      "layer": "A1-structure",
+      "value": "36px",
+      "confidence": "high",
+      "reason": "h2 (desktop) — section heading",
+      "sources": [
+        "global.css:283",
+        "tokens.css:45"
+      ]
+    },
+    {
+      "name": "--text-4xl",
+      "layer": "A1-structure",
+      "value": "68px",
+      "confidence": "high",
+      "reason": "h1 — hero display",
+      "sources": [
+        "global.css:277",
+        "tokens.css:46"
+      ]
+    },
+    {
+      "name": "--leading-body",
+      "layer": "A1-structure",
+      "value": "1.6",
+      "confidence": "high",
+      "reason": "html/body line-height",
+      "sources": [
+        "global.css:251",
+        "tokens.css:49"
+      ]
+    },
+    {
+      "name": "--leading-tight",
+      "layer": "A1-structure",
+      "value": "1.2",
+      "confidence": "high",
+      "reason": "h1 81.6/68 = 1.2 heading leading",
+      "sources": [
+        "global.css:278",
+        "tokens.css:50"
+      ]
+    },
+    {
+      "name": "--tracking-display",
+      "layer": "A1-structure",
+      "value": "-0.02em",
+      "confidence": "high",
+      "reason": "h1 -1.36px / 68px = -0.02em",
+      "sources": [
+        "global.css:279",
+        "tokens.css:51"
+      ]
+    },
+    {
+      "name": "--space-1",
+      "layer": "A2",
+      "value": "4px",
+      "confidence": "fallback",
+      "reason": "OpenDesign A2 default (Base spacing — 4px tier.)",
+      "sources": [
+        "_schema/defaults.css",
+        "tokens.css:54"
+      ]
+    },
+    {
+      "name": "--space-2",
+      "layer": "A2",
+      "value": "8px",
+      "confidence": "fallback",
+      "reason": "OpenDesign A2 default (Base spacing — 8px tier.)",
+      "sources": [
+        "_schema/defaults.css",
+        "tokens.css:55"
+      ]
+    },
+    {
+      "name": "--space-3",
+      "layer": "A2",
+      "value": "12px",
+      "confidence": "fallback",
+      "reason": "OpenDesign A2 default (Base spacing — 12px tier.)",
+      "sources": [
+        "_schema/defaults.css",
+        "tokens.css:56"
+      ]
+    },
+    {
+      "name": "--space-4",
+      "layer": "A2",
+      "value": "16px",
+      "confidence": "fallback",
+      "reason": "OpenDesign A2 default (Base spacing — 16px tier.)",
+      "sources": [
+        "_schema/defaults.css",
+        "tokens.css:57"
+      ]
+    },
+    {
+      "name": "--space-5",
+      "layer": "A2",
+      "value": "20px",
+      "confidence": "fallback",
+      "reason": "OpenDesign A2 default (Base spacing — 20px tier.)",
+      "sources": [
+        "_schema/defaults.css",
+        "tokens.css:58"
+      ]
+    },
+    {
+      "name": "--space-6",
+      "layer": "A2",
+      "value": "24px",
+      "confidence": "fallback",
+      "reason": "OpenDesign A2 default (Base spacing — 24px tier.)",
+      "sources": [
+        "_schema/defaults.css",
+        "tokens.css:59"
+      ]
+    },
+    {
+      "name": "--space-8",
+      "layer": "A2",
+      "value": "32px",
+      "confidence": "fallback",
+      "reason": "OpenDesign A2 default (Base spacing — 32px tier.)",
+      "sources": [
+        "_schema/defaults.css",
+        "tokens.css:60"
+      ]
+    },
+    {
+      "name": "--space-12",
+      "layer": "A2",
+      "value": "48px",
+      "confidence": "fallback",
+      "reason": "OpenDesign A2 default (Base spacing — 48px tier.)",
+      "sources": [
+        "_schema/defaults.css",
+        "tokens.css:61"
+      ]
+    },
+    {
+      "name": "--section-y-desktop",
+      "layer": "A1-structure",
+      "value": "140px",
+      "confidence": "high",
+      "reason": "--section-padding-lg",
+      "sources": [
+        "global.css:131",
+        "tokens.css:64"
+      ]
+    },
+    {
+      "name": "--section-y-tablet",
+      "layer": "A1-structure",
+      "value": "100px",
+      "confidence": "high",
+      "reason": "--section-padding-sm",
+      "sources": [
+        "global.css:133",
+        "tokens.css:65"
+      ]
+    },
+    {
+      "name": "--section-y-phone",
+      "layer": "A1-structure",
+      "value": "72px",
+      "confidence": "derived",
+      "reason": "reduced phone rhythm below the 100px tablet tier",
+      "sources": [
+        "global.css:131-133",
+        "tokens.css:66"
+      ]
+    },
+    {
+      "name": "--radius-sm",
+      "layer": "A2",
+      "value": "8px",
+      "confidence": "fallback",
+      "reason": "OpenDesign A2 default (Small radius — buttons, inputs, chips.)",
+      "sources": [
+        "_schema/defaults.css",
+        "tokens.css:69"
+      ]
+    },
+    {
+      "name": "--radius-md",
+      "layer": "A2",
+      "value": "12px",
+      "confidence": "fallback",
+      "reason": "OpenDesign A2 default (Medium radius — cards, modals.)",
+      "sources": [
+        "_schema/defaults.css",
+        "tokens.css:70"
+      ]
+    },
+    {
+      "name": "--radius-lg",
+      "layer": "A2",
+      "value": "16px",
+      "confidence": "high",
+      "reason": "--radius-card: featured containers/cards",
+      "sources": [
+        "global.css:139",
+        "tokens.css:71"
+      ]
+    },
+    {
+      "name": "--radius-pill",
+      "layer": "A2",
+      "value": "9999px",
+      "confidence": "fallback",
+      "reason": "OpenDesign A2 default (Pill radius — avatars, badges.)",
+      "sources": [
+        "_schema/defaults.css",
+        "tokens.css:72"
+      ]
+    },
+    {
+      "name": "--elev-flat",
+      "layer": "A2",
+      "value": "none",
+      "confidence": "fallback",
+      "reason": "OpenDesign A2 default (No elevation.)",
+      "sources": [
+        "_schema/defaults.css",
+        "tokens.css:75"
+      ]
+    },
+    {
+      "name": "--elev-ring",
+      "layer": "A2",
+      "value": "0 0 0 1px var(--border)",
+      "confidence": "fallback",
+      "reason": "OpenDesign A2 default (Hairline ring (1px box-shadow border).)",
+      "sources": [
+        "_schema/defaults.css",
+        "tokens.css:76"
+      ]
+    },
+    {
+      "name": "--elev-raised",
+      "layer": "A2",
+      "value": "0 8px 32px rgba(26, 75, 81, 0.08)",
+      "confidence": "high",
+      "reason": ".glass-card:hover lift shadow (teal-tinted whisper)",
+      "sources": [
+        "global.css:377",
+        "tokens.css:77"
+      ]
+    },
+    {
+      "name": "--focus-ring",
+      "layer": "A2",
+      "value": "0 0 0 3px rgba(26, 75, 81, 0.35)",
+      "confidence": "derived",
+      "reason": "teal focus halo (brand primary, ≈ shadcn focus proportion)",
+      "sources": [
+        "global.css:82",
+        "tokens.css:80"
+      ]
+    },
+    {
+      "name": "--motion-fast",
+      "layer": "A2",
+      "value": "150ms",
+      "confidence": "fallback",
+      "reason": "OpenDesign A2 default (Hover / micro-state duration.)",
+      "sources": [
+        "_schema/defaults.css",
+        "tokens.css:83"
+      ]
+    },
+    {
+      "name": "--motion-base",
+      "layer": "A2",
+      "value": "300ms",
+      "confidence": "high",
+      "reason": "--transition-base is 300ms (slower than the 200ms schema default)",
+      "sources": [
+        "global.css:174",
+        "tokens.css:84"
+      ]
+    },
+    {
+      "name": "--ease-standard",
+      "layer": "A2",
+      "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+      "confidence": "high",
+      "reason": "--ease-out: the brand's primary easing",
+      "sources": [
+        "global.css:171",
+        "tokens.css:85"
+      ]
+    },
+    {
+      "name": "--container-max",
+      "layer": "A1-structure",
+      "value": "1216px",
+      "confidence": "high",
+      "reason": "--container-max",
+      "sources": [
+        "global.css:129",
+        "tokens.css:88"
+      ]
+    },
+    {
+      "name": "--container-gutter-desktop",
+      "layer": "A1-structure",
+      "value": "32px",
+      "confidence": "high",
+      "reason": "--container-padding clamp max (2rem)",
+      "sources": [
+        "global.css:130",
+        "tokens.css:89"
+      ]
+    },
+    {
+      "name": "--container-gutter-tablet",
+      "layer": "A1-structure",
+      "value": "24px",
+      "confidence": "derived",
+      "reason": "mid step of the container-padding clamp",
+      "sources": [
+        "global.css:130",
+        "tokens.css:90"
+      ]
+    },
+    {
+      "name": "--container-gutter-phone",
+      "layer": "A1-structure",
+      "value": "20px",
+      "confidence": "high",
+      "reason": "--container-padding clamp min (1.25rem)",
+      "sources": [
+        "global.css:130",
+        "tokens.css:91"
+      ]
+    }
+  ]
+}
