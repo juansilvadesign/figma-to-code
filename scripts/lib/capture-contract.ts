@@ -968,13 +968,23 @@ function validateArtifactDeclaration(
         `artifact ${artifact.id}: expected path ${expectedPath} for original node id ${artifact.nodeId}`,
       );
     }
-    const callNodeId = artifact.toolCall?.arguments.nodeId;
-    if (
-      artifact.role !== "screenshot" &&
-      callNodeId !== artifact.nodeId
-    ) {
+    // get_reactions takes `nodeIds` (an array of roots); every other node-scoped
+    // read takes a single `nodeId`. One artifact still records exactly one node,
+    // so a reactions call must request exactly the node it is filed under.
+    const callArguments = artifact.toolCall?.arguments;
+    let callNodeId: JsonValue | undefined;
+    if (artifact.role === "reactions") {
+      const requested = callArguments?.nodeIds;
+      callNodeId =
+        Array.isArray(requested) && requested.length === 1
+          ? requested[0]
+          : undefined;
+    } else {
+      callNodeId = callArguments?.nodeId;
+    }
+    if (artifact.role !== "screenshot" && callNodeId !== artifact.nodeId) {
       issues.push(
-        `artifact ${artifact.id}: toolCall.arguments.nodeId must preserve original id ${artifact.nodeId}`,
+        `artifact ${artifact.id}: toolCall arguments must request exactly original id ${artifact.nodeId}`,
       );
     }
   }
@@ -1182,12 +1192,41 @@ function assertPayloadMatchesArtifact(
     );
   }
   if (
-    ["pages", "document", "variables", "styles", "components", "node-variables", "reactions"].includes(
+    ["pages", "document", "variables", "styles", "components", "reactions"].includes(
       artifact.role,
     ) &&
     artifact.coverage?.complete !== true
   ) {
     fail(artifact.id, "required capture payload is incomplete");
+  }
+  // A node-variables read resolves thousands of references and can legitimately
+  // fail on a handful (a node carrying two styles on one property resolves as
+  // "mixed"). Discarding every resolved reference because of a declared few is
+  // the false negative this contract exists to prevent — so an incomplete read
+  // is accepted only when the fork quantifies exactly what it could not resolve
+  // and the manifest records the explanation. Silent partials stay fatal.
+  if (
+    artifact.role === "node-variables" &&
+    artifact.coverage?.complete !== true
+  ) {
+    if (payload.unresolved === undefined) {
+      fail(
+        artifact.id,
+        "incomplete node-variables payload does not quantify its unresolved bindings/styles",
+      );
+    }
+    if (payload.unresolved.bindings === 0 && payload.unresolved.styles === 0) {
+      fail(
+        artifact.id,
+        "node-variables reports complete=false but zero unresolved bindings and styles",
+      );
+    }
+    if ((artifact.coverage?.limitations.length ?? 0) === 0) {
+      fail(
+        artifact.id,
+        "incomplete node-variables payload must record its limitations",
+      );
+    }
   }
   if (
     ["variables", "node-variables"].includes(artifact.role) &&

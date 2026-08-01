@@ -1,28 +1,60 @@
 {
-  "nodeId": "1:20",
+  "scope": "node_subtree",
   "supported": true,
-  "complete": true,
-  "nodeCount": 1,
+  "variablesSupported": true,
+  "stylesSupported": true,
+  "complete": false,
+  "limitations": [
+    "1 style reference could not be fully resolved; inspect each entry's resolutionStatus (\"mixed\" means the node carries more than one style on that property)."
+  ],
+  "rootNode": {
+    "id": "1:20",
+    "name": "Landing / Mobile",
+    "type": "FRAME"
+  },
+  "nodesScanned": 2,
   "bindingCount": 2,
+  "unresolvedBindings": 0,
   "bindings": [
     {
+      "nodeId": "1:20",
+      "nodeName": "Landing / Mobile",
+      "nodeType": "FRAME",
+      "nodePath": "Synthetic Page > Landing / Mobile",
       "property": "fills",
       "variableId": "VariableID:1:1",
       "variableName": "Color/Background",
       "value": "#ffffff",
+      "resolvedType": "COLOR",
       "resolutionStatus": "resolved"
     },
     {
+      "nodeId": "1:20",
+      "nodeName": "Landing / Mobile",
+      "nodeType": "FRAME",
+      "nodePath": "Synthetic Page > Landing / Mobile",
       "property": "paddingLeft",
       "variableId": "VariableID:1:4",
       "variableName": "Spacing/Section",
       "value": 20,
+      "resolvedType": "FLOAT",
       "resolutionStatus": "resolved"
     }
   ],
-  "styleCount": 0,
-  "styles": [],
-  "unresolvedVariables": 0,
-  "unresolvedStyles": 0,
-  "limitations": []
+  "styleCount": 1,
+  "unresolvedStyles": 1,
+  "styles": [
+    {
+      "nodeId": "1:21",
+      "nodeName": "Hero copy",
+      "nodeType": "TEXT",
+      "nodePath": "Synthetic Page > Landing / Mobile > Hero copy",
+      "property": "fillStyleId",
+      "styleId": null,
+      "styleName": null,
+      "styleType": null,
+      "remote": null,
+      "resolutionStatus": "mixed"
+    }
+  ]
 }

@@ -34,6 +34,12 @@ export type ValidatedForkPayload = {
   pageId?: string;
   supported?: boolean;
   complete?: boolean;
+  /**
+   * Quantified unresolved subset for reads that can be partially resolved.
+   * Present only when the fork states exactly what it could not resolve, which
+   * is what lets an incomplete read stay usable instead of being discarded.
+   */
+  unresolved?: { bindings: number; styles: number };
   limitations: string[];
   decodedImage?: Uint8Array;
   imageMimeType?: string;
@@ -118,7 +124,10 @@ function pageAt(value: JsonValue, path: string): JsonObject {
   const page = objectAt(value, path);
   stringAt(page.id, `${path}.id`);
   stringAt(page.name, `${path}.name`);
-  if (page.childCount !== undefined) {
+  // A page index reports `childCount: null` with `childCountStatus:
+  // "not_requested"` when counts were not opted into — an explicit absence,
+  // not a malformed count.
+  if (page.childCount !== undefined && page.childCount !== null) {
     integerAt(page.childCount, `${path}.childCount`);
   }
   return page;
@@ -156,15 +165,14 @@ function validateDocument(value: unknown): ValidatedForkPayload {
     currentPage.childCount,
     `${path}.currentPage.childCount`,
   );
-  const children = arrayAt(
-    currentPage.children,
-    `${path}.currentPage.children`,
-  );
+  // The bounded child slice is a top-level array; `currentPage` carries only
+  // the page's identity and its true total childCount.
+  const children = arrayAt(payload.children, `${path}.children`);
   for (const [index, child] of children.entries()) {
-    const node = objectAt(child, `${path}.currentPage.children[${index}]`);
-    stringAt(node.id, `${path}.currentPage.children[${index}].id`);
-    stringAt(node.name, `${path}.currentPage.children[${index}].name`);
-    stringAt(node.type, `${path}.currentPage.children[${index}].type`);
+    const node = objectAt(child, `${path}.children[${index}]`);
+    stringAt(node.id, `${path}.children[${index}].id`);
+    stringAt(node.name, `${path}.children[${index}].name`);
+    stringAt(node.type, `${path}.children[${index}].type`);
   }
   const pages = arrayAt(payload.pages, `${path}.pages`).map((page, index) =>
     pageAt(page, `${path}.pages[${index}]`),
@@ -252,11 +260,13 @@ function validateVariables(value: unknown): ValidatedForkPayload {
         mode.name,
         `${path}.collections[${collectionIndex}].modes[${modeIndex}].name`,
       );
+      // Variables are reported per mode, because the same variable resolves to
+      // a different value in each mode.
+      arrayAt(
+        mode.variables,
+        `${path}.collections[${collectionIndex}].modes[${modeIndex}].variables`,
+      );
     }
-    arrayAt(
-      collection.variables,
-      `${path}.collections[${collectionIndex}].variables`,
-    );
   }
   const collectionCount = integerAt(
     payload.collectionCount,
@@ -282,17 +292,27 @@ function validateVariables(value: unknown): ValidatedForkPayload {
 function validateStyles(value: unknown): ValidatedForkPayload {
   const path = "get_styles";
   const payload = objectAt(value, path);
-  const styles = arrayAt(payload.styles, `${path}.styles`);
-  for (const [index, entry] of styles.entries()) {
-    const style = objectAt(entry, `${path}.styles[${index}]`);
-    stringAt(style.id, `${path}.styles[${index}].id`);
-    stringAt(style.name, `${path}.styles[${index}].name`);
-    stringAt(style.type, `${path}.styles[${index}].type`);
-    optionalBoolean(style.remote, `${path}.styles[${index}].remote`);
-  }
-  const count = integerAt(payload.count, `${path}.count`);
-  if (count !== styles.length) {
-    fail(`${path}.count`, `expected ${styles.length} to match styles.length`);
+  // Local styles come back as four separate typed inventories, each with its
+  // own declared count — not one flat list.
+  const counts = objectAt(payload.counts, `${path}.counts`);
+  for (const inventory of ["colors", "texts", "effects", "grids"] as const) {
+    const entries = arrayAt(payload[inventory], `${path}.${inventory}`);
+    for (const [index, entry] of entries.entries()) {
+      const style = objectAt(entry, `${path}.${inventory}[${index}]`);
+      stringAt(style.id, `${path}.${inventory}[${index}].id`);
+      stringAt(style.name, `${path}.${inventory}[${index}].name`);
+      optionalBoolean(style.remote, `${path}.${inventory}[${index}].remote`);
+    }
+    const declared = integerAt(
+      counts[inventory],
+      `${path}.counts.${inventory}`,
+    );
+    if (declared !== entries.length) {
+      fail(
+        `${path}.counts.${inventory}`,
+        `expected ${entries.length} to match ${inventory}.length`,
+      );
+    }
   }
   const supported = optionalBoolean(payload.supported, `${path}.supported`);
   const complete = optionalBoolean(payload.complete, `${path}.complete`);
@@ -310,22 +330,17 @@ function validateComponents(value: unknown): ValidatedForkPayload {
   const payload = objectAt(value, path);
   booleanAt(payload.summary, `${path}.summary`);
   integerAt(payload.count, `${path}.count`);
-  arrayAt(payload.families, `${path}.families`);
+  // Summary mode names its family rollup `nameFamilies`, and reports its own
+  // scope/completeness at the top level rather than under a coverage wrapper.
+  arrayAt(payload.nameFamilies, `${path}.nameFamilies`);
   arrayAt(payload.authoringSessions, `${path}.authoringSessions`);
-  const coverage = objectAt(payload.coverage, `${path}.coverage`);
-  stringAt(coverage.scope, `${path}.coverage.scope`);
-  const complete = booleanAt(
-    coverage.complete,
-    `${path}.coverage.complete`,
-  );
-  integerAt(coverage.pagesTotal, `${path}.coverage.pagesTotal`);
-  integerAt(coverage.pagesScanned, `${path}.coverage.pagesScanned`);
-  arrayAt(coverage.pagesSkipped, `${path}.coverage.pagesSkipped`);
-  arrayAt(coverage.pagesNotFound, `${path}.coverage.pagesNotFound`);
-  const limitations = stringsAt(
-    coverage.limitations,
-    `${path}.coverage.limitations`,
-  );
+  stringAt(payload.scope, `${path}.scope`);
+  const complete = booleanAt(payload.complete, `${path}.complete`);
+  integerAt(payload.pagesTotal, `${path}.pagesTotal`);
+  integerAt(payload.pagesScanned, `${path}.pagesScanned`);
+  arrayAt(payload.pagesSkipped, `${path}.pagesSkipped`);
+  arrayAt(payload.pagesNotFound, `${path}.pagesNotFound`);
+  const limitations = stringsAt(payload.limitations, `${path}.limitations`);
   return {
     role: "components",
     value: payload,
@@ -351,7 +366,9 @@ function validateNode(value: unknown): ValidatedForkPayload {
 function validateNodeVariables(value: unknown): ValidatedForkPayload {
   const path = "get_node_variables";
   const payload = objectAt(value, path);
-  const nodeId = stringAt(payload.nodeId, `${path}.nodeId`);
+  // The fork identifies the scanned root as an object, not a bare id.
+  const rootNode = objectAt(payload.rootNode, `${path}.rootNode`);
+  const nodeId = stringAt(rootNode.id, `${path}.rootNode.id`);
   const supported = booleanAt(payload.supported, `${path}.supported`);
   const complete = booleanAt(payload.complete, `${path}.complete`);
   const bindings = arrayAt(payload.bindings, `${path}.bindings`);
@@ -373,40 +390,76 @@ function validateNodeVariables(value: unknown): ValidatedForkPayload {
       `expected ${styles.length} to match styles.length`,
     );
   }
-  integerAt(payload.unresolvedVariables, `${path}.unresolvedVariables`);
-  integerAt(payload.unresolvedStyles, `${path}.unresolvedStyles`);
+  const unresolvedBindings = integerAt(
+    payload.unresolvedBindings,
+    `${path}.unresolvedBindings`,
+  );
+  const unresolvedStyles = integerAt(
+    payload.unresolvedStyles,
+    `${path}.unresolvedStyles`,
+  );
   return {
     role: "node-variables",
     value: payload,
     nodeId,
     supported,
     complete,
+    unresolved: { bindings: unresolvedBindings, styles: unresolvedStyles },
     limitations: limitationsOf(payload, path),
   };
 }
 
+/**
+ * `get_reactions` answers for a set of requested roots, so the reply describes
+ * subtrees rather than one node: it reports `nodesCount` roots, lists only the
+ * descendants that actually carry reactions, and states its API coverage limit
+ * in `coverage.limitation`. It carries no top-level node id — the requested
+ * root lives in the manifest's `toolCall.arguments.nodeIds`.
+ */
 function validateReactions(value: unknown): ValidatedForkPayload {
   const path = "get_reactions";
   const payload = objectAt(value, path);
-  const nodeId = stringAt(payload.nodeId, `${path}.nodeId`);
-  const reactions = arrayAt(payload.reactions, `${path}.reactions`);
-  const reactionCount = integerAt(
-    payload.reactionCount,
-    `${path}.reactionCount`,
+  stringAt(payload.scope, `${path}.scope`);
+  const complete = optionalBoolean(payload.complete, `${path}.complete`);
+  const coverage = objectAt(payload.coverage, `${path}.coverage`);
+  booleanAt(
+    coverage.includesChangeToVariantTransitions,
+    `${path}.coverage.includesChangeToVariantTransitions`,
   );
-  if (reactionCount !== reactions.length) {
+  const limitation = stringAt(
+    coverage.limitation,
+    `${path}.coverage.limitation`,
+  );
+  integerAt(payload.nodesCount, `${path}.nodesCount`);
+  const nodesWithReactions = integerAt(
+    payload.nodesWithReactions,
+    `${path}.nodesWithReactions`,
+  );
+  const nodes = arrayAt(payload.nodes, `${path}.nodes`);
+  if (nodesWithReactions !== nodes.length) {
     fail(
-      `${path}.reactionCount`,
-      `expected ${reactions.length} to match reactions.length`,
+      `${path}.nodesWithReactions`,
+      `expected ${nodes.length} to match nodes.length`,
     );
   }
-  const complete = optionalBoolean(payload.complete, `${path}.complete`);
+  for (const [index, entry] of nodes.entries()) {
+    const nodePath = `${path}.nodes[${index}]`;
+    const node = objectAt(entry, nodePath);
+    stringAt(node.id, `${nodePath}.id`);
+    stringAt(node.name, `${nodePath}.name`);
+    stringAt(node.type, `${nodePath}.type`);
+    integerAt(node.depth, `${nodePath}.depth`);
+    booleanAt(node.hasReactions, `${nodePath}.hasReactions`);
+    arrayAt(node.reactions, `${nodePath}.reactions`);
+  }
+  arrayAt(payload.errors, `${path}.errors`);
   return {
     role: "reactions",
     value: payload,
-    nodeId,
     complete,
-    limitations: limitationsOf(payload, path),
+    // An empty reaction set is still evidence, so the coverage limit is
+    // preserved as a limitation rather than dropped.
+    limitations: [limitation],
   };
 }
 

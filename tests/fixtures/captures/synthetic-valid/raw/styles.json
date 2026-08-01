@@ -1,20 +1,28 @@
 {
+  "scope": "document",
   "supported": true,
   "complete": true,
-  "count": 2,
-  "styles": [
+  "colors": [],
+  "texts": [
     {
       "id": "S:1",
       "name": "Display/Hero",
-      "type": "TEXT",
-      "remote": false
-    },
-    {
-      "id": "S:2",
-      "name": "Shadow/Raised",
-      "type": "EFFECT",
       "remote": false
     }
   ],
+  "effects": [
+    {
+      "id": "S:2",
+      "name": "Shadow/Raised",
+      "remote": false
+    }
+  ],
+  "grids": [],
+  "counts": {
+    "colors": 0,
+    "texts": 1,
+    "effects": 1,
+    "grids": 0
+  },
   "limitations": []
 }

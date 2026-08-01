@@ -141,8 +141,8 @@
       "role": "document",
       "path": "raw/document.json",
       "mediaType": "application/json",
-      "sha256": "ca787de919181e45e759f1da8a67b829f0d46c7b7075cddc55c1b4a07901a512",
-      "bytes": 738,
+      "sha256": "b1191054af39304bbe0c130be975d77d9c97be67033dc16df8106d532a4d6e56",
+      "bytes": 1069,
       "capturedAt": "2026-07-31T12:00:02.000Z",
       "pageId": "1:1",
       "toolCall": {
@@ -164,8 +164,8 @@
       "role": "variables",
       "path": "raw/variables.json",
       "mediaType": "application/json",
-      "sha256": "a9a124d4335653de5e7c0951e74a0a3047a44e68f848ced62ad5bbb25c51dd75",
-      "bytes": 1321,
+      "sha256": "d1a69d54a9e43a39b2e82678e9e3786b9f237645085709f222967d59d92c14f6",
+      "bytes": 4187,
       "capturedAt": "2026-07-31T12:00:03.000Z",
       "toolCall": {
         "name": "get_variables",
@@ -183,8 +183,8 @@
       "role": "styles",
       "path": "raw/styles.json",
       "mediaType": "application/json",
-      "sha256": "74d227b3297d4d5b1ff464957e747893f6029c6f9a65224da939bf172f90fdf1",
-      "bytes": 312,
+      "sha256": "e28db0b086d1208bb56db41a23efb972a633957cde8adc91027a9ac01496a20a",
+      "bytes": 409,
       "capturedAt": "2026-07-31T12:00:04.000Z",
       "toolCall": {
         "name": "get_styles",
@@ -202,8 +202,8 @@
       "role": "components",
       "path": "raw/components.json",
       "mediaType": "application/json",
-      "sha256": "fd8b9a781f087318271465ff551c2263b21ec2c8b0116b658e65d7e862a4ac99",
-      "bytes": 699,
+      "sha256": "21f458ca1a7cda7022b8fbd9731bcb538b5fe6399a1f16e23dc616c31999a4f0",
+      "bytes": 933,
       "capturedAt": "2026-07-31T12:00:05.000Z",
       "toolCall": {
         "name": "get_local_components",
@@ -250,8 +250,8 @@
       "role": "node-variables",
       "path": "raw/node-variables/1_10.json",
       "mediaType": "application/json",
-      "sha256": "991a3e0a81a18a320d5358982b24c234154be15a923d5d8291d5e59b36b0423c",
-      "bytes": 791,
+      "sha256": "00c2e2a00216124176a051d3ced9b1a651b7e70dc7ef1a1ee90f938b78bc9d60",
+      "bytes": 1449,
       "capturedAt": "2026-07-31T12:00:07.000Z",
       "nodeId": "1:10",
       "pageId": "1:1",
@@ -273,15 +273,17 @@
       "role": "reactions",
       "path": "raw/reactions/1_10.json",
       "mediaType": "application/json",
-      "sha256": "63a37883b9af51ae3b31d98d3acc1a55ae3cb196dfd5e5b4440fd6ab8a83a958",
-      "bytes": 476,
+      "sha256": "96b02e64741ff415fd89f19648cdd6ec5e4a3a0d455f30cac6f36f8fa0150cde",
+      "bytes": 1155,
       "capturedAt": "2026-07-31T12:00:08.000Z",
       "nodeId": "1:10",
       "pageId": "1:1",
       "toolCall": {
         "name": "get_reactions",
         "arguments": {
-          "nodeId": "1:10"
+          "nodeIds": [
+            "1:10"
+          ]
         }
       },
       "coverage": {
@@ -354,8 +356,8 @@
       "role": "node-variables",
       "path": "raw/node-variables/1_20.json",
       "mediaType": "application/json",
-      "sha256": "da31e091d18911009adba081e9fae525aae7887563b26bf3c95ec771615796f3",
-      "bytes": 596,
+      "sha256": "a2a1e75445c3a55d713ae79667add41c38be81115e62a8938128ce579db33ca5",
+      "bytes": 1596,
       "capturedAt": "2026-07-31T12:00:12.000Z",
       "nodeId": "1:20",
       "pageId": "1:1",
@@ -367,9 +369,11 @@
       },
       "coverage": {
         "scope": "node-subtree",
-        "complete": true,
+        "complete": false,
         "supported": true,
-        "limitations": []
+        "limitations": [
+          "1 style reference could not be fully resolved; inspect each entry's resolutionStatus (\"mixed\" means the node carries more than one style on that property)."
+        ]
       }
     },
     {

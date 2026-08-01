@@ -1,24 +1,48 @@
 {
-  "nodeId": "1:10",
-  "reactionCount": 1,
-  "reactions": [
+  "scope": "requested_node_subtrees",
+  "complete": true,
+  "coverage": {
+    "includesChangeToVariantTransitions": true,
+    "limitation": "An empty result would not prove the absence of unsupported prototype behavior."
+  },
+  "nodesCount": 1,
+  "nodesWithReactions": 1,
+  "nodes": [
     {
-      "sourceNodeId": "1:10",
-      "trigger": {
-        "type": "ON_CLICK"
-      },
-      "action": {
-        "type": "CHANGE_TO",
-        "destinationId": "1:11",
-        "transition": {
-          "type": "SMART_ANIMATE",
-          "duration": 0.3
+      "id": "1:10",
+      "name": "Landing / Desktop",
+      "type": "FRAME",
+      "depth": 0,
+      "hasReactions": true,
+      "reactions": [
+        {
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "action": {
+            "type": "NODE",
+            "destinationId": "1:11",
+            "navigation": "CHANGE_TO",
+            "transition": {
+              "type": "SMART_ANIMATE",
+              "duration": 0.3
+            }
+          },
+          "actions": [
+            {
+              "type": "NODE",
+              "destinationId": "1:11",
+              "navigation": "CHANGE_TO",
+              "transition": {
+                "type": "SMART_ANIMATE",
+                "duration": 0.3
+              }
+            }
+          ]
         }
-      }
+      ],
+      "path": "Synthetic Page > Landing / Desktop"
     }
   ],
-  "complete": true,
-  "limitations": [
-    "An empty result would not prove the absence of unsupported prototype behavior."
-  ]
+  "errors": []
 }

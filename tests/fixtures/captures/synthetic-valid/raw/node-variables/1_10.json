@@ -1,28 +1,52 @@
 {
-  "nodeId": "1:10",
+  "scope": "node_subtree",
   "supported": true,
+  "variablesSupported": true,
+  "stylesSupported": true,
   "complete": true,
-  "nodeCount": 1,
+  "limitations": [],
+  "rootNode": {
+    "id": "1:10",
+    "name": "Landing / Desktop",
+    "type": "FRAME"
+  },
+  "nodesScanned": 1,
   "bindingCount": 2,
+  "unresolvedBindings": 0,
   "bindings": [
     {
+      "nodeId": "1:10",
+      "nodeName": "Landing / Desktop",
+      "nodeType": "FRAME",
+      "nodePath": "Synthetic Page > Landing / Desktop",
       "property": "fills",
       "variableId": "VariableID:1:1",
       "variableName": "Color/Background",
       "value": "#ffffff",
+      "resolvedType": "COLOR",
       "resolutionStatus": "resolved"
     },
     {
+      "nodeId": "1:10",
+      "nodeName": "Landing / Desktop",
+      "nodeType": "FRAME",
+      "nodePath": "Synthetic Page > Landing / Desktop",
       "property": "itemSpacing",
       "variableId": "VariableID:1:4",
       "variableName": "Spacing/Section",
       "value": 120,
+      "resolvedType": "FLOAT",
       "resolutionStatus": "resolved"
     }
   ],
   "styleCount": 1,
+  "unresolvedStyles": 0,
   "styles": [
     {
+      "nodeId": "1:10",
+      "nodeName": "Landing / Desktop",
+      "nodeType": "FRAME",
+      "nodePath": "Synthetic Page > Landing / Desktop",
       "property": "textStyleId",
       "styleId": "S:1",
       "styleName": "Display/Hero",
@@ -30,8 +54,5 @@
       "remote": false,
       "resolutionStatus": "resolved"
     }
-  ],
-  "unresolvedVariables": 0,
-  "unresolvedStyles": 0,
-  "limitations": []
+  ]
 }

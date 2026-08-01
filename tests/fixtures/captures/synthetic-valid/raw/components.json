@@ -1,7 +1,25 @@
 {
+  "scope": "selected_pages",
+  "complete": true,
+  "pagesTotal": 1,
+  "pagesRequested": 1,
+  "pagesScanned": 1,
+  "pagesSkipped": [],
+  "pagesNotFound": [],
+  "limitations": [
+    "Scoped to 1 requested page; counts are not a document total."
+  ],
   "summary": true,
   "count": 2,
-  "families": [
+  "pages": [
+    {
+      "id": "1:1",
+      "name": "Landing",
+      "componentCount": 2
+    }
+  ],
+  "familyCount": 2,
+  "nameFamilies": [
     {
       "name": "Button",
       "count": 1
@@ -11,10 +29,14 @@
       "count": 1
     }
   ],
+  "familiesTruncated": false,
+  "familyLimit": 100,
+  "sessionCount": 1,
   "authoringSessions": [
     {
-      "prefix": "1",
+      "session": "1",
       "count": 2,
+      "familyCount": 2,
       "topFamilies": [
         {
           "name": "Button",
@@ -27,16 +49,6 @@
       ]
     }
   ],
-  "coverage": {
-    "scope": "selected_pages",
-    "complete": true,
-    "pagesTotal": 1,
-    "pagesRequested": 1,
-    "pagesScanned": 1,
-    "pagesSkipped": [],
-    "pagesNotFound": [],
-    "limitations": [
-      "Scoped to 1 requested page; counts are not a document total."
-    ]
-  }
+  "sessionsTruncated": false,
+  "sessionLimit": 20
 }

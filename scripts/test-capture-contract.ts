@@ -419,7 +419,8 @@ async function main(): Promise<void> {
           manifest,
           "reactions-1-10",
           (value) => {
-            value.limitations = ["Different limitation"];
+            const coverage = value.coverage as { limitation: string };
+            coverage.limitation = "Different limitation";
           },
         );
         await loadCaptureBundle(
@@ -427,6 +428,77 @@ async function main(): Promise<void> {
         );
       }),
     /payload limitations do not match manifest coverage/,
+  );
+
+  await expectFailure(
+    "a reactions call must request exactly the node it is filed under",
+    () =>
+      withTempBundle(async (bundleRoot, manifest) => {
+        const artifact = manifest.artifacts.find(
+          (entry) => entry.id === "reactions-1-10",
+        );
+        assert.ok(artifact?.toolCall, "expected the reactions toolCall");
+        artifact.toolCall.arguments = { nodeIds: ["1:10", "1:20"] };
+        await writeFile(
+          path.join(bundleRoot, "capture-manifest.json"),
+          JSON.stringify(manifest, null, 2),
+        );
+        await loadCaptureBundle(
+          path.join(bundleRoot, "capture-manifest.json"),
+        );
+      }),
+    /toolCall arguments must request exactly original id 1:10/,
+  );
+
+  await check(
+    "an incomplete node-variables read is accepted when it quantifies what it could not resolve",
+    async () => {
+      const bundle = await loadCaptureBundle(FIXTURE_MANIFEST);
+      const partial = bundle.payloads.get("node-variables-1-20");
+      assert.ok(partial, "expected the mobile node-variables payload");
+      assert.equal(partial.role, "node-variables");
+      assert.equal(partial.nodeId, "1:20");
+      assert.equal(partial.complete, false);
+      assert.deepEqual(partial.unresolved, { bindings: 0, styles: 1 });
+    },
+  );
+
+  await expectFailure(
+    "an incomplete node-variables read without quantified unresolved counts fails",
+    () =>
+      withTempBundle(async (bundleRoot, manifest) => {
+        await rewriteJsonArtifact(
+          bundleRoot,
+          manifest,
+          "node-variables-1-20",
+          (value) => {
+            delete value.unresolvedStyles;
+          },
+        );
+        await loadCaptureBundle(
+          path.join(bundleRoot, "capture-manifest.json"),
+        );
+      }),
+    /unresolvedStyles/,
+  );
+
+  await expectFailure(
+    "node-variables cannot claim complete:false with nothing unresolved",
+    () =>
+      withTempBundle(async (bundleRoot, manifest) => {
+        await rewriteJsonArtifact(
+          bundleRoot,
+          manifest,
+          "node-variables-1-20",
+          (value) => {
+            value.unresolvedStyles = 0;
+          },
+        );
+        await loadCaptureBundle(
+          path.join(bundleRoot, "capture-manifest.json"),
+        );
+      }),
+    /complete=false but zero unresolved bindings and styles/,
   );
 
   await expectFailure(
@@ -463,14 +535,15 @@ async function main(): Promise<void> {
           manifest,
           "styles",
           (value) => {
-            value.count = 999;
+            const counts = value.counts as { texts: number };
+            counts.texts = 999;
           },
         );
         await loadCaptureBundle(
           path.join(bundleRoot, "capture-manifest.json"),
         );
       }),
-    /get_styles\.count.*styles\.length/s,
+    /get_styles\.counts\.texts.*texts\.length/s,
   );
 
   await expectFailure(

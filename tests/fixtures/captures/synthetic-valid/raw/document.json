@@ -1,44 +1,60 @@
 {
-  "scope": "current_page",
+  "scope": "current_page_with_document_page_index",
+  "summary": true,
+  "document": {
+    "id": "0:0",
+    "name": "Synthetic Landing Page",
+    "type": "DOCUMENT"
+  },
+  "name": "Landing",
+  "id": "1:1",
+  "type": "PAGE",
   "currentPage": {
     "id": "1:1",
     "name": "Landing",
-    "childCount": 2,
-    "children": [
-      {
-        "id": "1:10",
-        "name": "Landing / Desktop",
-        "type": "FRAME"
-      },
-      {
-        "id": "1:20",
-        "name": "Landing / Mobile",
-        "type": "FRAME"
-      }
-    ]
+    "childCount": 2
   },
+  "childrenTruncated": false,
+  "pagination": {
+    "offset": 0,
+    "limit": 100,
+    "returned": 2,
+    "hasMore": false
+  },
+  "pageCount": 1,
   "pages": [
     {
       "id": "1:1",
       "name": "Landing",
-      "childCount": 2
+      "childCount": 2,
+      "childCountStatus": "available"
     }
   ],
-  "pageCount": 1,
-  "childrenTruncated": false,
-  "pagination": {
-    "limit": 100,
-    "offset": 0,
-    "returned": 2,
-    "hasMore": false
-  },
-  "childTypes": {
-    "FRAME": 2
-  },
+  "childTypes": [
+    {
+      "name": "FRAME",
+      "count": 2
+    }
+  ],
+  "childFamilyCount": 1,
   "childFamilies": [
     {
       "name": "Landing",
       "count": 2
+    }
+  ],
+  "childFamiliesTruncated": false,
+  "familyLimit": 100,
+  "children": [
+    {
+      "id": "1:10",
+      "name": "Landing / Desktop",
+      "type": "FRAME"
+    },
+    {
+      "id": "1:20",
+      "name": "Landing / Mobile",
+      "type": "FRAME"
     }
   ],
   "complete": true,
