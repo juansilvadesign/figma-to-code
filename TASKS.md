@@ -49,10 +49,11 @@ Hard rules:
   family from that same capture and produce a static-first Astro page that consumes
   the validated package, builds cleanly, and has final 1440px/390px visual evidence.
 
-The package remains at `0.0.0`, but R0 is executable and R1.1's immutable capture
-contract is frozen with offline tests. The Figma extractor remains an intentional
-throwing stub and no live capture exists yet, so neither the Importer MVP nor Astro
-page MVP has shipped.
+The package remains at `0.0.0`, but R0 is executable, R1.1's immutable capture
+contract is frozen with offline tests, and R1.2 has now run once against the live
+SYD file (preflight green, 7 of 9 roles captured). The Figma extractor remains an
+intentional throwing stub and no capture bundle validates yet, so neither the
+Importer MVP nor Astro page MVP has shipped.
 
 ## Planning frame
 
@@ -140,26 +141,44 @@ only the next release. Later releases stay coarse until the preceding checkpoint
 
 The remaining executable stub is `scripts/extract-figma-tokens.ts`.
 
-## ▶ Next session — operator-assisted R1.2
+## ▶ Next session — finish R1.2
 
-Required input: the authorized SYD Figma file open in the fork DEV plugin, the local
-relay running, and the connected channel name.
+R1.2 ran on 2026-07-31 against the live SYD file. Preflight passed and 7 of 9
+payload roles are captured in `docs/research/syd/` (13 files, ~923 KB, gitignored).
+Full findings: [`docs/research/r1-capture-note.md`](docs/research/r1-capture-note.md).
 
-1. **Preflight before the first document read.** Verify the exact fork commit,
-   `dist/server.js` hash, plugin name/id/API/code hash, local relay, and required MCP
-   tool inventory. Compute the canonical capability fingerprint and fail closed on
-   any mismatch.
-2. Create a `private-local` bundle under `docs/research/syd/`; confirm gitignore
-   catches its manifest, raw replies, screenshots, overrides, and normalized output.
-3. Capture through MCP only: pages → selected page context/document summaries →
-   variables → styles → scoped component summary → representative desktop/mobile
-   node info and node variables → reactions on interactive roots → raw exports and
-   decoded screenshots.
-4. Save each reply once without field changes, bind its byte count/SHA-256 into the
-   manifest, and run `loadCaptureBundle` offline.
-5. Stop R1.2 when the private bundle validates without another MCP call. Do not start
-   token resolution until R1.3 has measured whether the captured shapes contain every
-   structural fact the live OpenDesign schema requires.
+Remaining, in order:
+
+1. **Fix the two contract defects** the capture exposed (reactions payload shape;
+   the over-strict `complete:true` rule) from the captured evidence, with fixture
+   coverage for both. Do not touch the fork — its replies are correct and richer
+   than R1.1 assumed.
+2. **Obtain the two `image-export` replies** from an MCP client that exposes raw
+   tool replies, and decode the screenshots. The harness used in this session
+   materializes images, so the raw base64 envelope never reaches the client; it was
+   not reconstructed, because a synthetic envelope is not evidence.
+3. **Write `capture-manifest.json`** and prove `loadCaptureBundle` passes offline
+   with zero further MCP calls. That is the real R1.2 exit criterion.
+
+**R0 retrospective:** the source-agnostic emitter/validator transferred with zero
+functional changes, the pinned OpenDesign schema currently resolves 56 slots, and the
+compatibility fixture passes all 15 quality checks. The next riskiest assumption is
+capture integrity, so R1 starts with the evidence contract rather than live calls.
+
+**R1.1 retrospective:** the fork's public contracts are sufficient to freeze a
+fail-closed evidence envelope without importing its implementation. The remaining
+uncertainty is empirical payload sufficiency, so the next work is one private,
+single-pass SYD capture—not extractor heuristics.
+
+**R1.2 retrospective:** deriving payload validators from a dependency's prose docs
+was the wrong bet — two of nine roles were specified incorrectly and only live
+traffic revealed it. The deeper lesson is about *absence*: `get_styles` returned
+empty and `get_variables` returned `complete:true` with no SYD data, and both were
+honest, yet the file has a full token system in a remote library. **A complete
+document-wide read is not a token census.** Structural sufficiency is better than
+feared (bbox arithmetic + `TEXT.style` cover the A1 set) and auto-layout/effect
+values are genuinely absent, but they map to A2 slots the emitter can fall back on —
+so no fork change is required for MVP.
 
 **R0 retrospective:** the source-agnostic emitter/validator transferred with zero
 functional changes, the pinned OpenDesign schema currently resolves 56 slots, and the
@@ -251,44 +270,98 @@ clearly. See
 
 Document and execute this read-only sequence:
 
-- [ ] Preflight the fork's DEV plugin, local relay, built MCP server, and channel.
+- [x] Preflight the fork's DEV plugin, local relay, built MCP server, and channel.
       Never silently fall back to npm or the rate-limited official MCP.
-- [ ] Compare the connected runtime identity/capabilities with the pinned expectation
+      Shipped as `npm run check:r1:preflight`
+      ([`scripts/preflight-capture.ts`](scripts/preflight-capture.ts)), fail-closed.
+- [x] Compare the connected runtime identity/capabilities with the pinned expectation
       before the first document read; fail closed on a mismatch. Until the fork ships
       a handshake, verify commit, `dist` hash, plugin manifest/name, and tool inventory
-      explicitly.
-- [ ] Invoke the fork only through MCP tool calls. Do not import its TypeScript,
+      explicitly. **Pin advanced `956a6af` → `3546719`** (docs-only delta, all
+      executable hashes identical); fingerprint `6ec10c8a…`, 10/10 tools of 48.
+- [x] Invoke the fork only through MCP tool calls. Do not import its TypeScript,
       `code.js`, bundled server modules, or internal helper functions.
-- [ ] `get_pages({includeChildCount:true})` to establish honest document scope.
-- [ ] For selected pages, use `set_current_page` then bounded
+- [x] `get_pages({includeChildCount:true})` to establish honest document scope.
+      33 pages; SYD is `52:435`. (First attempt errored transiently at connect
+      time; the succeeding reply is the evidence.)
+- [x] For selected pages, use `set_current_page` then bounded
       `get_document_info`; preserve pagination/coverage fields.
-- [ ] Capture `get_variables` and require `supported:true`; inspect `complete`,
+- [x] Capture `get_variables` and require `supported:true`; inspect `complete`,
       `resolutionStatus`, mode collections, and alias resolution before drawing any
-      absence conclusion.
-- [ ] Capture `get_styles` for the document-wide paint/text/effect/grid inventory.
-- [ ] Capture `get_local_components` in summary mode, scoped to relevant pages;
+      absence conclusion. **`complete:true` but zero SYD collections — and it omits
+      a variable a node is demonstrably bound to. Not a token census.**
+- [x] Capture `get_styles` for the document-wide paint/text/effect/grid inventory.
+      **Entirely empty; SYD's styles are `remote: true` library styles.**
+- [x] Capture `get_local_components` in summary mode, scoped to relevant pages;
       preserve `complete`, skipped pages, families, and `authoringSessions` so a
-      pasted UI kit is not mistaken for authored product work.
-- [ ] Target representative desktop/mobile frames with `get_node_info` and
+      pasted UI kit is not mistaken for authored product work. 13 components, one
+      authoring session (`52`), 4 families — hand-authored.
+- [~] Target representative desktop/mobile frames with `get_node_info` and
       `get_node_variables`; export source images for later evidence and QA.
-- [ ] Capture `get_reactions` only for selected interactive roots, retaining its
+      Node + node-variables captured for `52:7799`/`52:8263`. **Image exports NOT
+      captured** — the operator harness decodes images, so the raw base64 reply is
+      unrecoverable; not fabricated. Needs a raw-reply MCP client.
+- [x] Capture `get_reactions` only for selected interactive roots, retaining its
       limitations instead of treating an empty result as proof of no behavior.
 - [ ] Save each reply once and prove the rest of R1 runs offline without another MCP
-      call.
-- [ ] Preserve the raw fork replies unchanged; normalize them into separate typed
+      call. **Blocked** on the two missing export artifacts and on the two contract
+      defects below.
+- [x] Preserve the raw fork replies unchanged; normalize them into separate typed
       artifacts so additive fork fields do not rewrite the evidence.
+
+**Defects found by the live capture — all fixed 2026-07-31** (see
+[`docs/research/r1-capture-note.md`](docs/research/r1-capture-note.md) §5):
+
+- [x] **Six of nine payload roles were specified wrongly.** `document`
+      (`children` is top-level), `variables` (variables nest under modes),
+      `styles` (four typed inventories + `counts{}`, not one list),
+      `components` (`nameFamilies`; coverage at top level), `node-variables`
+      (`rootNode`, `unresolvedBindings`), `reactions` (`nodes[]`,
+      `nodesCount`/`nodesWithReactions`, `coverage.limitation`). Only `pages` and
+      `node` were right. Every role is now shaped from an observed reply.
+- [x] The reactions argument check required a `nodeId` the tool does not take;
+      it now accepts a single-element `nodeIds[]` naming exactly the filed node.
+- [x] The blanket `complete:true` rule rejected node-variables replies that are
+      `complete:false` only because 3 of 888 style refs are `mixed`. An
+      incomplete read is now accepted when the fork quantifies the unresolved
+      subset and the manifest records the limitation; unquantified partials stay
+      fatal.
+- [x] A page index reporting `childCount: null` / `childCountStatus:
+      "not_requested"` is an explicit absence, not a malformed count.
+
+Verified: **all 13 captured SYD payloads validate**, the offline suite is at
+**29 checks** (was 25), typecheck and preflight green.
+
+**Upstream, logged in [`talk-to-figma-fork`](../talk-to-figma-fork/TASKS.md) R1 —
+neither blocks MVP:**
+
+- `get_node_variables` should return the resolved *value* beside the resolved
+  name for style references. The name→value join via `get_node_info` is lossy
+  because that read returns only 31 %/40 % of the scanned nodes, leaving
+  `atencao` (248 refs, the file's 2nd-most-used colour) unresolvable.
+- The already-planned compact export path (local path or resource reference
+  instead of base64) would make `export_node_as_image` capturable by an
+  image-materializing client.
 
 ### 1.3 Measure the remaining read gap
 
 The fork is now a credible extractor, but its current aggregate style payload and
 filtered node shape may still omit values needed for structural tokens.
 
-- [ ] Prove whether bounding boxes plus targeted text/node data are sufficient for
+- [x] Prove whether bounding boxes plus targeted text/node data are sufficient for
       the live schema's mandatory type ramp, section rhythm, container width, and
-      gutters.
-- [ ] Check whether exact text line-height/letter-spacing, effect values, auto-layout
+      gutters. **Yes for the A1 set.** Type ramp from `TEXT.style`
+      (`fontSize`/`fontWeight`/`letterSpacing`/`lineHeightPx`); container + gutters
+      from bbox arithmetic (1280 frame → 1168 container → 56px gutter; mobile 375 →
+      343 → 16px). Section rhythm is derivable only as bbox deltas between sibling
+      sections, never read directly — mark `derived`.
+- [x] Check whether exact text line-height/letter-spacing, effect values, auto-layout
       padding/gaps, image/vector assets, and breakpoint relationships survive the
-      captured shapes.
+      captured shapes. **Line-height/letter-spacing survive. `layoutMode`,
+      `itemSpacing`, `padding*`, `effects`, and `opacity` are absent from every one
+      of the 503 desktop nodes** — so `--space-*` and `--elev-*` (both A2) are
+      unevidenced and must be omitted, not guessed. Effect *names* survive via
+      `get_node_variables` (`Shadows/shadow-xs`); values do not.
 - [ ] If a required fact is absent, stop and write the smallest generic capability
       request against `talk-to-figma-fork`.
 - [ ] Implement the field/tool, its generic fixture, contract test, docs, and rebuilt
@@ -425,17 +498,28 @@ Keep coarse until R2 is complete:
 
 ## Open questions still to decide
 
-- [ ] **Structural-read sufficiency:** can current node bounding boxes support every
-      mandatory structural slot, or does the fork need additive auto-layout fields?
-- [ ] **Capture privacy:** which real fixtures may be committed, and which remain
-      local with only sanitized extracts checked in?
+- [x] **Structural-read sufficiency:** *Answered 2026-07-31.* Bounding boxes plus
+      `TEXT.style` cover every mandatory A1 structural slot. Auto-layout fields are
+      absent but map only to A2 slots (`--space-*`), so they are an optional
+      upstream enhancement, not an MVP blocker.
+- [x] **Capture privacy:** *Answered 2026-07-31.* The SYD source is a 33-page
+      multi-client portfolio file, and `get_variables` alone returns 15 other
+      clients' collections. Real captures stay `private-local` and gitignored; only
+      the research note is committed. No sanitized SYD fixture is planned.
+- [ ] **Library-backed tokens:** SYD's real tokens are `remote: true` library
+      styles/variables invisible to `get_styles`/`get_variables`. Should the
+      extractor resolve them from `get_node_variables` name+value evidence only, or
+      should the fork expose the remote library collections directly?
 - [ ] **Multi-axis modes:** require an explicit mapping file for every non-theme mode,
       or infer only the unambiguous responsive/brand cases?
 - [ ] **Astro reuse shape:** vendor a minimal template into this repo, or add a
       reproducible scaffold script sourced from the cloner baseline?
-- [ ] **Fork compatibility fingerprint:** what exact runtime fields can be verified at
-      `956a6af`, and when can this project require the fork's planned formal
-      `get_runtime_info`/capability handshake?
+- [x] **Fork compatibility fingerprint:** *Answered 2026-07-31.* Verifiable today:
+      git commit, `package.json` version, `dist/server.js` SHA-256, plugin
+      `manifest.json` identity + hash, plugin `code.js` hash, relay reachability,
+      and a canonical fingerprint over the 10 required tools' `inputSchema` — all
+      implemented in `scripts/preflight-capture.ts`. A formal `get_runtime_info`
+      handshake would replace the filesystem probes but is not required for MVP.
 - [ ] **Fork adapter policy:** support one strict runtime pin for MVP, or retain an
       adapter for the immediately previous pin after the first upgrade?
 

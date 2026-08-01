@@ -17,10 +17,17 @@ talk-to-figma-fork reply
 The runtime implementation is
 [`scripts/lib/capture-contract.ts`](../scripts/lib/capture-contract.ts). Fork
 payload guarantees are isolated in
-[`scripts/lib/fork-payload-contracts.ts`](../scripts/lib/fork-payload-contracts.ts).
-Those validators were derived only from the pinned fork's committed public
-`README.md` and `docs/READ-LAYER-PLAN.md`; this project does not import fork
-source or helpers.
+[`scripts/lib/fork-payload-contracts.ts`](../scripts/lib/fork-payload-contracts.ts);
+this project does not import fork source or helpers.
+
+> **Corrected 2026-07-31 from live evidence.** These validators were originally
+> derived from the fork's committed prose (`README.md`,
+> `docs/READ-LAYER-PLAN.md`), and the first live capture showed **six of nine
+> payload roles were specified wrongly** — `document`, `variables`, `styles`,
+> `components`, `node-variables`, and `reactions`. Only `pages` and `node` were
+> right (`image-export` is still untested). Prose is not a schema: every role is
+> now shaped from an observed reply, and
+> `docs/research/r1-capture-note.md` records what each one actually returns.
 
 ## Bundle layout
 
@@ -142,8 +149,14 @@ pages, and limitations rather than treating a missing value as a negative findin
 
 For the Importer MVP:
 
-- `get_variables` and `get_node_variables` must report both
-  `supported: true` and `complete: true`;
+- `get_variables` must report both `supported: true` and `complete: true`;
+- `get_node_variables` must report `supported: true`. It may report
+  `complete: false` **only** when it quantifies exactly what it could not
+  resolve (`unresolvedBindings` / `unresolvedStyles`, at least one non-zero) and
+  the manifest records the matching limitation. A read that resolves 885 of 888
+  style references is evidence, not a failure — discarding it because 3 are
+  `mixed` is the false negative this policy exists to prevent. Unquantified
+  partials remain fatal;
 - pages, document summary, styles, selected-page component summary, node-variable
   reads, and reactions must be complete for their declared scope;
 - `get_document_info` may contain a bounded child slice, but its pagination and
