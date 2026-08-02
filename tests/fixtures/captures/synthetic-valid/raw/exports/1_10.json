@@ -1,8 +1,5 @@
 {
-  "nodeId": "1:10",
-  "format": "SVG",
-  "mimeType": "image/svg+xml",
-  "encoding": "base64",
+  "type": "image",
   "data": "PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNDQwIiBoZWlnaHQ9IjkwMCI+PHJlY3Qgd2lkdGg9IjE0NDAiIGhlaWdodD0iOTAwIiBmaWxsPSIjMTIzNDU2Ii8+PC9zdmc+Cg==",
-  "limitations": []
+  "mimeType": "image/svg+xml"
 }

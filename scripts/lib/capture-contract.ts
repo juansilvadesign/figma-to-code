@@ -25,7 +25,7 @@ export const SLOT_OVERRIDES_SCHEMA_VERSION =
   "figma-to-code/slot-overrides/v1" as const;
 
 export const PINNED_FORK = {
-  commit: "35467196397fdcecb8bd26c3e2c8f331ec6db0ce",
+  commit: "5e0c869b0409f196de1b73c9f849736dfb114e48",
   packageVersion: "0.3.5",
   serverBundleSha256:
     "d8cf09aad16559b618884616aca3b927ca495c86a7048992d3ad1ab192a5422c",

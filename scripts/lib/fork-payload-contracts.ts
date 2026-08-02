@@ -473,6 +473,13 @@ function decodeBase64(value: string, path: string): Uint8Array {
   return decoded;
 }
 
+/**
+ * `export_node_as_image` answers with an MCP **image content block**, not a
+ * descriptive envelope: `{ type: "image", data: <base64>, mimeType }`. It
+ * carries no node id and no `encoding` field — base64 is implied by the block
+ * type — so the exported node is known only from the manifest's
+ * `toolCall.arguments.nodeId`.
+ */
 function validateImageExport(value: unknown): ValidatedForkPayload {
   const path = "export_node_as_image";
   if (typeof value === "string") {
@@ -484,18 +491,14 @@ function validateImageExport(value: unknown): ValidatedForkPayload {
     };
   }
   const payload = objectAt(value, path);
-  const nodeId = stringAt(payload.nodeId, `${path}.nodeId`);
-  stringAt(payload.format, `${path}.format`);
-  const mimeType = stringAt(payload.mimeType, `${path}.mimeType`);
-  const encoding = stringAt(payload.encoding, `${path}.encoding`);
-  if (encoding !== "base64") {
-    fail(`${path}.encoding`, 'expected "base64"');
+  if (payload.type !== "image") {
+    fail(`${path}.type`, 'expected "image"');
   }
+  const mimeType = stringAt(payload.mimeType, `${path}.mimeType`);
   const data = stringAt(payload.data, `${path}.data`);
   return {
     role: "image-export",
     value: payload,
-    nodeId,
     limitations: limitationsOf(payload, path),
     decodedImage: decodeBase64(data, `${path}.data`),
     imageMimeType: mimeType,

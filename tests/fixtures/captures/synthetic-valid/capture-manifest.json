@@ -46,13 +46,13 @@
     "captureMethod": "read-only-local-mcp",
     "operator": "synthetic-fixture-builder",
     "notes": [
-      "Payload shapes mirror public guarantees documented at fork commit 956a6af, unchanged through the pinned 3546719 (docs-only delta).",
+      "Payload shapes mirror public guarantees documented at fork commit 956a6af, unchanged through the pinned 5e0c869 (docs-only delta).",
       "Capability input-schema hashes are deterministic synthetic stand-ins, not live runtime evidence."
     ]
   },
   "runtime": {
     "provider": "talk-to-figma-fork",
-    "forkCommit": "35467196397fdcecb8bd26c3e2c8f331ec6db0ce",
+    "forkCommit": "5e0c869b0409f196de1b73c9f849736dfb114e48",
     "packageVersion": "0.3.5",
     "serverBundleSha256": "d8cf09aad16559b618884616aca3b927ca495c86a7048992d3ad1ab192a5422c",
     "connection": {
@@ -299,8 +299,8 @@
       "role": "image-export",
       "path": "raw/exports/1_10.json",
       "mediaType": "application/json",
-      "sha256": "518330d3d7b72bc582be18bad167ba3e8923b1e0ec3ae9a44986dcca0d15ec56",
-      "bytes": 296,
+      "sha256": "c93ed31f8f46a3fe949e86fa063285d95e14d418ca87f455d50ece8c1387e0bf",
+      "bytes": 231,
       "capturedAt": "2026-07-31T12:00:09.000Z",
       "nodeId": "1:10",
       "pageId": "1:1",
@@ -381,8 +381,8 @@
       "role": "image-export",
       "path": "raw/exports/1_20.json",
       "mediaType": "application/json",
-      "sha256": "f50bee0ba6ebcad23fd6b9051d7fe0662bdca87720585100b3507332150cce80",
-      "bytes": 292,
+      "sha256": "39b05825acb6f0a648141e1728ebd50a55c799d316e9f3dc3ba77f13dccf8d08",
+      "bytes": 227,
       "capturedAt": "2026-07-31T12:00:13.000Z",
       "nodeId": "1:20",
       "pageId": "1:1",

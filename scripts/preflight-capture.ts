@@ -19,7 +19,7 @@ import { spawn } from "node:child_process";
 import { readFile } from "node:fs/promises";
 import net from "node:net";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 import {
   type CapabilityRecord,
@@ -33,13 +33,13 @@ import type { JsonValue } from "./lib/fork-payload-contracts.js";
 
 const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = path.resolve(SCRIPT_DIR, "..");
-const DEFAULT_FORK_ROOT = path.resolve(PROJECT_ROOT, "..", "talk-to-figma-fork");
+export const DEFAULT_FORK_ROOT = path.resolve(PROJECT_ROOT, "..", "talk-to-figma-fork");
 const DEFAULT_RELAY_PORT = 3055;
 const TOOL_LIST_TIMEOUT_MS = 30_000;
 
 type CheckStatus = "pass" | "fail";
 
-type CheckResult = {
+export type CheckResult = {
   name: string;
   status: CheckStatus;
   expected?: string;
@@ -52,7 +52,7 @@ type McpTool = {
   inputSchema: JsonValue;
 };
 
-type PreflightReport = {
+export type PreflightReport = {
   forkRoot: string;
   relayPort: number;
   checks: CheckResult[];
@@ -262,7 +262,7 @@ async function listTools(serverPath: string): Promise<McpTool[]> {
   }
 }
 
-async function preflight(
+export async function preflight(
   forkRoot: string,
   relayPort: number,
 ): Promise<PreflightReport> {
@@ -427,4 +427,8 @@ async function main(): Promise<void> {
   if (!report.ok) process.exitCode = 1;
 }
 
-await main();
+// Only run the CLI when invoked directly; `preflight` is also imported by
+// scripts/capture-figma.ts, which parses its own arguments.
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  await main();
+}

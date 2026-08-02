@@ -217,7 +217,7 @@ async function main(): Promise<void> {
       manifest.runtime.forkCommit = "0".repeat(40);
       parseCaptureManifest(manifest);
     },
-    /runtime\.forkCommit.*3546719/s,
+    /runtime\.forkCommit.*5e0c869/s,
   );
 
   await expectFailure(
@@ -544,6 +544,47 @@ async function main(): Promise<void> {
         );
       }),
     /get_styles\.counts\.texts.*texts\.length/s,
+  );
+
+  // R1.1 specified this role as a descriptive envelope. The fork actually
+  // answers with an MCP image content block, so the block type is the only
+  // thing marking these bytes as an image at all.
+  await expectFailure(
+    "image export must be an MCP image content block",
+    () =>
+      withTempBundle(async (bundleRoot, manifest) => {
+        await rewriteJsonArtifact(
+          bundleRoot,
+          manifest,
+          "image-export-1-10",
+          (value) => {
+            value.type = "text";
+          },
+        );
+        await loadCaptureBundle(
+          path.join(bundleRoot, "capture-manifest.json"),
+        );
+      }),
+    /export_node_as_image\.type.*expected "image"/s,
+  );
+
+  await expectFailure(
+    "image export must carry a declared mime type",
+    () =>
+      withTempBundle(async (bundleRoot, manifest) => {
+        await rewriteJsonArtifact(
+          bundleRoot,
+          manifest,
+          "image-export-1-10",
+          (value) => {
+            delete value.mimeType;
+          },
+        );
+        await loadCaptureBundle(
+          path.join(bundleRoot, "capture-manifest.json"),
+        );
+      }),
+    /export_node_as_image\.mimeType/s,
   );
 
   await expectFailure(
