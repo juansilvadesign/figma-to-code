@@ -13,5 +13,13 @@ docs/research/*/normalized/
 
 # Legacy raw-response naming.
 docs/research/**/*.raw.json
+
+# Derived artifacts inherit their capture's commit policy. A tokens.source.json
+# extracted from a private-local capture still quotes that file's node ids,
+# internal style names, and measurements, so it is no more publishable than the
+# raw/ bundle it came from. `npm run extract` prints a reminder when the capture
+# it just read is private-local; add the brand here when it is.
+# (design-systems/psiativa/ is Juan's own and stays committed as the R0 fixture.)
+design-systems/syd/
 .env
 .env.*

@@ -4,18 +4,21 @@
   "private": true,
   "type": "module",
   "packageManager": "npm@11.16.0",
-  "description": "Figma file → portable OpenDesign design-system package. The Figma-source twin of ai-website-cloner-template.",
+  "description": "Figma file \u2192 portable OpenDesign design-system package. The Figma-source twin of ai-website-cloner-template.",
   "scripts": {
-    "extract": "tsx scripts/extract-figma-tokens.ts",
+    "extract": "node --import tsx scripts/extract-figma-tokens.ts",
     "emit": "tsx scripts/emit-design-system.ts",
     "validate": "tsx scripts/validate-design-system.ts",
     "typecheck:scripts": "tsc --ignoreConfig --noEmit --strict --skipLibCheck --module NodeNext --moduleResolution NodeNext --target ES2022 --types node scripts/*.ts scripts/lib/*.ts",
     "test:r0:failures": "tsx scripts/verify-r0-failures.ts",
     "test:capture-contract": "node --import tsx scripts/test-capture-contract.ts",
+    "test:extract": "node --import tsx scripts/test-extract-tokens.ts",
     "preflight:capture": "node --import tsx scripts/preflight-capture.ts",
     "check:r1:preflight": "npm run typecheck:scripts && npm run preflight:capture",
-    "check:r0": "npm run typecheck:scripts && npm run emit -- --brand psiativa --name PsiAtiva --category \"Health & Wellness\" --description \"Design system extracted from the PsiAtiva landing page — a warm, serif-forward teal + sage identity for a psychology-practice consultancy.\" && npm run validate -- --brand psiativa && npm run validate -- --brand psiativa --od-root ../../../skills/open-design && npm run test:r0:failures",
-    "check:r1:contract": "npm run typecheck:scripts && npm run test:capture-contract"
+    "check:r1:extract": "npm run typecheck:scripts && npm run test:extract",
+    "check:r0": "npm run typecheck:scripts && npm run emit -- --brand psiativa --name PsiAtiva --category \"Health & Wellness\" --description \"Design system extracted from the PsiAtiva landing page \u2014 a warm, serif-forward teal + sage identity for a psychology-practice consultancy.\" && npm run validate -- --brand psiativa && npm run validate -- --brand psiativa --od-root ../../../skills/open-design && npm run test:r0:failures",
+    "check:r1:contract": "npm run typecheck:scripts && npm run test:capture-contract",
+    "capture": "node --import tsx scripts/capture-figma.ts"
   },
   "devDependencies": {
     "@types/node": "^24.13.3",
