@@ -50,10 +50,14 @@ Hard rules:
   the validated package, builds cleanly, and has final 1440px/390px visual evidence.
 
 The package remains at `0.0.0`, but R0 is executable, R1.1's immutable capture
-contract is frozen with offline tests, and R1.2 has now run once against the live
-SYD file (preflight green, 7 of 9 roles captured). The Figma extractor remains an
-intentional throwing stub and no capture bundle validates yet, so neither the
-Importer MVP nor Astro page MVP has shipped.
+contract is frozen with offline tests, **R1.2 is complete** (a full nine-role
+capture of the SYD source file lives at `docs/research/syd/` and replays offline
+through `loadCaptureBundle` with zero MCP calls), and **R1.4 is complete**: the
+throwing stub is gone and `npm run extract` turns that capture into a
+26-of-26-A1 `tokens.source.json` deterministically and offline. Neither the
+Importer MVP nor the Astro page MVP has shipped — the package still has no
+`components.html`, `DESIGN.md`, or emitted CSS, so **R1.5 is the next executable
+step**.
 
 ## Planning frame
 
@@ -73,7 +77,7 @@ Importer MVP nor Astro page MVP has shipped.
 
 | Project | Relationship | Baseline inspected 2026-07-28 | Contract used here |
 | --- | --- | --- | --- |
-| [`talk-to-figma-fork`](../talk-to-figma-fork/) | **Independent runtime dependency** | `3546719` (was `956a6af`; docs-only advance verified 2026-07-31) | Read-only MCP tools: `get_pages`, bounded `get_document_info`, `set_current_page`, `get_variables`, `get_styles`, scoped/summary `get_local_components`, `get_node_info`, `get_node_variables`, `get_reactions`, and `export_node_as_image` |
+| [`talk-to-figma-fork`](../talk-to-figma-fork/) | **Independent runtime dependency** | `5e0c869` (was `956a6af` → `3546719`; both advances docs-only, executable hashes verified identical) | Read-only MCP tools: `get_pages`, bounded `get_document_info`, `set_current_page`, `get_variables`, `get_styles`, scoped/summary `get_local_components`, `get_node_info`, `get_node_variables`, `get_reactions`, and `export_node_as_image` |
 | [`ai-website-cloner-template`](../ai-website-cloner-template/) | **Vendored generic-code/workflow baseline** | `b7b4dda` (`0.4.0`) | Emitter/validator, Astro scaffold, design-system-first order, component specs, static-first rules, and 1440px/390px QA |
 | [`open-design`](../../skills/open-design/) | **Schema/validation dependency** | `3447f60a3` | Live token schema and guard/rendering contracts; code discovers the contract rather than encoding the observed 56/26 counts |
 
@@ -139,26 +143,40 @@ only the next release. Later releases stay coarse until the preceding checkpoint
   Evidence:
   [`docs/research/r1-capture-contract-note.md`](docs/research/r1-capture-contract-note.md).
 
-The remaining executable stub is `scripts/extract-figma-tokens.ts`.
+- [x] **R1.2 shipped — nine-role SYD capture (2026-08-02).** Replays offline
+  through `loadCaptureBundle` with zero MCP calls. Evidence:
+  [`docs/research/r1-capture-note.md`](docs/research/r1-capture-note.md).
+- [x] **R1.4 shipped — the offline extractor (2026-08-02).** 26/26 mandatory
+  slots from the SYD capture, deterministic, 17 offline checks. Evidence:
+  [`docs/research/r1-extractor-note.md`](docs/research/r1-extractor-note.md).
 
-## ▶ Next session — finish R1.2
+There are no throwing stubs left. `scripts/extract-figma-tokens.ts` is implemented.
 
-R1.2 ran on 2026-07-31 against the live SYD file. Preflight passed and 7 of 9
-payload roles are captured in `docs/research/syd/` (13 files, ~923 KB, gitignored).
-Full findings: [`docs/research/r1-capture-note.md`](docs/research/r1-capture-note.md).
+## ▶ Next session — R1.5, author and validate the rich package
 
-Remaining, in order:
+`design-systems/syd/source/tokens.source.json` exists and is evidence-backed, but
+nothing has been emitted from it yet: no `components.html`, no `DESIGN.md`, no
+`tokens.css`. `npm run emit -- --brand syd` has never been run.
 
-1. **Fix the two contract defects** the capture exposed (reactions payload shape;
-   the over-strict `complete:true` rule) from the captured evidence, with fixture
-   coverage for both. Do not touch the fork — its replies are correct and richer
-   than R1.1 assumed.
-2. **Obtain the two `image-export` replies** from an MCP client that exposes raw
-   tool replies, and decode the screenshots. The harness used in this session
-   materializes images, so the raw base64 envelope never reaches the client; it was
-   not reconstructed, because a synthetic envelope is not evidence.
-3. **Write `capture-manifest.json`** and prove `loadCaptureBundle` passes offline
-   with zero further MCP calls. That is the real R1.2 exit criterion.
+Start here, in order:
+
+1. **Adjudicate the two R1.4 findings** (§1.4). `--border` currently equals
+   `--bg`; decide whether that is what SYD means or whether it needs the first
+   entry in `docs/research/syd/slot-overrides.json`. Same for `--accent` /
+   `--fg`, where the name won over usage by design. **Do this before emitting** —
+   the override changes the artifact, and re-emitting is cheap now and expensive
+   after `components.html` exists.
+2. **Author `components.html`** from the real component families in
+   `extraction-report.json` plus targeted node reads. The guard needs ≥10
+   selectors, ≥8 `var(--…)` references, ≥4 component groups, and no token that
+   `tokens.css` does not declare.
+3. **Emit and validate** — `npm run emit -- --brand syd` then
+   `npm run validate -- --brand syd`. This is the first time the Figma path
+   exercises the emitter, so expect the artifact/emitter contract to be the
+   thing that breaks, not the extraction.
+4. **Then, and only then, open `SYD-Next`.** Extraction stayed independent of it
+   on purpose; it is a validation oracle, not an input. Treat semantic
+   differences as findings.
 
 **R0 retrospective:** the source-agnostic emitter/validator transferred with zero
 functional changes, the pinned OpenDesign schema currently resolves 56 slots, and the
@@ -179,16 +197,6 @@ document-wide read is not a token census.** Structural sufficiency is better tha
 feared (bbox arithmetic + `TEXT.style` cover the A1 set) and auto-layout/effect
 values are genuinely absent, but they map to A2 slots the emitter can fall back on —
 so no fork change is required for MVP.
-
-**R0 retrospective:** the source-agnostic emitter/validator transferred with zero
-functional changes, the pinned OpenDesign schema currently resolves 56 slots, and the
-compatibility fixture passes all 15 quality checks. The next riskiest assumption is
-capture integrity, so R1 starts with the evidence contract rather than live calls.
-
-**R1.1 retrospective:** the fork's public contracts are sufficient to freeze a
-fail-closed evidence envelope without importing its implementation. The remaining
-uncertainty is empirical payload sufficiency, so the next work is one private,
-single-pass SYD capture—not extractor heuristics.
 
 ---
 
@@ -296,29 +304,43 @@ Document and execute this read-only sequence:
       preserve `complete`, skipped pages, families, and `authoringSessions` so a
       pasted UI kit is not mistaken for authored product work. 13 components, one
       authoring session (`52`), 4 families — hand-authored.
-- [~] Target representative desktop/mobile frames with `get_node_info` and
+- [x] Target representative desktop/mobile frames with `get_node_info` and
       `get_node_variables`; export source images for later evidence and QA.
-      Node + node-variables captured for `52:7799`/`52:8263`. **Image exports NOT
-      captured** — the operator harness decodes images, so the raw base64 reply is
-      unrecoverable; not fabricated. Needs a raw-reply MCP client.
+      Paciente `1082:1875` (1280×9410) + `1155:5211` (375×11759), all four roles
+      each. Image exports needed a raw-reply client —
+      [`scripts/capture-figma.ts`](scripts/capture-figma.ts) is it: it spawns the
+      pinned `dist/server.js` and writes replies verbatim, so the base64 envelope
+      survives and the screenshot is decoded from, and checked against, it.
 - [x] Capture `get_reactions` only for selected interactive roots, retaining its
       limitations instead of treating an empty result as proof of no behavior.
-- [ ] Save each reply once and prove the rest of R1 runs offline without another MCP
-      call. **Blocked** on the two missing export artifacts and on the two contract
-      defects below.
+- [x] Save each reply once and prove the rest of R1 runs offline without another MCP
+      call. **`docs/research/syd/` — 14 artifacts, 9/9 roles, `loadCaptureBundle`
+      green offline.** The capture script self-verifies against the contract before
+      it exits, so a bundle that does not replay is never written.
 - [x] Preserve the raw fork replies unchanged; normalize them into separate typed
       artifacts so additive fork fields do not rewrite the evidence.
 
-**Defects found by the live capture — all fixed 2026-07-31** (see
-[`docs/research/r1-capture-note.md`](docs/research/r1-capture-note.md) §5):
+**R1.2 acceptance — passed 2026-08-02.** The authoritative capture is of the
+**`SYD (SaveYourDay) - Spaceapps`** source file (page `1068:5433`), not the
+`Landing Pages` portfolio file first read on 2026-07-31. The portfolio's SYD page
+is a *copy* whose tokens are remote refs; the source file holds them locally — 11
+paint styles with resolved values plus `Size` (1280/768/375) and `Typograph`
+(Lato) variable collections. That moves SYD from tier 3 (`derived`) to **tier 1+2
+(`high`)**. The copy's bundle is kept at `docs/research/syd-landing-pages-copy/`
+as the regression fixture for the remote-library finding.
 
-- [x] **Six of nine payload roles were specified wrongly.** `document`
+**Defects found by the live capture — all fixed** (see
+[`docs/research/r1-capture-note.md`](docs/research/r1-capture-note.md) §5, §6b):
+
+- [x] **Seven of nine payload roles were specified wrongly.** `document`
       (`children` is top-level), `variables` (variables nest under modes),
       `styles` (four typed inventories + `counts{}`, not one list),
       `components` (`nameFamilies`; coverage at top level), `node-variables`
       (`rootNode`, `unresolvedBindings`), `reactions` (`nodes[]`,
-      `nodesCount`/`nodesWithReactions`, `coverage.limitation`). Only `pages` and
-      `node` were right. Every role is now shaped from an observed reply.
+      `nodesCount`/`nodesWithReactions`, `coverage.limitation`), and
+      `image-export` (an MCP image content block `{type,data,mimeType}` — no
+      `nodeId`, no `encoding`). Only `pages` and `node` were right. Every role is
+      now shaped from an observed reply.
 - [x] The reactions argument check required a `nodeId` the tool does not take;
       it now accepts a single-element `nodeIds[]` naming exactly the filed node.
 - [x] The blanket `complete:true` rule rejected node-variables replies that are
@@ -329,19 +351,25 @@ Document and execute this read-only sequence:
 - [x] A page index reporting `childCount: null` / `childCountStatus:
       "not_requested"` is an explicit absence, not a malformed count.
 
-Verified: **all 13 captured SYD payloads validate**, the offline suite is at
-**29 checks** (was 25), typecheck and preflight green.
+Verified: **both SYD bundles' payloads validate**, the offline suite is at
+**31 checks** (was 25), typecheck, R0, and preflight green.
+
+**Pin advanced `3546719` → `5e0c869`** — one commit, our own `TASKS.md` edit
+auto-committed in the fork repo. `dist/server.js`, plugin `manifest.json`, and
+plugin `code.js` hashes verified byte-identical; fingerprint unchanged at
+`6ec10c8a…`. Preflight caught the drift and failed closed, as intended.
 
 **Upstream, logged in [`talk-to-figma-fork`](../talk-to-figma-fork/TASKS.md) R1 —
-neither blocks MVP:**
+neither blocks MVP, and both are now lower priority:**
 
 - `get_node_variables` should return the resolved *value* beside the resolved
-  name for style references. The name→value join via `get_node_info` is lossy
-  because that read returns only 31 %/40 % of the scanned nodes, leaving
-  `atencao` (248 refs, the file's 2nd-most-used colour) unresolvable.
+  name for style references. **No longer blocking for SYD:** on the source file
+  `get_styles` returns paint values inline and 93 % of style refs are local, so
+  `atencao` resolves at `high`. Still worth having for the 61 remote UI-kit refs
+  and for any file that is itself a copy.
 - The already-planned compact export path (local path or resource reference
-  instead of base64) would make `export_node_as_image` capturable by an
-  image-materializing client.
+  instead of base64). **No longer blocking at all** — `scripts/capture-figma.ts`
+  captures the base64 envelope directly. Now purely a payload-size nicety.
 
 ### 1.3 Measure the remaining read gap
 
@@ -362,8 +390,18 @@ filtered node shape may still omit values needed for structural tokens.
       of the 503 desktop nodes** — so `--space-*` and `--elev-*` (both A2) are
       unevidenced and must be omitted, not guessed. Effect *names* survive via
       `get_node_variables` (`Shadows/shadow-xs`); values do not.
-- [ ] If a required fact is absent, stop and write the smallest generic capability
-      request against `talk-to-figma-fork`.
+- [x] **Re-answered against the source file (2026-08-02).** Colors and fonts are
+      no longer measured: `get_styles` returns paint values inline (10 solid
+      styles) and `Typograph` declares `Lato` for `Heading`/`Body`/`Button`, so
+      the 6 identity colors and both A1 font slots are `high`, not `derived`. The
+      `Size` collection declares `width` 1280/768/375 per breakpoint mode, so the
+      responsive structural slots have a declared basis instead of a guess. Still
+      `derived`: the 11-slot type ramp (0 text styles in the file) and section
+      rhythm (bbox deltas). Still absent: effect *values* (`perfil` carries no
+      value) and auto-layout, both A2 — omit, do not guess.
+- [x] If a required fact is absent, stop and write the smallest generic capability
+      request against `talk-to-figma-fork`. Two logged, neither blocking; see
+      above.
 - [ ] Implement the field/tool, its generic fixture, contract test, docs, and rebuilt
       `dist/` **in the fork repository**—never as a private patch here.
 - [ ] Update this project's fork pin and payload adapter only after the fork change is
@@ -373,30 +411,79 @@ filtered node shape may still omit values needed for structural tokens.
 
 ### 1.4 Implement the pure offline extractor
 
-- [ ] Replace the stub with a pure transform:
+- [x] Replace the stub with a pure transform:
       `--capture docs/research/<slug>/capture-manifest.json` →
       `design-systems/<slug>/source/tokens.source.json`.
-- [ ] Normalize versioned raw MCP replies through an explicit fork-adapter boundary;
+      `scripts/extract-figma-tokens.ts`, `npm run extract`.
+- [x] Normalize versioned raw MCP replies through an explicit fork-adapter boundary;
       extraction logic consumes the normalized types, not fork implementation details.
-- [ ] Load OpenDesign's `TOKEN_SCHEMA` at runtime; derive mandatory/optional slots
-      from it and never encode the observed 56/26 counts.
-- [ ] Implement name resolution in explicit stages: exact map → normalized
+      `scripts/lib/figma-normalize.ts` is the only file that reads a raw payload.
+- [x] Load OpenDesign's `TOKEN_SCHEMA` at runtime; derive mandatory/optional slots
+      from it and never encode the observed 56/26 counts. The breakpoint set is read
+      off the schema's own slot names too — an unrecognized `--section-y-*` suffix is
+      a hard error, proven by a test that appends a fake `--section-y-ultrawide`.
+- [x] Implement name resolution in explicit stages: exact map → normalized
       prefix/suffix → regex role map → conservative heuristic → per-file override.
-- [ ] Implement mode mapping: light/dark → theme scopes; responsive modes →
+      `scripts/lib/token-resolution.ts`. **The role map is bilingual (en + pt-BR)** —
+      decided 2026-08-02, because the first real file names its palette `primaria`,
+      `texto`, `bg`, `card`, `erro`, `atencao` and an English-only table resolves
+      none of them. `secundaria` is deliberately NOT mapped to `--muted`: in a pt-BR
+      palette it is the second *brand* color, not muted body copy.
+- [x] Implement mode mapping: light/dark → theme scopes; responsive modes →
       responsive structural slots; brand modes → separate package outputs. Fail on
       ambiguous axes until an override resolves them.
-- [ ] Project semantic text styles/nodes onto the type ramp. Interpolation is
-      `derived` and cites both neighboring sources.
-- [ ] Derive mandatory rhythm/container slots from representative frames and cite
-      node IDs plus measurements.
-- [ ] Omit unsupported A2/B slots so the emitter owns fallbacks/aliases.
-- [ ] Fail before emission with every missing mandatory slot and every incomplete
+- [x] Project semantic text styles/nodes onto the type ramp. Interpolation is
+      `derived` and cites both neighboring sources. **Ramp evidence is filtered to
+      declared font families** — decided 2026-08-02. SYD's frames carry an Untitled
+      UI form kit (Inter), App Store badges (SF Pro / Product Sans) and a Genty
+      display numeral; unfiltered, `--text-4xl` would be 96px off three decorative
+      numerals instead of 50px off the real hero. Every exclusion is recorded as a
+      limitation. When the filter would empty the pool, it falls back to all text
+      and says so, rather than reporting 11 missing A1 slots.
+- [x] Derive mandatory rhythm/container slots from representative frames and cite
+      node IDs plus measurements. Breakpoints with no captured frame interpolate on
+      the *declared* widths and round to whole pixels.
+- [x] Omit unsupported A2/B slots so the emitter owns fallbacks/aliases — 28 omitted
+      on SYD, asserted by test.
+- [x] Fail before emission with every missing mandatory slot and every incomplete
       evidence dependency.
-- [ ] Make output deterministic: identical capture + overrides + schema commit
+- [x] Make output deterministic: identical capture + overrides + schema commit
       produces an identical source artifact apart from explicitly isolated run time.
-- [ ] Unit-test declared variables, alias resolution, style-only fallback,
+      The run clock is opt-in via `--stamp`; without it there is no time field at
+      all. Verified byte-identical on the real SYD capture across runs.
+- [x] Unit-test declared variables, alias resolution, style-only fallback,
       responsive modes, ambiguous brand modes, missing A1, overrides, and partial
-      capture rejection.
+      capture rejection. `npm run check:r1:extract` — 17 checks, offline, against
+      the real `TOKEN_SCHEMA`.
+
+**R1.4 acceptance — passed 2026-08-02.** `npm run extract -- --capture
+docs/research/syd/capture-manifest.json` resolves **26/26 mandatory slots** with
+zero MCP calls: 9 `high` (6 identity colors + `--danger`/`--warn` from declared
+paint styles, both fonts from the `Typograph` variable collection) and 19
+`derived` (the 11-slot ramp, section rhythm, container/gutters). Stages used:
+1 exact, 8 role-map, 19 heuristic, 0 override.
+
+**Two findings for R1.5 to adjudicate — not failures:**
+
+1. **`--border` measured as `#f8f8f8`, identical to `--bg`.** The most frequent
+   stroke in the file (48 nodes) is the page background color, so card edges are
+   not visually distinct. No declared style claims a border role. The extractor
+   records the collision instead of quietly picking a prettier runner-up
+   (`#95cf9a`, 21 nodes). This is the first genuine use case for
+   `slot-overrides.json`, which is still empty.
+2. **Name-vs-usage disagreement, resolved in favour of the name** (decided
+   2026-08-02). `--accent` = `primaria` `#95cf9a` (2 fill / 25 stroke uses) while
+   the unclaimed `secundaria` `#6460be` carries **757** uses; `--fg` = `texto`
+   `#000000` with **0** recorded uses while the unclaimed `texto-lp` `#141414`
+   carries 122 fills. Both disagreements are written into the token's own
+   `reason` and into `extraction-report.json`, so R1.5's comparison against
+   `SYD-Next` starts from the disagreement rather than discovering it.
+
+**R1.4 retrospective:** the load-bearing decisions were not algorithmic, they
+were about *what counts as evidence* — which language a role name may be written
+in, and whether a pasted third-party UI kit inside a frame is part of the design
+language. Both were settled by interview before any code, and both are recorded
+here because neither is recoverable from the code alone.
 
 ### 1.5 Author and validate the rich package
 
@@ -411,9 +498,10 @@ filtered node shape may still omit values needed for structural tokens.
 - [ ] Validate and record A1 coverage plus the `high`/`derived`/schema-fallback split.
 - [ ] Run the first live acceptance pass on **SYD**. Compare the Figma-derived
       package with the tokens and visual roles in the human-authored
-      `zokuWebDesign/SYD-Next` implementation. Keep the Next.js code out of extraction
-      so the comparison remains independent; use it only after emission as a
-      validation oracle. Treat semantic differences as findings, not automatic
+      `SYD-Next` implementation, checked out at
+      `workspace/spaceapps/projects/syd/website/`. Keep the Next.js code out of
+      extraction so the comparison remains independent; use it only after emission
+      as a validation oracle. Treat semantic differences as findings, not automatic
       failures.
 
 **R1 acceptance:** one clean capture made exclusively through the pinned independent
@@ -441,7 +529,8 @@ Detail this release after the R1 retrospective. Current boundary:
 - [ ] Capture the implementation at 1440px and 390px and create final side-by-side
       comparisons against the corresponding Figma exports.
 - [ ] For SYD, also compare the generated result with the existing human-authored
-      Next.js landing page at the same viewports. Figma is the visual-intent source;
+      Next.js landing page at `workspace/spaceapps/projects/syd/website/` at the
+      same viewports. Figma is the visual-intent source;
       `SYD-Next` is the implementation/behavior reference.
 - [ ] Re-run the design-system guard after the last page correction.
 

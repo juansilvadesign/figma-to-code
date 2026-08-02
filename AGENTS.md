@@ -6,11 +6,14 @@ A **design-system-first** Figma importer. Point it at a Figma file; it extracts 
 
 The Figma twin of [`../ai-website-cloner-template/`](../ai-website-cloner-template/). Both feed the **same** emitter through the **same** intermediate contract (`source/tokens.source.json`); only extraction differs.
 
-**Status:** R0 and R1.1 shipped 2026-07-31. Emit + validate and the immutable
-capture-contract loader are proven offline; live capture has not happened and
-extraction remains a throwing stub. Open [`TASKS.md`](TASKS.md) first for the live
-implementation state, then use [`docs/BUILD-PLAN.md`](docs/BUILD-PLAN.md) for the
-original rationale and contracts.
+**Status:** R0 + R1.1 shipped 2026-07-31; R1.2 (live capture) and R1.4 (the
+offline extractor) shipped 2026-08-02. Emit + validate, the immutable
+capture-contract loader, and Figma → `tokens.source.json` are all proven offline.
+Nothing has been *emitted* from a Figma capture yet — no `components.html`, no
+`tokens.css` — so the Importer MVP is not done; R1.5 is next. Open
+[`TASKS.md`](TASKS.md) first for the live implementation state, then use
+[`docs/BUILD-PLAN.md`](docs/BUILD-PLAN.md) for the original rationale and
+contracts.
 
 ## Non-negotiables
 
@@ -26,6 +29,8 @@ original rationale and contracts.
 ```bash
 npm run check:r0
 npm run check:r1:contract
+npm run check:r1:extract
+npm run extract -- --capture docs/research/<slug>/capture-manifest.json
 npm run emit -- --brand <slug> --name "<Name>" --category "<Category>"
 npm run validate -- --brand <slug>
 ```

@@ -12,9 +12,12 @@ Figma   ──▶ Figma MCP extraction  ───┘        the shared contract
 
 The cloner infers tokens from `getComputedStyle()` — lossy, requires clustering. Figma **declares** them as variables and styles. Same destination, better input, different extraction problem.
 
-> **Status: R0 + R1.1 shipped 2026-07-31.** Emit/validate and the immutable
-> capture-contract loader work from clean offline fixtures. No live Figma capture
-> or extractor exists yet, so the Importer MVP is not shipped. Follow
+> **Status: R0 + R1.1 shipped 2026-07-31; R1.2 + R1.4 shipped 2026-08-02.**
+> A real Figma file has been captured through the pinned fork and replays
+> offline, and `npm run extract` turns that capture into an evidence-backed
+> `tokens.source.json` — 26 of 26 mandatory OpenDesign slots, deterministically,
+> with zero MCP calls. Nothing has been *emitted* from it yet (no
+> `components.html`, no `tokens.css`), so the Importer MVP is not shipped. Follow
 > [`TASKS.md`](TASKS.md) for current work; use
 > [`docs/BUILD-PLAN.md`](docs/BUILD-PLAN.md) for the original rationale.
 
@@ -31,6 +34,7 @@ nvm use
 npm ci
 npm run check:r0
 npm run check:r1:contract
+npm run check:r1:extract
 ```
 
 `scripts/extract-figma-tokens.ts` still throws intentionally. Its capture contract

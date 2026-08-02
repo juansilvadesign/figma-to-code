@@ -1,12 +1,36 @@
-# R1.2 — first live capture (SYD), 2026-07-31
+# R1.2 — live capture (SYD), 2026-07-31 / 2026-08-02
 
-Status: **partial.** Preflight passed, seven of nine payload roles were captured
-into a private-local bundle, and the capture falsified three R1.1 assumptions.
-The bundle does **not** validate yet: two artifact roles could not be captured
-honestly, and two contract defects must be fixed first.
+Status: **complete.** `docs/research/syd/` holds all nine payload roles across 14
+artifacts and `loadCaptureBundle` accepts it offline with zero further MCP calls
+— the R1.2 exit criterion. Seven of nine roles had been specified wrongly by
+R1.1; all are now shaped from observed replies.
 
-No value in this note was guessed. Everything below is read from
-`docs/research/syd/raw/**` (gitignored, 13 files, ~923 KB, all valid JSON).
+No value in this note was guessed. Everything is read from captured bundles
+(gitignored, private-local).
+
+## 0. Two captures, and why the second one is authoritative
+
+The first capture (2026-07-31) read SYD from **`Landing Pages`** — a 33-page
+agency portfolio file where SYD is page `52:435`. That file's SYD page is a
+**copy**: its tokens are `remote: true` references, so every document-local read
+came back empty and SYD looked tier-3 "no design system".
+
+The second capture (2026-08-02) reads the **`SYD (SaveYourDay) - Spaceapps`**
+source file, page `3-LP` (`1068:5433`). That file *is* the library the copy was
+pointing at. The Paciente frames are byte-for-byte the same design — identical
+dimensions, 1280 × 9410 and 375 × 11759 — and the operator confirmed both files
+carry the same landing pages.
+
+| | `Landing Pages` (copy) | `SYD (SaveYourDay)` (source) |
+| --- | --- | --- |
+| Bundle | `docs/research/syd-landing-pages-copy/` | **`docs/research/syd/`** |
+| Local paint styles | **0** | **11**, with resolved values |
+| Local variables | 15 collections, none SYD's | **`Size`** (Laptop/Tablet/Mobile) + **`Typograph`** |
+| Extraction tier | 3 — measure everything, `derived` | **1 + 2 — `high`** |
+| Roles captured | 7 of 9 (no exports) | **9 of 9** |
+
+The first bundle is kept: it is the evidence for §3's remote-library finding,
+which is the more generalizable result. The second is the extraction input.
 
 ## 1. Preflight — passed, and the pin moved
 
@@ -215,20 +239,43 @@ families (`Timeline Item` ×8, `Accordion Item` ×2, `Profissional` ×2, `card` 
 Note for R1.5: the guard wants **≥4 component groups** and this file yields exactly
 4 — no margin.
 
-### Not captured, and deliberately not faked
+### The export blocker, and how it was removed
 
-`image-export` and `screenshot` are **missing for both frames.** The operator
-harness used for this session materializes images: `export_node_as_image` returned
-a rendered PNG and a decoded `.svg` blob, never the raw base64 reply. The contract
-requires the raw envelope *and* a screenshot whose bytes equal that envelope
-decoded. Re-encoding the decoded bytes into a synthetic envelope would assert an
-unverifiable claim about the original reply, violating AGENTS.md #3 ("never invent
-a token value" / no invented evidence) and § Immutable raw evidence — so it was
-not done.
+On the first pass `image-export` and `screenshot` were **missing for both
+frames**, because the operator harness materializes images: `export_node_as_image`
+returned a rendered PNG, never the raw base64 reply. Re-encoding decoded bytes
+into a synthetic envelope would assert an unverifiable claim about the original
+reply, so it was not done.
 
-**This is a capture-pipeline finding, not a fork limitation:** R1.2 must be run
-from an MCP client that exposes raw tool replies, or the export step must be
-performed separately and the bytes handed to the bundle.
+That was a **capture-pipeline finding, not a fork limitation** — and it is now
+resolved. [`scripts/capture-figma.ts`](../../scripts/capture-figma.ts) is the
+raw-reply client: it spawns the pinned fork's own `dist/server.js`, speaks MCP
+over stdio, and writes each reply verbatim. Nothing renders the image on the way
+past, so the base64 envelope survives to disk and the screenshot is decoded from
+the stored bytes and checked against them. The fork needed no change.
+
+## 6b. The second capture — all nine roles
+
+`docs/research/syd/`, 14 artifacts, `bundle ok — 12 payloads, 2 screenshots`:
+
+| Role | Artifact | Coverage as declared by the fork |
+| --- | --- | --- |
+| pages | `pages.json` | `childCountIncluded: true`, 6 pages |
+| document | `document.json` | page `1068:5433`, 16/16 children, not truncated |
+| variables | `variables.json` | `supported: true`, `complete: true`, **2 collections, 5 variables** |
+| styles | `styles.json` | **11 colors + 1 effect**, all local, values resolved |
+| components | `components.json` | scoped, `complete: true` |
+| node | `nodes/1082_1875.json`, `nodes/1155_5211.json` | 142 KB / 128 KB |
+| node-variables | `node-variables/1082_1875.json`, `1155_5211.json` | `complete: false`, quantified: 0 unresolved bindings, 3 unresolved styles (§5B) |
+| **image-export** | `exports/1082_1875.json`, `1155_5211.json` | image content blocks, 4.29 MB / 1.73 MB base64 |
+| **screenshot** | `screenshots/1082_1875.png`, `1155_5211.png` | **1280 × 9410** and **375 × 11759**, decoded and byte-matched |
+| reactions | `reactions/1082_1875.json` | `complete: true`, limitation preserved |
+
+**A seventh wrongly-specified role.** R1.1 assumed `export_node_as_image` returns
+`{nodeId, format, mimeType, encoding, data}`. It actually returns an **MCP image
+content block** — `{type: "image", data, mimeType}` — with no node id and no
+`encoding` field. The exported node is knowable only from the manifest's
+`toolCall.arguments.nodeId`. Fixed, with two negative tests.
 
 ## 7. Style names resolve to values — with one hole
 
@@ -276,14 +323,54 @@ follow-ups (A2 slots only): auto-layout fields and `effects` on `get_node_info`.
 Nothing needs re-capturing for this — when it ships, only the two
 `node-variables` replies need re-reading.
 
+### 7b. On the source file the join is not needed
+
+`get_styles` on the source file returns the **paint value inline**, so the whole
+name→value join is bypassed for local styles:
+
+| Slot | Style | Value | Confidence |
+| --- | --- | --- | --- |
+| `--bg` | `bg` | `#F8F8F8` | `high` |
+| `--surface` | `card` | `#ECECEC` | `high` |
+| `--fg` | `texto-lp` | `#141414` | `high` |
+| `--accent` | `secundaria` (482 refs) | `#6460BE` | `high` |
+| — | `primaria` | `#95CF9A` | `high` |
+| — | `apoio` | `#72AD77` | `high` |
+| — | **`atencao`** (248 refs) | **`#F9B800`** | `high` |
+| `--danger` | `erro` | `#D92D20` | `high` |
+| — | `texto` | `#000000` | `high` |
+| — | `placeholder` | `#000000` @ 0.5 | `high` |
+
+The first four **independently reproduce** the values the lossy join recovered
+from the copy — and `atencao`, the style the join could *not* resolve on either
+frame, resolves here at `high`. **841 of 902 desktop style references (93 %) are
+local**; the remaining 61 are a third-party UI kit (`Gray/*`, `Brand/600`,
+`Base/White`, `Shadows/shadow-xs`, `Text sm/*`, `Avatar user square/*`) and still
+need the join or an override.
+
+Also newly `high` instead of derived:
+
+- **`--font-display` / `--font-body` = `Lato`** — declared in the `Typograph`
+  collection (`Heading`, `Body`, `Button`, all Lato).
+- **Breakpoints** — the `Size` collection declares `width` **1280 / 768 / 375**
+  with a matching `breakpoint` string per mode, feeding the responsive
+  `--section-y-*` and `--container-gutter-*` slots directly instead of by
+  inference. This is the `Desktop/Tablet/Phone` mode axis EXTRACTION-GUIDE
+  Phase 2 anticipated.
+
+Still unevidenced and correctly omitted: the `perfil` effect style carries only
+`id`/`name`/`key` with **no value**, so `--elev-*` (A2) stays absent; there are
+**0 text styles**, so the 11-slot type ramp still comes from `TEXT.style` on
+nodes and stays `derived`.
+
 ## 8. Next
 
-1. Obtain the two `image-export` replies through a raw-reply client and decode the
-   screenshots.
-2. Then write `capture-manifest.json` and prove `loadCaptureBundle` passes offline
-   with zero further MCP calls — the real R1.2 exit criterion.
-3. R1.4 must resolve tokens from **`get_node_variables` + node measurement**, and
-   must not treat a `complete: true` `get_variables` reply as proof that a file has
-   no tokens (§3).
-4. Clone `zokuWebDesign/SYD-Next` before R1.5 — it is not checked out locally, and
-   it is the comparison oracle for the emitted package.
+1. **R1.4** — implement the offline extractor against `docs/research/syd/`.
+   Resolve colors and fonts from `get_styles` + `get_variables` (`high`), the type
+   ramp from `TEXT.style` (`derived`), and rhythm/container from bbox arithmetic
+   cross-checked against the declared `Size` widths.
+2. It must not treat a `complete: true` `get_variables` reply as proof that a file
+   has no tokens (§3) — the copy bundle is the regression fixture for that.
+3. **R1.5** — the comparison oracle is checked out at
+   `workspace/spaceapps/projects/syd/website/` (`SYD-Next`). Keep it out of
+   extraction; use it only after emission.
