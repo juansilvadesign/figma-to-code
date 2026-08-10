@@ -1,0 +1,51 @@
+/**
+ * Vendored from juansilvadesign/ai-website-cloner-template
+ * @ b7b4dda5ffc9cfa279f9269b567c073f22a25860 on 2026-08-10.
+ * Functional delta from that commit: none at the default brand. The first
+ * @import below is the brand seam; `--build astro --brand <slug>` retargets it.
+ */
+
+@import "../../design-systems/psiativa/tokens.css";
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  min-width: 320px;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  line-height: var(--leading-body);
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  background: var(--bg);
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+a {
+  color: inherit;
+}
+
+:focus-visible {
+  border-radius: var(--radius-sm);
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--accent-on);
+}

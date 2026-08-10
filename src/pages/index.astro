@@ -1,0 +1,117 @@
+---
+// Authored for this repository. Modeled on the structure of
+// juansilvadesign/ai-website-cloner-template@b7b4dda5ffc9cfa279f9269b567c073f22a25860
+// `src/pages/index.astro`, but not vendored from it: that file and its
+// ClonePlaceholder component carry the cloner's own product copy, which R2 bars.
+//
+// This is the R2 foundation proof, not a page. It exists so the Astro seam can
+// typecheck and build against a validated OpenDesign package before any Figma
+// page topology is frozen. R2 replaces its body with real sections.
+import "../styles/global.css";
+
+const brand = "psiativa";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta
+      name="description"
+      content="Astro foundation for the Figma-to-code importer, consuming an emitted OpenDesign token package."
+    />
+    <meta name="generator" content={Astro.generator} />
+    <title>Figma → Code · Astro foundation</title>
+  </head>
+  <body>
+    <main class="shell">
+      <section class="shell__card" aria-labelledby="shell-title">
+        <p class="shell__eyebrow">Foundation</p>
+        <h1 id="shell-title">The Astro seam is green.</h1>
+        <p class="shell__copy">
+          This shell renders from <code>design-systems/{brand}/tokens.css</code>
+          and declares no brand values of its own. Every rule below resolves
+          through a design-system variable, so a failure here is a token
+          failure, not a styling one.
+        </p>
+        <p class="shell__note">
+          Page sections land only after a Figma package passes validation.
+        </p>
+      </section>
+    </main>
+  </body>
+</html>
+
+<style>
+  .shell {
+    display: grid;
+    min-height: 100vh;
+    place-items: center;
+    padding: var(--section-y-phone) var(--container-gutter-phone);
+  }
+
+  .shell__card {
+    width: min(100%, var(--container-max));
+    padding: clamp(var(--space-6), 6vw, var(--space-12));
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    box-shadow: var(--elev-raised);
+  }
+
+  .shell__eyebrow {
+    margin: 0 0 var(--space-3);
+    color: var(--meta);
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    max-width: 16ch;
+    margin: 0;
+    color: var(--fg-2);
+    font-family: var(--font-display);
+    font-size: clamp(var(--text-3xl), 7vw, var(--text-4xl));
+    font-weight: 500;
+    letter-spacing: var(--tracking-display);
+    line-height: var(--leading-tight);
+  }
+
+  .shell__copy {
+    max-width: 58ch;
+    margin: var(--space-6) 0 var(--space-4);
+    color: var(--muted);
+    font-size: var(--text-base);
+  }
+
+  .shell__note {
+    margin: 0;
+    color: var(--meta);
+    font-size: var(--text-sm);
+  }
+
+  code {
+    padding: 0 var(--space-1);
+    border-radius: var(--radius-sm);
+    background: var(--bg);
+    color: var(--accent);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+  }
+
+  @media (min-width: 768px) {
+    .shell {
+      padding: var(--section-y-tablet) var(--container-gutter-tablet);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .shell {
+      padding: var(--section-y-desktop) var(--container-gutter-desktop);
+    }
+  }
+</style>
