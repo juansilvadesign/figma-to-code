@@ -42,22 +42,19 @@ Hard rules:
 
 ## Two levels of done — do not conflate them
 
-- **Importer MVP — the original goal, NOT shipped.** With an authorized Figma file
-  open in the local plugin, capture its evidence once, replay it offline, and emit a
-  guard-green OpenDesign package at `design-systems/<slug>/`.
+- **Importer MVP — the original goal, SHIPPED 2026-08-10.** An authorized Figma
+  file was captured once through the local plugin, replayed offline, and emitted as
+  a guard-green OpenDesign package at `design-systems/syd/`.
 - **Astro page MVP — the expanded goal, NOT shipped.** Select a desktop/mobile frame
   family from that same capture and produce a static-first Astro page that consumes
   the validated package, builds cleanly, and has final 1440px/390px visual evidence.
 
-The package remains at `0.0.0`, but R0 is executable, R1.1's immutable capture
-contract is frozen with offline tests, **R1.2 is complete** (a full nine-role
-capture of the SYD source file lives at `docs/research/syd/` and replays offline
-through `loadCaptureBundle` with zero MCP calls), and **R1.4 is complete**: the
-throwing stub is gone and `npm run extract` turns that capture into a
-26-of-26-A1 `tokens.source.json` deterministically and offline. Neither the
-Importer MVP nor the Astro page MVP has shipped — the package still has no
-`components.html`, `DESIGN.md`, or emitted CSS, so **R1.5 is the next executable
-step**.
+The package remains at `0.0.0` because generalization is still ahead, but **R1 is
+complete**. The immutable SYD capture replays offline, extraction resolves 26/26
+A1 slots deterministically, and R1.5 emits the first Figma-derived rich package:
+56 schema slots, 65 component selectors, seven detected groups, zero undeclared
+token references, and OpenDesign package quality 100. The Importer MVP has shipped;
+the Astro page MVP has not.
 
 ## Planning frame
 
@@ -149,34 +146,34 @@ only the next release. Later releases stay coarse until the preceding checkpoint
 - [x] **R1.4 shipped — the offline extractor (2026-08-02).** 26/26 mandatory
   slots from the SYD capture, deterministic, 17 offline checks. Evidence:
   [`docs/research/r1-extractor-note.md`](docs/research/r1-extractor-note.md).
+- [x] **R1.5 / R1 shipped — first Figma rich package (2026-08-10).** Three
+  evidence-backed role overrides, 56 emitted slots, a seven-group component
+  fixture, complete provenance ledger, and OpenDesign quality 100. Evidence:
+  [`docs/research/r1-package-note.md`](docs/research/r1-package-note.md).
 
 There are no throwing stubs left. `scripts/extract-figma-tokens.ts` is implemented.
 
-## ▶ Next session — R1.5, author and validate the rich package
+## ▶ Next session — R2.1, freeze the Astro build seam
 
-`design-systems/syd/source/tokens.source.json` exists and is evidence-backed, but
-nothing has been emitted from it yet: no `components.html`, no `DESIGN.md`, no
-`tokens.css`. `npm run emit -- --brand syd` has never been run.
+R1 is closed. Do not recapture or revisit token heuristics unless R2 exposes an
+actual evidence failure. Start the page MVP by retiring its next riskiest
+assumption: that the cloner's generic Astro foundation can consume this private,
+validated Figma package without importing brand-specific code.
 
 Start here, in order:
 
-1. **Adjudicate the two R1.4 findings** (§1.4). `--border` currently equals
-   `--bg`; decide whether that is what SYD means or whether it needs the first
-   entry in `docs/research/syd/slot-overrides.json`. Same for `--accent` /
-   `--fg`, where the name won over usage by design. **Do this before emitting** —
-   the override changes the artifact, and re-emitting is cheap now and expensive
-   after `components.html` exists.
-2. **Author `components.html`** from the real component families in
-   `extraction-report.json` plus targeted node reads. The guard needs ≥10
-   selectors, ≥8 `var(--…)` references, ≥4 component groups, and no token that
-   `tokens.css` does not declare.
-3. **Emit and validate** — `npm run emit -- --brand syd` then
-   `npm run validate -- --brand syd`. This is the first time the Figma path
-   exercises the emitter, so expect the artifact/emitter contract to be the
-   thing that breaks, not the extraction.
-4. **Then, and only then, open `SYD-Next`.** Extraction stayed independent of it
-   on purpose; it is a validation oracle, not an input. Treat semantic
-   differences as findings.
+1. **Decide the Astro reuse shape** (§ Open questions). Inspect the cloner's pinned
+   `b7b4dda` generic scaffold/workflow and choose the smallest provenance-recorded
+   vendor or reproducible-scaffold seam. Do not copy its working tree or page code.
+2. **Add `--build none|astro`, default `none`.** An Astro build must fail closed
+   unless `design-systems/<slug>/` has just passed validation; importer-only runs
+   retain today's behavior.
+3. **Freeze SYD page topology from the cached frames.** Record one section spec per
+   desktop/mobile pair, verbatim copy/assets, responsive relationships, and known
+   behavior gaps before writing `.astro` components.
+4. **Prove the foundation first.** Make the empty/static shell typecheck and build
+   while consuming the emitted `tokens.css`; assemble page sections only after
+   that seam is green.
 
 **R0 retrospective:** the source-agnostic emitter/validator transferred with zero
 functional changes, the pinned OpenDesign schema currently resolves 56 slots, and the
@@ -197,6 +194,16 @@ document-wide read is not a token census.** Structural sufficiency is better tha
 feared (bbox arithmetic + `TEXT.style` cover the A1 set) and auto-layout/effect
 values are genuinely absent, but they map to A2 slots the emitter can fall back on —
 so no fork change is required for MVP.
+
+**R1 retrospective:** payload sufficiency was not the last hard problem; semantic
+role assignment was. SYD's palette names disagree with the landing-page roles, so
+three explicit, evidence-backed overrides were safer than either blind name trust
+or raw frequency. OpenDesign also compresses a white canvas plus two greens into
+fewer semantic slots; the honest result records the unused evidence instead of
+mislabeling it. `SYD-Next` confirmed the core violet/ink/green decisions but also
+diverged in component metrics, topology, and behavior, validating its role as an
+oracle rather than an input. The next risk is the package → static Astro seam, not
+more Figma reads.
 
 ---
 
@@ -463,21 +470,22 @@ paint styles, both fonts from the `Typograph` variable collection) and 19
 `derived` (the 11-slot ramp, section rhythm, container/gutters). Stages used:
 1 exact, 8 role-map, 19 heuristic, 0 override.
 
-**Two findings for R1.5 to adjudicate — not failures:**
+**Two findings adjudicated in R1.5 — closed 2026-08-10:**
 
 1. **`--border` measured as `#f8f8f8`, identical to `--bg`.** The most frequent
    stroke in the file (48 nodes) is the page background color, so card edges are
    not visually distinct. No declared style claims a border role. The extractor
    records the collision instead of quietly picking a prettier runner-up
-   (`#95cf9a`, 21 nodes). This is the first genuine use case for
-   `slot-overrides.json`, which is still empty.
-2. **Name-vs-usage disagreement, resolved in favour of the name** (decided
-   2026-08-02). `--accent` = `primaria` `#95cf9a` (2 fill / 25 stroke uses) while
+   (`#95cf9a`, 21 nodes). R1.5 overrides `--border` to that visible green and
+   preserves the displaced heuristic in the report.
+2. **Name-vs-usage disagreement, originally resolved in favour of the name**
+   (2026-08-02). `--accent` = `primaria` `#95cf9a` (2 fill / 25 stroke uses) while
    the unclaimed `secundaria` `#6460be` carries **757** uses; `--fg` = `texto`
    `#000000` with **0** recorded uses while the unclaimed `texto-lp` `#141414`
    carries 122 fills. Both disagreements are written into the token's own
-   `reason` and into `extraction-report.json`, so R1.5's comparison against
-   `SYD-Next` starts from the disagreement rather than discovering it.
+   `reason` and into `extraction-report.json`. R1.5's human adjudication selects
+   `secundaria` for `--accent` and `texto-lp` for `--fg`; `SYD-Next` independently
+   confirms both roles.
 
 **R1.4 retrospective:** the load-bearing decisions were not algorithmic, they
 were about *what counts as evidence* — which language a role name may be written
@@ -487,16 +495,16 @@ here because neither is recoverable from the code alone.
 
 ### 1.5 Author and validate the rich package
 
-- [ ] Adapt the cloner's proven package-authoring workflow for Figma evidence:
+- [x] Adapt the cloner's proven package-authoring workflow for Figma evidence:
       `DESIGN.md`, `USAGE.md`, `components.html`,
       `preview/{colors,typography,spacing}.html`, and `source/evidence.md`.
-- [ ] Build `components.html` from real component families and targeted nodes, not
+- [x] Build `components.html` from real component families and targeted nodes, not
       from the raw component total or invented controls.
-- [ ] Record per-token source, confidence, transformations, capture hashes, and any
+- [x] Record per-token source, confidence, transformations, capture hashes, and any
       override in `source/evidence.md`.
-- [ ] Emit all derived files; never hand-edit a derived cache.
-- [ ] Validate and record A1 coverage plus the `high`/`derived`/schema-fallback split.
-- [ ] Run the first live acceptance pass on **SYD**. Compare the Figma-derived
+- [x] Emit all derived files; never hand-edit a derived cache.
+- [x] Validate and record A1 coverage plus the `high`/`derived`/schema-fallback split.
+- [x] Run the first live acceptance pass on **SYD**. Compare the Figma-derived
       package with the tokens and visual roles in the human-authored
       `SYD-Next` implementation, checked out at
       `workspace/spaceapps/projects/syd/website/`. Keep the Next.js code out of
@@ -504,16 +512,18 @@ here because neither is recoverable from the code alone.
       as a validation oracle. Treat semantic differences as findings, not automatic
       failures.
 
-**R1 acceptance:** one clean capture made exclusively through the pinned independent
-fork interface replays offline into a complete, guard-green OpenDesign package. Every
-authored value traces to a variable, style, node, measurement, or explicit override;
-no fork source is copied into this repository.
+**R1 acceptance — passed 2026-08-10:** one clean capture made exclusively through
+the pinned independent fork interface replays offline into a complete, guard-green
+OpenDesign package. Every authored value traces to a variable, style, node,
+measurement, or explicit override; no fork source is copied into this repository.
+See [`docs/research/r1-package-note.md`](docs/research/r1-package-note.md).
 
 ---
 
 ## Release R2 — Astro page MVP
 
-Detail this release after the R1 retrospective. Current boundary:
+R1's retrospective is complete. Execute in this order; defer fidelity extras that
+do not retire the package → Astro → visual-evidence path:
 
 - [ ] Add `--build none|astro`; default to `none` until importer acceptance is stable.
 - [ ] Reuse only the cloner's committed generic Astro foundation and workflow—never
@@ -560,29 +570,29 @@ Keep coarse until R2 is complete:
 
 ## Cross-cutting checklist
 
-- [ ] **Read-only Figma operation.** This pipeline never calls setters, creators,
+- [x] **Read-only Figma operation.** This pipeline never calls setters, creators,
       delete tools, or write-oriented prompts.
-- [ ] **Independent tool boundary.** The fork is invoked only through its MCP
+- [x] **Independent tool boundary.** The fork is invoked only through its MCP
       interface; no fork source/plugin helpers are imported or copied here.
-- [ ] **Consumer-owned adaptation.** Raw replies remain immutable and versioned;
+- [x] **Consumer-owned adaptation.** Raw replies remain immutable and versioned;
       fork-specific normalization is isolated from token resolution/emission.
-- [ ] **Generic gaps land upstream in the fork.** This repository never carries a
+- [x] **Generic gaps land upstream in the fork.** This repository never carries a
       private Figma-tool implementation.
-- [ ] **No invented evidence.** Missing is an error or schema fallback, never a
+- [x] **No invented evidence.** Missing is an error or schema fallback, never a
       plausible-looking value.
-- [ ] **No false negatives from partial reads.** Preserve `supported`, `complete`,
+- [x] **No false negatives from partial reads.** Preserve `supported`, `complete`,
       pagination, limitations, skipped pages, and unresolved-status fields.
-- [ ] **Dynamic contract.** OpenDesign owns slot names, layers, fallbacks, aliases,
+- [x] **Dynamic contract.** OpenDesign owns slot names, layers, fallbacks, aliases,
       renderers, and validation.
-- [ ] **Immutable raw evidence.** Normalize into new files; never silently rewrite
+- [x] **Immutable raw evidence.** Normalize into new files; never silently rewrite
       the capture that justified an output.
-- [ ] **Pinned sibling reuse.** Every vendored file or workflow cites the source
+- [x] **Pinned sibling reuse.** Every vendored file or workflow cites the source
       commit and has a parity check.
 - [ ] **One token source in code.** Astro consumes the emitted `tokens.css`; page
       styles do not recreate brand values.
-- [ ] **Authorization and privacy.** Capture only files the operator may use; do not
+- [x] **Authorization and privacy.** Capture only files the operator may use; do not
       commit private client copy/assets by default.
-- [ ] **Fresh acceptance.** Re-run the guard/build after the last relevant edit;
+- [x] **Fresh acceptance.** Re-run the guard/build after the last relevant edit;
       stale output is not evidence.
 
 ## Open questions still to decide
@@ -591,14 +601,15 @@ Keep coarse until R2 is complete:
       `TEXT.style` cover every mandatory A1 structural slot. Auto-layout fields are
       absent but map only to A2 slots (`--space-*`), so they are an optional
       upstream enhancement, not an MVP blocker.
-- [x] **Capture privacy:** *Answered 2026-07-31.* The SYD source is a 33-page
-      multi-client portfolio file, and `get_variables` alone returns 15 other
-      clients' collections. Real captures stay `private-local` and gitignored; only
-      the research note is committed. No sanitized SYD fixture is planned.
-- [ ] **Library-backed tokens:** SYD's real tokens are `remote: true` library
-      styles/variables invisible to `get_styles`/`get_variables`. Should the
-      extractor resolve them from `get_node_variables` name+value evidence only, or
-      should the fork expose the remote library collections directly?
+- [x] **Capture privacy:** *Answered 2026-07-31, corrected 2026-08-02.* The first
+      portfolio-copy read exposed unrelated client collections; the authoritative
+      six-page SYD source is still private client content. Both real captures stay
+      `private-local` and gitignored; only non-private acceptance notes are committed.
+- [x] **Library-backed tokens:** *Answered for MVP 2026-08-02.* The first portfolio
+      copy uses remote library refs and remains a regression fixture, but the
+      authoritative SYD source exposes 11 local paint styles plus `Size` and
+      `Typograph` collections. Remote-library enumeration is not required for SYD;
+      reopen only when an unrelated authorized file proves it blocks R3.
 - [ ] **Multi-axis modes:** require an explicit mapping file for every non-theme mode,
       or infer only the unambiguous responsive/brand cases?
 - [ ] **Astro reuse shape:** vendor a minimal template into this repo, or add a
@@ -614,8 +625,8 @@ Keep coarse until R2 is complete:
 
 ## Inputs needed only when their phase starts
 
-- **R1 live capture:** the SYD Figma file open in the independently running fork DEV
-  plugin, the connected channel name, and the verified pinned runtime identity.
+- **R2:** no new Figma session is required unless the cached SYD bundle lacks a
+  page asset or interaction that the frozen topology explicitly requires.
 - **R3 generalization:** a second unrelated authorized file.
 - **Any calendar commitment:** a deadline/capacity decision; until then the project
   remains backlog-paced and scope-open.
