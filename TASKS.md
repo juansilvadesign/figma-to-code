@@ -153,15 +153,18 @@ only the next release. Later releases stay coarse until the preceding checkpoint
 
 There are no throwing stubs left. `scripts/extract-figma-tokens.ts` is implemented.
 
-## ▶ Next session — R2.3, give the brand seam an owner
+## ▶ Next session — R2.4, freeze the SYD page topology
 
-The vendored foundation is green (steps 1 and 4 below are closed). The next task is
-step 2, and it needs one decision made first: **how `--build astro` establishes that
-`design-systems/<slug>/` "has just passed validation"** — re-run the validator
-in-process and fail closed on its result, or have `validate-design-system.ts` write a
-receipt the build script reads. Re-running removes the staleness question entirely;
-a receipt is cheaper but introduces a freshness claim that can rot. Decide, then
-build. Until then `src/styles/global.css` line 7 is edited by hand.
+The package → Astro seam is closed (steps 1, 2, and 4 below). R2.3 chose
+**in-process revalidation**, not a receipt: `--build astro` now emits the current
+package, calls the exported validator on that exact directory, and only then
+retargets `src/styles/global.css` and runs Astro. Seven focused checks include the
+failure-order negative and a fully isolated emitter CLI → real Astro build. Evidence:
+[`docs/research/r2-brand-seam-note.md`](docs/research/r2-brand-seam-note.md).
+
+The next task is step 3. Work only from the cached SYD frame family; do not write
+page components until one desktop/mobile section spec records topology, verbatim
+copy and assets, responsive relationships, and known behavior gaps.
 
 R1 is closed. Do not recapture or revisit token heuristics unless R2 exposes an
 actual evidence failure. Start the page MVP by retiring its next riskiest
@@ -176,11 +179,12 @@ Start here, in order:
    hashes, and rationale are in
    [`docs/research/r2-astro-seam-note.md`](docs/research/r2-astro-seam-note.md).
    Do not re-derive the shape; do not copy the cloner's working tree or page code.
-2. **Add `--build none|astro`, default `none`.** An Astro build must fail closed
-   unless `design-systems/<slug>/` has just passed validation; importer-only runs
-   retain today's behavior. This flag also owns the one-line brand seam — it
-   retargets `src/styles/global.css`'s first `@import` to the selected slug.
-3. **Freeze SYD page topology from the cached frames.** Record one section spec per
+2. [x] **Validated brand seam shipped 2026-08-10.** `--build none|astro` lives on
+   the emitter and defaults to the unchanged package-only path. `astro` re-runs the
+   validator in-process, fails before mutation on any violation, retargets the exact
+   first `@import`, and invokes Astro's build API. Evidence:
+   [`docs/research/r2-brand-seam-note.md`](docs/research/r2-brand-seam-note.md).
+3. **Next — freeze SYD page topology from the cached frames.** Record one section spec per
    desktop/mobile pair, verbatim copy/assets, responsive relationships, and known
    behavior gaps before writing `.astro` components.
 4. [x] **Foundation proven 2026-08-10.** The static shell typechecks and builds
@@ -540,7 +544,10 @@ See [`docs/research/r1-package-note.md`](docs/research/r1-package-note.md).
 R1's retrospective is complete. Execute in this order; defer fidelity extras that
 do not retire the package → Astro → visual-evidence path:
 
-- [ ] Add `--build none|astro`; default to `none` until importer acceptance is stable.
+- [x] **Validated build routing shipped 2026-08-10.** `--build none|astro` is owned
+      by the emitter and defaults to `none`; the Astro route is ordered emit →
+      in-process validate → retarget seam → build. Evidence:
+      [`docs/research/r2-brand-seam-note.md`](docs/research/r2-brand-seam-note.md).
 - [x] **Reuse shape frozen 2026-08-10.** Minimal vendor of the five generic baseline
       files at repository root, pinned to `b7b4dda`; `index.astro` authored here and
       `ClonePlaceholder.astro` excluded as brand-specific. Spec, deltas, and baseline
@@ -552,7 +559,8 @@ do not retire the package → Astro → visual-evidence path:
       are byte-identical to the baseline, and both drift-injection negatives fail the
       gate. `check:astro` green; `check:r0` and both R1 suites unaffected. Evidence:
       [`docs/research/r2-foundation-note.md`](docs/research/r2-foundation-note.md).
-- [ ] Require a validated `design-systems/<slug>/` before any page component work.
+- [x] Require a validated `design-systems/<slug>/` before any page component work;
+      the Astro build route cannot touch the seam until that exact package passes.
 - [ ] Choose one coherent desktop/mobile frame family and write page topology plus
       one evidence-backed component spec per section.
 - [ ] Extract verbatim text, exported assets, responsive relationships, and known
