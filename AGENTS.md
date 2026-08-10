@@ -30,6 +30,8 @@ contracts.
 npm run check:r0
 npm run check:r1:contract
 npm run check:r1:extract
+npm run check:vendor          # parity of every file vendored from the cloner baseline
+npm run check:astro           # lint + astro check + script typecheck + static build
 npm run extract -- --capture docs/research/<slug>/capture-manifest.json
 npm run emit -- --brand <slug> --name "<Name>" --category "<Category>"
 npm run validate -- --brand <slug>
@@ -48,6 +50,8 @@ npm run validate -- --brand <slug>
 - At this checkout depth, `--od-root`'s default relative path
   (`../../../skills/open-design`) resolves correctly. If this project is moved,
   pass `--od-root` explicitly.
-- `design-systems/**` is emitted content and `scripts/**` is tsx tooling; keep both out of any app-level tsconfig/eslint program if one is added later (the cloner had to do exactly this to keep CI green).
+- `design-systems/**` is emitted content and `scripts/**` is tsx tooling; both are excluded from the app-level `tsconfig.json` and `eslint.config.mjs` added in R2.2. Keep them excluded — the cloner had to do exactly this to keep CI green.
+- **The Astro foundation's brand import is a seam, not a preference.** `src/styles/global.css` imports `design-systems/psiativa/tokens.css` because that package is *committed*; `design-systems/syd/` is gitignored as private-local. Repointing the committed default at `syd` breaks `npm run build` on every clean clone. Change it locally for page work, never in a commit.
+- Files vendored from the cloner baseline are hash-pinned in `vendor.manifest.json`. Editing one fails `npm run check:vendor`. If the edit is deliberate, re-run with `--update` and write the delta down.
 
 @docs/EXTRACTION-GUIDE.md

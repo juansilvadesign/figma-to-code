@@ -153,7 +153,15 @@ only the next release. Later releases stay coarse until the preceding checkpoint
 
 There are no throwing stubs left. `scripts/extract-figma-tokens.ts` is implemented.
 
-## ▶ Next session — R2.2, execute the frozen Astro seam
+## ▶ Next session — R2.3, give the brand seam an owner
+
+The vendored foundation is green (steps 1 and 4 below are closed). The next task is
+step 2, and it needs one decision made first: **how `--build astro` establishes that
+`design-systems/<slug>/` "has just passed validation"** — re-run the validator
+in-process and fail closed on its result, or have `validate-design-system.ts` write a
+receipt the build script reads. Re-running removes the staleness question entirely;
+a receipt is cheaper but introduces a freshness claim that can rot. Decide, then
+build. Until then `src/styles/global.css` line 7 is edited by hand.
 
 R1 is closed. Do not recapture or revisit token heuristics unless R2 exposes an
 actual evidence failure. Start the page MVP by retiring its next riskiest
@@ -175,11 +183,12 @@ Start here, in order:
 3. **Freeze SYD page topology from the cached frames.** Record one section spec per
    desktop/mobile pair, verbatim copy/assets, responsive relationships, and known
    behavior gaps before writing `.astro` components.
-4. **Prove the foundation first.** Make the empty/static shell typecheck and build
-   while consuming the emitted `tokens.css`; assemble page sections only after
-   that seam is green. Prove it against the committed `psiativa` package, not
-   `syd` — `design-systems/syd/` is gitignored, so a `syd`-pinned import cannot
-   build on a clean clone or ever become a CI gate.
+4. [x] **Foundation proven 2026-08-10.** The static shell typechecks and builds
+   against the committed `psiativa` package; `dist/index.html` carries all 56 token
+   declarations, both scopes, and zero undeclared references. Run against `psiativa`,
+   never `syd` — `design-systems/syd/` is gitignored, so a `syd`-pinned import cannot
+   build on a clean clone or ever become a CI gate. Evidence:
+   [`docs/research/r2-foundation-note.md`](docs/research/r2-foundation-note.md).
 
 **R0 retrospective:** the source-agnostic emitter/validator transferred with zero
 functional changes, the pinned OpenDesign schema currently resolves 56 slots, and the
@@ -536,10 +545,13 @@ do not retire the package → Astro → visual-evidence path:
       files at repository root, pinned to `b7b4dda`; `index.astro` authored here and
       `ClonePlaceholder.astro` excluded as brand-specific. Spec, deltas, and baseline
       hashes: [`docs/research/r2-astro-seam-note.md`](docs/research/r2-astro-seam-note.md).
-- [ ] Vendor those five files with the R0 provenance block, add the Astro dependency
-      set at the baseline's ranges, and add `vendor.manifest.json` +
-      `scripts/check-vendor-parity.ts` + `npm run check:vendor`. Extend the manifest
-      to cover the two scripts R0 vendored — their parity is documented, not checked.
+- [x] **Foundation vendored and green 2026-08-10.** Five files vendored behind the R0
+      provenance block, Astro dependency set added at the baseline's ranges,
+      `vendor.manifest.json` + `scripts/check-vendor-parity.ts` + `npm run check:vendor`
+      shipped and extended over R0's two scripts. 26 parity checks pass, 5 of 7 files
+      are byte-identical to the baseline, and both drift-injection negatives fail the
+      gate. `check:astro` green; `check:r0` and both R1 suites unaffected. Evidence:
+      [`docs/research/r2-foundation-note.md`](docs/research/r2-foundation-note.md).
 - [ ] Require a validated `design-systems/<slug>/` before any page component work.
 - [ ] Choose one coherent desktop/mobile frame family and write page topology plus
       one evidence-backed component spec per section.
