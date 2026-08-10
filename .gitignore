@@ -1,6 +1,10 @@
 node_modules/
 *.log
 
+# Astro build artifacts (the foundation vendored from the cloner baseline).
+.astro/
+dist/
+
 # Live capture bundles are private-local by default. The manifest itself carries
 # document identity and the raw/screenshot/override files may contain client copy,
 # assets, variable names, or node ids. Authorized sanitized regression fixtures
