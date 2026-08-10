@@ -20,11 +20,13 @@
     "test:r0:failures": "tsx scripts/verify-r0-failures.ts",
     "test:capture-contract": "node --import tsx scripts/test-capture-contract.ts",
     "test:extract": "node --import tsx scripts/test-extract-tokens.ts",
+    "test:r2:build": "node --import tsx scripts/test-build-target.ts",
     "preflight:capture": "node --import tsx scripts/preflight-capture.ts",
     "check:r1:preflight": "npm run typecheck:scripts && npm run preflight:capture",
     "check:r1:extract": "npm run typecheck:scripts && npm run test:extract",
     "check:r0": "npm run typecheck:scripts && npm run emit -- --brand psiativa --name PsiAtiva --category \"Health & Wellness\" --description \"Design system extracted from the PsiAtiva landing page \u2014 a warm, serif-forward teal + sage identity for a psychology-practice consultancy.\" && npm run validate -- --brand psiativa && npm run validate -- --brand psiativa --od-root ../../../skills/open-design && npm run test:r0:failures",
     "check:r1:contract": "npm run typecheck:scripts && npm run test:capture-contract",
+    "check:r2:build": "npm run test:r2:build && npm run check:vendor && npm run check:astro",
     "capture": "node --import tsx scripts/capture-figma.ts"
   },
   "dependencies": {

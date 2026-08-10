@@ -14,10 +14,10 @@
       "release": "R0",
       "provenanceLines": [3, 6],
       "baselineSha256": "9c41f08a52245246ca884b32470e62bc694ab01d449fb86e9305c3d71eb1bd6d",
-      "localSha256": "3e35b71caa341b521af59838a5203803cb6d10b214db5f10ce96122dda577e27",
-      "strippedSha256": "9c41f08a52245246ca884b32470e62bc694ab01d449fb86e9305c3d71eb1bd6d",
-      "matchesBaseline": true,
-      "delta": "none (provenance comment only)"
+      "localSha256": "fe755fb4a98f2d6fc3bd4b3359fd2ac5ff47fe4ca424ee8648f62cb80ef75e8a",
+      "strippedSha256": "bc0c4ed24fe5b54ecef73b0201b262df26554c80f3289dc59e441ba06623011f",
+      "matchesBaseline": false,
+      "delta": "R2.3 parses --build none|astro (default none) and delegates the astro path to the local build-target gate after emission. The default path retains the baseline behavior."
     },
     {
       "path": "scripts/validate-design-system.ts",
@@ -26,10 +26,10 @@
       "release": "R0",
       "provenanceLines": [3, 6],
       "baselineSha256": "8397bf3cf238f9bf7f3fcb1e91acbc19a8b1c0ed13ca58719808e9380494d36f",
-      "localSha256": "42e20b014b9820b841a44fcf74af868c210441d5b7495c40fa84ac574227d6c1",
-      "strippedSha256": "8397bf3cf238f9bf7f3fcb1e91acbc19a8b1c0ed13ca58719808e9380494d36f",
-      "matchesBaseline": true,
-      "delta": "none (provenance comment only)"
+      "localSha256": "b405c3954d4b6d8a75e9db2e7fdad71cffd9fdd6697cbb8fc398c1471abefa1b",
+      "strippedSha256": "5a847d410ecd6474a009d8db2490ae6d4853db6ef6e228917becf29d54e728e1",
+      "matchesBaseline": false,
+      "delta": "R2.3 separates validation from CLI reporting and exports validateDesignSystem for the Astro gate to call in-process. The standalone command preserves the same OpenDesign checks and exit semantics."
     },
     {
       "path": "astro.config.mjs",
