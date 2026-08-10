@@ -2,7 +2,7 @@
 /**
  * Vendored from juansilvadesign/ai-website-cloner-template
  * @ b7b4dda5ffc9cfa279f9269b567c073f22a25860 on 2026-07-31.
- * Functional delta from that commit: none (provenance comment only).
+ * Functional delta from that commit: R2.3 exports an in-process validation API.
  *
  * validate-design-system.ts — run OpenDesign's OWN design-system guard checks
  * against a single emitted package, without a full monorepo `pnpm install`.
@@ -28,6 +28,27 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
 const FORK_ROOT = path.resolve(SCRIPT_DIR, "..");
 
+export type DesignSystemPackageQuality = {
+  migrated: boolean;
+  score: number;
+  checks: string[];
+  violations: string[];
+};
+
+export type DesignSystemValidation = {
+  brand: string;
+  label: string;
+  ok: boolean;
+  quality: DesignSystemPackageQuality | null;
+  violations: string[];
+};
+
+export type ValidateDesignSystemOptions = {
+  brand: string;
+  brandRoot?: string;
+  odRoot?: string;
+};
+
 function arg(name: string, fallback?: string): string | undefined {
   const i = process.argv.indexOf(`--${name}`);
   if (i !== -1 && i + 1 < process.argv.length) return process.argv[i + 1];
@@ -43,13 +64,18 @@ async function exists(p: string): Promise<boolean> {
   }
 }
 
-async function main(): Promise<void> {
-  const brand = arg("brand", "psiativa")!;
+export async function validateDesignSystem(
+  options: ValidateDesignSystemOptions,
+): Promise<DesignSystemValidation> {
+  const { brand } = options;
   const odRoot = path.resolve(
     SCRIPT_DIR,
-    arg("od-root") ?? process.env.OPEN_DESIGN_ROOT ?? "../../../skills/open-design",
+    options.odRoot ?? process.env.OPEN_DESIGN_ROOT ?? "../../../skills/open-design",
   );
-  const brandRoot = path.resolve(FORK_ROOT, arg("out", `design-systems/${brand}`)!);
+  const brandRoot = path.resolve(
+    FORK_ROOT,
+    options.brandRoot ?? `design-systems/${brand}`,
+  );
   const label = `design-systems/${brand}/manifest.json`;
 
   async function loadOd<T>(rel: string): Promise<T> {
@@ -80,14 +106,15 @@ async function main(): Promise<void> {
 
   const manifestPath = path.join(brandRoot, "manifest.json");
   if (!(await exists(manifestPath))) {
-    console.error(`validate-design-system: ${label} not found — run the emitter first.`);
-    process.exit(1);
+    violations.push(
+      `validate-design-system: ${label} not found — run the emitter first.`,
+    );
+    return validationResult(brand, label, violations, null);
   }
   const parsed = parseDesignSystemProjectManifest(await readFile(manifestPath, "utf8"));
   if (!parsed.ok) {
     for (const e of parsed.errors) violations.push(`${label}: ${e}`);
-    report(violations, null);
-    return;
+    return validationResult(brand, label, violations, null);
   }
   const manifest = parsed.manifest;
 
@@ -117,7 +144,7 @@ async function main(): Promise<void> {
 
   // package-quality minimums (DESIGN.md H2s, tokens coverage, USAGE headings,
   // component fixture bars, preview pages, source evidence)
-  let quality: { migrated: boolean; score: number; checks: string[]; violations: string[] } | null = null;
+  let quality: DesignSystemPackageQuality | null = null;
   const need = async (f?: string): Promise<string | undefined> =>
     f && (await exists(path.join(brandRoot, f))) ? readFile(path.join(brandRoot, f), "utf8") : undefined;
   try {
@@ -133,23 +160,48 @@ async function main(): Promise<void> {
     violations.push(`${label}: quality check failed to run: ${e instanceof Error ? e.message : String(e)}`);
   }
 
-  report(violations, quality);
+  return validationResult(brand, label, violations, quality);
 }
 
-function report(violations: string[], quality: { migrated: boolean; score: number; checks: string[]; violations: string[] } | null): void {
-  if (quality) {
-    console.log(`Package quality: migrated=${quality.migrated} score=${quality.score} (${quality.checks.length} checks, ${quality.violations.length} failing)`);
+function validationResult(
+  brand: string,
+  label: string,
+  violations: string[],
+  quality: DesignSystemPackageQuality | null,
+): DesignSystemValidation {
+  return { brand, label, ok: violations.length === 0, quality, violations };
+}
+
+export function printValidationResult(result: DesignSystemValidation): void {
+  if (result.quality) {
+    console.log(`Package quality: migrated=${result.quality.migrated} score=${result.quality.score} (${result.quality.checks.length} checks, ${result.quality.violations.length} failing)`);
   }
-  if (violations.length === 0) {
+  if (result.ok) {
     console.log("\n✅ VALIDATION PASSED — package satisfies OpenDesign's design-system guard checks.");
     return;
   }
-  console.error(`\n❌ VALIDATION FAILED — ${violations.length} violation(s):`);
-  for (const v of violations) console.error(`  - ${v}`);
-  process.exitCode = 1;
+  console.error(`\n❌ VALIDATION FAILED — ${result.violations.length} violation(s):`);
+  for (const violation of result.violations) console.error(`  - ${violation}`);
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exitCode = 1;
-});
+async function main(): Promise<void> {
+  const brand = arg("brand", "psiativa")!;
+  const result = await validateDesignSystem({
+    brand,
+    brandRoot: arg("out", `design-systems/${brand}`),
+    odRoot: arg("od-root"),
+  });
+  printValidationResult(result);
+  if (!result.ok) process.exitCode = 1;
+}
+
+const invokedDirectly =
+  process.argv[1] !== undefined &&
+  path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+
+if (invokedDirectly) {
+  main().catch((err) => {
+    console.error(err);
+    process.exitCode = 1;
+  });
+}

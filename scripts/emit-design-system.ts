@@ -2,7 +2,7 @@
 /**
  * Vendored from juansilvadesign/ai-website-cloner-template
  * @ b7b4dda5ffc9cfa279f9269b567c073f22a25860 on 2026-07-31.
- * Functional delta from that commit: none (provenance comment only).
+ * Functional delta from that commit: R2.3 adds the optional Astro build gate.
  *
  * emit-design-system.ts — the design-system emitter (FORK-PLAN Milestone C).
  *
@@ -26,7 +26,8 @@
  *     [--source design-systems/psiativa/source/tokens.source.json] \
  *     [--out design-systems/psiativa] \
  *     [--od-root /absolute/path/to/open-design] \
- *     [--name "PsiAtiva"] [--category "Health & Wellness"] [--description "..."]
+ *     [--name "PsiAtiva"] [--category "Health & Wellness"] [--description "..."] \
+ *     [--build none|astro]
  *
  * OpenDesign lookup order: `--od-root`, `OPEN_DESIGN_ROOT`, then the sibling
  * checkout used by the notes workspace (`knowledge/skills/open-design`).
@@ -35,6 +36,8 @@
 import { readFile, writeFile, mkdir } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+
+import { parseBuildTarget, runBuildTarget } from "./lib/build-target.js";
 
 const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
 const FORK_ROOT = path.resolve(SCRIPT_DIR, "..");
@@ -81,6 +84,10 @@ async function main(): Promise<void> {
     console.error("emit-design-system: --brand <slug> is required (lowercase-kebab).");
     process.exit(1);
   }
+  const buildTarget = parseBuildTarget(
+    arg("build"),
+    process.argv.includes("--build"),
+  );
   const outDir = path.resolve(FORK_ROOT, arg("out", `design-systems/${brand}`)!);
   const sourcePath = path.resolve(FORK_ROOT, arg("source", `design-systems/${brand}/source/tokens.source.json`)!);
   const odRoot = path.resolve(
@@ -316,6 +323,13 @@ async function main(): Promise<void> {
   console.log(`  source/token-contract.report.json  (${bindings.length} bindings)`);
   console.log(`  ${componentsNote}`);
   console.log(`\nStill authored by the emit phase: DESIGN.md, USAGE.md, components.html, preview/*.html, source/evidence.md`);
+
+  await runBuildTarget({
+    target: buildTarget,
+    brand,
+    odRoot,
+    packageRoot: outDir,
+  });
 }
 
 main().catch((err) => {
