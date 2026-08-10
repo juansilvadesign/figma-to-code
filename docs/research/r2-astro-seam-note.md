@@ -145,3 +145,8 @@ file makes multi-package routing real; the migration is then a move, not a rewri
 - Whether Astro 7.1.3 installs and builds clean on Node 24.18.0 — untested here. It
   is the first empirical gate of R2.2, and `npm run check:astro` against the
   committed `psiativa` package is the whole test.
+
+> **Follow-up, 2026-08-10:** R2.2 proved the Astro foundation and R2.3 implemented
+> the flag plus its in-process validation decision. See
+> [`r2-foundation-note.md`](r2-foundation-note.md) and
+> [`r2-brand-seam-note.md`](r2-brand-seam-note.md).

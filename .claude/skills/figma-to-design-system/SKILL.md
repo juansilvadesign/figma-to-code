@@ -1,7 +1,7 @@
 ---
 name: figma-to-design-system
 description: Turn a Figma file into a portable OpenDesign design-system package (design-systems/<slug>/) — extracts variables, styles, the type ramp, spacing, and component sets, serializes them to tokens.source.json, emits tokens.css plus the derived caches, and validates against OpenDesign's real guard checks. Use when the user wants to extract a design system from Figma, turn a Figma file into design tokens, or produce tokens.css from a design. Do NOT use to build a page or component from a frame (that is figma-to-astro) or to clone a live website (that is clone-website).
-argument-hint: "<figma-url-or-file-key> [--brand <slug>]"
+argument-hint: "<figma-url-or-file-key> [--brand <slug>] [--build none|astro]"
 user-invocable: true
 ---
 
@@ -10,9 +10,10 @@ user-invocable: true
 Extract a Figma file's design language into an **OpenDesign v1 rich package** that passes
 OpenDesign's own guard checks.
 
-> **⚠️ NOT YET BUILT.** This project was scaffolded 2026-07-24; the scripts are stubs. Read
-> [`docs/BUILD-PLAN.md`](../../../docs/BUILD-PLAN.md) and start at Milestone 1. Do not attempt to
-> run the pipeline until Milestone 3 lands — announce this instead of improvising a substitute.
+> **Importer MVP shipped.** Capture, offline extraction, emission, and validation
+> are implemented. `--build none` is the default package-only route;
+> `--build astro` additionally selects the validated package and builds the root
+> Astro target. It does not generate page sections by itself.
 
 ## Pre-flight
 
@@ -79,6 +80,17 @@ The emitter does **not** write these:
 npx tsx scripts/emit-design-system.ts --brand <slug> --name "<Name>" --category "<Category>"
 npx tsx scripts/validate-design-system.ts --brand <slug>
 ```
+
+For the optional Astro target, let the emitter own validation and the brand seam:
+
+```bash
+npx tsx scripts/emit-design-system.ts --brand <slug> --name "<Name>" \
+  --category "<Category>" --build astro
+```
+
+Do not run the standalone validator first and treat that as a receipt. The Astro
+path deliberately re-runs the same validator in-process immediately before it
+retargets `src/styles/global.css`.
 
 **Acceptance:** the validator passes — equivalent to `pnpm guard` + `pnpm typecheck` inside the
 OpenDesign repo. That is the definition of done; a package that doesn't validate isn't delivered.

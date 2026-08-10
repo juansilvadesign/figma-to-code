@@ -6,26 +6,27 @@ This is the **Figma twin** of [`ai-website-cloner-template`](../ai-website-clone
 
 ```
 URL     ──▶ browser MCP extraction ──┐
-                                     ├──▶ tokens.source.json ──▶ OpenDesign package ──▶ (later) Astro page
+                                     ├──▶ tokens.source.json ──▶ OpenDesign package ──▶ optional Astro page
 Figma   ──▶ Figma MCP extraction  ───┘        the shared contract
 ```
 
 The cloner infers tokens from `getComputedStyle()` — lossy, requires clustering. Figma **declares** them as variables and styles. Same destination, better input, different extraction problem.
 
-> **Status: R0 + R1.1 shipped 2026-07-31; R1.2 + R1.4 shipped 2026-08-02.**
-> A real Figma file has been captured through the pinned fork and replays
-> offline, and `npm run extract` turns that capture into an evidence-backed
-> `tokens.source.json` — 26 of 26 mandatory OpenDesign slots, deterministically,
-> with zero MCP calls. Nothing has been *emitted* from it yet (no
-> `components.html`, no `tokens.css`), so the Importer MVP is not shipped. Follow
-> [`TASKS.md`](TASKS.md) for current work; use
+> **Status: Importer MVP shipped; Astro foundation + validated brand seam shipped
+> 2026-08-10.** A real Figma capture replays offline into a quality-100 OpenDesign
+> package. `--build astro` now revalidates that package in-process, selects its
+> token import, and runs the static Astro build. Page topology and section fidelity
+> remain R2 work. Follow [`TASKS.md`](TASKS.md) for current work; use
 > [`docs/BUILD-PLAN.md`](docs/BUILD-PLAN.md) for the original rationale.
 
 ## Scope (v1)
 
-**In:** Figma file → `design-systems/<slug>/` (OpenDesign v1 rich package), guard-green.
+**In:** Figma file → `design-systems/<slug>/` (OpenDesign v1 rich package),
+guard-green, with an optional validated Astro target.
 
-**Out (deliberately):** building an Astro page from it. That is the cloner's Milestone D — a *page builder that reads the design system*, shared by both sources once it exists. Until then, `../../skills/figma-to-astro/` remains the hand-driven path from frame to `.astro`.
+**Still manual in R2:** translating selected desktop/mobile frames into semantic
+Astro sections. The project owns the target and guard; it does not yet claim generic
+one-command frame codegen.
 
 ## Quick start
 
@@ -35,10 +36,18 @@ npm ci
 npm run check:r0
 npm run check:r1:contract
 npm run check:r1:extract
+npm run check:r2:build
 ```
 
-`scripts/extract-figma-tokens.ts` still throws intentionally. Its capture contract
-and implementation are tracked under R1 in [`TASKS.md`](TASKS.md).
+Emit a package only (the default), or validate and build Astro:
+
+```bash
+npm run emit -- --brand <slug> --build none
+npm run emit -- --brand <slug> --build astro
+```
+
+The Astro path fails before touching `src/styles/global.css` unless the just-emitted
+`design-systems/<slug>/` passes OpenDesign validation.
 
 ## Prerequisites
 
@@ -58,8 +67,9 @@ docs/
 scripts/
   extract-figma-tokens.ts    # Figma → tokens.source.json   (NEW — the real work)
   emit-design-system.ts      # tokens.source.json → package  (vendored from the cloner)
-  validate-design-system.ts  # acceptance gate               (vendored from the cloner)
+  validate-design-system.ts  # standalone + in-process acceptance gate
   lib/
+    build-target.ts          # validated package → brand seam → Astro build
     capture-contract.ts      # manifest + cross-file integrity loader
     fork-payload-contracts.ts # external reply-shape boundary
 schemas/               # versioned manifest + override JSON Schemas

@@ -139,3 +139,7 @@ therefore the only way to change the page's appearance, which is what the
   owner — `src/styles/global.css` line 7 is currently edited by hand.
 - No visual evidence. The 1440px/390px comparison contract belongs to page assembly,
   and there is no page yet.
+
+> **Follow-up, 2026-08-10:** the first limitation above is closed by
+> [`r2-brand-seam-note.md`](r2-brand-seam-note.md). It remains here as an accurate
+> boundary of the earlier R2.2 evidence.

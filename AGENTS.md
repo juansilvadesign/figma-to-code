@@ -6,11 +6,10 @@ A **design-system-first** Figma importer. Point it at a Figma file; it extracts 
 
 The Figma twin of [`../ai-website-cloner-template/`](../ai-website-cloner-template/). Both feed the **same** emitter through the **same** intermediate contract (`source/tokens.source.json`); only extraction differs.
 
-**Status:** R0 + R1.1 shipped 2026-07-31; R1.2 (live capture) and R1.4 (the
-offline extractor) shipped 2026-08-02. Emit + validate, the immutable
-capture-contract loader, and Figma → `tokens.source.json` are all proven offline.
-Nothing has been *emitted* from a Figma capture yet — no `components.html`, no
-`tokens.css` — so the Importer MVP is not done; R1.5 is next. Open
+**Status:** R0 and the full R1 Importer MVP are shipped. R2.2 added the green Astro
+foundation; R2.3 added the fail-closed `--build none|astro` gate and programmatic
+brand-seam owner. The Astro page itself is not assembled yet; R2.4 freezes the SYD
+desktop/mobile topology before section code. Open
 [`TASKS.md`](TASKS.md) first for the live implementation state, then use
 [`docs/BUILD-PLAN.md`](docs/BUILD-PLAN.md) for the original rationale and
 contracts.
@@ -32,8 +31,9 @@ npm run check:r1:contract
 npm run check:r1:extract
 npm run check:vendor          # parity of every file vendored from the cloner baseline
 npm run check:astro           # lint + astro check + script typecheck + static build
+npm run check:r2:build        # R2.3 gate tests + vendor parity + Astro checks
 npm run extract -- --capture docs/research/<slug>/capture-manifest.json
-npm run emit -- --brand <slug> --name "<Name>" --category "<Category>"
+npm run emit -- --brand <slug> --name "<Name>" --category "<Category>" [--build none|astro]
 npm run validate -- --brand <slug>
 ```
 
@@ -51,7 +51,7 @@ npm run validate -- --brand <slug>
   (`../../../skills/open-design`) resolves correctly. If this project is moved,
   pass `--od-root` explicitly.
 - `design-systems/**` is emitted content and `scripts/**` is tsx tooling; both are excluded from the app-level `tsconfig.json` and `eslint.config.mjs` added in R2.2. Keep them excluded — the cloner had to do exactly this to keep CI green.
-- **The Astro foundation's brand import is a seam, not a preference.** `src/styles/global.css` imports `design-systems/psiativa/tokens.css` because that package is *committed*; `design-systems/syd/` is gitignored as private-local. Repointing the committed default at `syd` breaks `npm run build` on every clean clone. Change it locally for page work, never in a commit.
+- **The Astro foundation's brand import is a seam, not a preference.** `src/styles/global.css` imports `design-systems/psiativa/tokens.css` because that package is *committed*; `design-systems/syd/` is gitignored as private-local. `npm run emit -- --brand <slug> --build astro` is the only programmatic owner: it revalidates in-process before retargeting. Repointing the committed default at `syd` breaks `npm run build` on every clean clone, so use it locally for page work and never commit that selected private seam.
 - Files vendored from the cloner baseline are hash-pinned in `vendor.manifest.json`. Editing one fails `npm run check:vendor`. If the edit is deliberate, re-run with `--update` and write the delta down.
 
 @docs/EXTRACTION-GUIDE.md
