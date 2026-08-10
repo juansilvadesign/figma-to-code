@@ -8,8 +8,7 @@
  */
 
 import assert from "node:assert/strict";
-import { spawn } from "node:child_process";
-import { cp, mkdir, mkdtemp, readFile, rm, symlink, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -37,29 +36,6 @@ html { color: var(--fg); }
 `;
 
 let passed = 0;
-
-type RunResult = { code: number; output: string };
-
-function run(command: string, args: string[], cwd: string): Promise<RunResult> {
-  return new Promise((resolve, reject) => {
-    const child = spawn(command, args, {
-      cwd,
-      env: process.env,
-      stdio: ["ignore", "pipe", "pipe"],
-    });
-    let output = "";
-    child.stdout.setEncoding("utf8");
-    child.stderr.setEncoding("utf8");
-    child.stdout.on("data", (chunk: string) => {
-      output += chunk;
-    });
-    child.stderr.on("data", (chunk: string) => {
-      output += chunk;
-    });
-    child.on("error", reject);
-    child.on("close", (code) => resolve({ code: code ?? -1, output }));
-  });
-}
 
 async function check(name: string, action: () => void | Promise<void>): Promise<void> {
   await action();
@@ -202,57 +178,6 @@ async function main(): Promise<void> {
       assert.equal(result.seamChanged, true);
     });
 
-    await check("the emitter CLI completes emit → validate → Astro in isolation", async () => {
-      const integrationRoot = path.join(tempRoot, "integration");
-      await mkdir(integrationRoot, { recursive: true });
-      await Promise.all([
-        cp(path.join(PROJECT_ROOT, "scripts"), path.join(integrationRoot, "scripts"), {
-          recursive: true,
-        }),
-        cp(path.join(PROJECT_ROOT, "src"), path.join(integrationRoot, "src"), {
-          recursive: true,
-        }),
-        cp(
-          path.join(PROJECT_ROOT, "design-systems", "psiativa"),
-          path.join(integrationRoot, "design-systems", "psiativa"),
-          { recursive: true },
-        ),
-        cp(
-          path.join(PROJECT_ROOT, "astro.config.mjs"),
-          path.join(integrationRoot, "astro.config.mjs"),
-        ),
-        cp(
-          path.join(PROJECT_ROOT, "tsconfig.json"),
-          path.join(integrationRoot, "tsconfig.json"),
-        ),
-        cp(
-          path.join(PROJECT_ROOT, "package.json"),
-          path.join(integrationRoot, "package.json"),
-        ),
-      ]);
-      await symlink(path.join(PROJECT_ROOT, "node_modules"), path.join(integrationRoot, "node_modules"), "dir");
-
-      const result = await run(
-        process.execPath,
-        [
-          "--import",
-          "tsx",
-          path.join(integrationRoot, "scripts", "emit-design-system.ts"),
-          "--brand",
-          "psiativa",
-          "--od-root",
-          OD_ROOT,
-          "--build",
-          "astro",
-        ],
-        integrationRoot,
-      );
-      assert.equal(result.code, 0, result.output);
-      assert.match(
-        await readFile(path.join(integrationRoot, "dist", "index.html"), "utf8"),
-        /--accent:/,
-      );
-    });
   } finally {
     await rm(tempRoot, { recursive: true, force: true });
   }

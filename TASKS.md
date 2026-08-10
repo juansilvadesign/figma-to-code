@@ -158,8 +158,8 @@ There are no throwing stubs left. `scripts/extract-figma-tokens.ts` is implement
 The package → Astro seam is closed (steps 1, 2, and 4 below). R2.3 chose
 **in-process revalidation**, not a receipt: `--build astro` now emits the current
 package, calls the exported validator on that exact directory, and only then
-retargets `src/styles/global.css` and runs Astro. Seven focused checks include the
-failure-order negative and a fully isolated emitter CLI → real Astro build. Evidence:
+retargets `src/styles/global.css` and runs Astro. Six focused checks include the
+failure-order negative; an isolated emitter CLI smoke also reached a real Astro build. Evidence:
 [`docs/research/r2-brand-seam-note.md`](docs/research/r2-brand-seam-note.md).
 
 The next task is step 3. Work only from the cached SYD frame family; do not write

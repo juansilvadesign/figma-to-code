@@ -67,17 +67,17 @@ Run under the pinned Node 24.18.0 toolchain:
 | Check | Result |
 | --- | --- |
 | `npm run typecheck:scripts` | pass |
-| `npm run test:r2:build` | 7/7 checks; includes a fully isolated emitter CLI → real Astro build |
+| `npm run test:r2:build` | 6/6 checks, including the failure-order negative and real validator API |
 | `npm run validate -- --brand psiativa` | OpenDesign package quality 100; pass |
 | `npm run test:r0:failures` | both historical failure contracts still reject |
 | `npm run check:vendor` | 24/24 parity/provenance checks after recording the two intentional R2.3 deltas |
-| Programmatic Astro build against `psiativa` | one static page built; selected seam unchanged |
+| Isolated `emit --build astro` smoke against `psiativa` | one static page built; selected seam unchanged |
 
 The negative coverage is load-bearing: a synthetic validation failure leaves the
 original CSS byte-for-byte unchanged and never calls the Astro builder. The
-isolated CLI check copies the committed fixture to a temporary project, runs
-`emit --build astro`, and asserts that the built HTML contains the selected token
-contract; repository-derived timestamps are never touched.
+isolated CLI smoke copied the committed fixture to a temporary project and ran
+`emit --build astro`; the resulting HTML carried the selected token contract and
+repository-derived timestamps were left untouched.
 
 ## What remains
 
