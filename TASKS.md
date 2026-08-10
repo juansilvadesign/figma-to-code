@@ -75,7 +75,7 @@ the Astro page MVP has not.
 | Project | Relationship | Baseline inspected 2026-07-28 | Contract used here |
 | --- | --- | --- | --- |
 | [`talk-to-figma-fork`](../talk-to-figma-fork/) | **Independent runtime dependency** | `5e0c869` (was `956a6af` → `3546719`; both advances docs-only, executable hashes verified identical) | Read-only MCP tools: `get_pages`, bounded `get_document_info`, `set_current_page`, `get_variables`, `get_styles`, scoped/summary `get_local_components`, `get_node_info`, `get_node_variables`, `get_reactions`, and `export_node_as_image` |
-| [`ai-website-cloner-template`](../ai-website-cloner-template/) | **Vendored generic-code/workflow baseline** | `b7b4dda` (`0.4.0`) | Emitter/validator, Astro scaffold, design-system-first order, component specs, static-first rules, and 1440px/390px QA |
+| [`ai-website-cloner-template`](../ai-website-cloner-template/) | **Vendored generic-code/workflow baseline** | `b7b4dda` (`0.4.0`) — held; its `HEAD` has since grown a `src/clones/<slug>/` multi-clone architecture this project does not need until R3 | Emitter/validator, Astro scaffold, design-system-first order, component specs, static-first rules, and 1440px/390px QA |
 | [`open-design`](../../skills/open-design/) | **Schema/validation dependency** | `3447f60a3` | Live token schema and guard/rendering contracts; code discovers the contract rather than encoding the observed 56/26 counts |
 
 **Fork dependency rule:** invoke the built fork as an MCP process and treat replies as
@@ -153,7 +153,7 @@ only the next release. Later releases stay coarse until the preceding checkpoint
 
 There are no throwing stubs left. `scripts/extract-figma-tokens.ts` is implemented.
 
-## ▶ Next session — R2.1, freeze the Astro build seam
+## ▶ Next session — R2.2, execute the frozen Astro seam
 
 R1 is closed. Do not recapture or revisit token heuristics unless R2 exposes an
 actual evidence failure. Start the page MVP by retiring its next riskiest
@@ -162,18 +162,24 @@ validated Figma package without importing brand-specific code.
 
 Start here, in order:
 
-1. **Decide the Astro reuse shape** (§ Open questions). Inspect the cloner's pinned
-   `b7b4dda` generic scaffold/workflow and choose the smallest provenance-recorded
-   vendor or reproducible-scaffold seam. Do not copy its working tree or page code.
+1. [x] **Astro reuse shape decided (2026-08-10).** Minimal vendor at root pinned to
+   `b7b4dda`, committed brand default `psiativa`, executable parity manifest, pin
+   not advanced. Execute it exactly as specified — the file list, deltas, baseline
+   hashes, and rationale are in
+   [`docs/research/r2-astro-seam-note.md`](docs/research/r2-astro-seam-note.md).
+   Do not re-derive the shape; do not copy the cloner's working tree or page code.
 2. **Add `--build none|astro`, default `none`.** An Astro build must fail closed
    unless `design-systems/<slug>/` has just passed validation; importer-only runs
-   retain today's behavior.
+   retain today's behavior. This flag also owns the one-line brand seam — it
+   retargets `src/styles/global.css`'s first `@import` to the selected slug.
 3. **Freeze SYD page topology from the cached frames.** Record one section spec per
    desktop/mobile pair, verbatim copy/assets, responsive relationships, and known
    behavior gaps before writing `.astro` components.
 4. **Prove the foundation first.** Make the empty/static shell typecheck and build
    while consuming the emitted `tokens.css`; assemble page sections only after
-   that seam is green.
+   that seam is green. Prove it against the committed `psiativa` package, not
+   `syd` — `design-systems/syd/` is gitignored, so a `syd`-pinned import cannot
+   build on a clean clone or ever become a CI gate.
 
 **R0 retrospective:** the source-agnostic emitter/validator transferred with zero
 functional changes, the pinned OpenDesign schema currently resolves 56 slots, and the
@@ -526,8 +532,14 @@ R1's retrospective is complete. Execute in this order; defer fidelity extras tha
 do not retire the package → Astro → visual-evidence path:
 
 - [ ] Add `--build none|astro`; default to `none` until importer acceptance is stable.
-- [ ] Reuse only the cloner's committed generic Astro foundation and workflow—never
-      its brand-specific page components.
+- [x] **Reuse shape frozen 2026-08-10.** Minimal vendor of the five generic baseline
+      files at repository root, pinned to `b7b4dda`; `index.astro` authored here and
+      `ClonePlaceholder.astro` excluded as brand-specific. Spec, deltas, and baseline
+      hashes: [`docs/research/r2-astro-seam-note.md`](docs/research/r2-astro-seam-note.md).
+- [ ] Vendor those five files with the R0 provenance block, add the Astro dependency
+      set at the baseline's ranges, and add `vendor.manifest.json` +
+      `scripts/check-vendor-parity.ts` + `npm run check:vendor`. Extend the manifest
+      to cover the two scripts R0 vendored — their parity is documented, not checked.
 - [ ] Require a validated `design-systems/<slug>/` before any page component work.
 - [ ] Choose one coherent desktop/mobile frame family and write page topology plus
       one evidence-backed component spec per section.
@@ -564,6 +576,9 @@ Keep coarse until R2 is complete:
       [`knowledge/skills/CONTEXT.md`](../../skills/CONTEXT.md).
 - [ ] Publish the supported fork commit/version and runtime fingerprint alongside the
       importer release; changing that pin requires a fresh capture compatibility pass.
+- [ ] Revisit the cloner pin now that a second package makes multi-package routing
+      real: adopting `HEAD`'s `src/clones/<slug>/` layout would be a move of the R2
+      page, not a rewrite. Deferred deliberately at R2.1.
 - [ ] Add CI for install, typecheck/tests, fixture emission, OpenDesign validation,
       and the Astro build when applicable.
 - [ ] Publish the first documented version only after both unrelated files pass.
@@ -612,8 +627,14 @@ Keep coarse until R2 is complete:
       reopen only when an unrelated authorized file proves it blocks R3.
 - [ ] **Multi-axis modes:** require an explicit mapping file for every non-theme mode,
       or infer only the unambiguous responsive/brand cases?
-- [ ] **Astro reuse shape:** vendor a minimal template into this repo, or add a
-      reproducible scaffold script sourced from the cloner baseline?
+- [x] **Astro reuse shape:** *Answered 2026-08-10 — minimal vendor.* The baseline's
+      whole generic foundation is 1302 bytes across five reusable files, so a
+      scaffold script would be larger than what it emits and would add a second
+      sibling-repository runtime dependency to generate an immutable pin. Vendored at
+      root behind R0's provenance block, brand default `psiativa` (the committed
+      fixture — `syd` is gitignored and cannot build on a clean clone), parity made
+      executable via `vendor.manifest.json`, pin held at `b7b4dda`. Full record:
+      [`docs/research/r2-astro-seam-note.md`](docs/research/r2-astro-seam-note.md).
 - [x] **Fork compatibility fingerprint:** *Answered 2026-07-31.* Verifiable today:
       git commit, `package.json` version, `dist/server.js` SHA-256, plugin
       `manifest.json` identity + hash, plugin `code.js` hash, relay reachability,
