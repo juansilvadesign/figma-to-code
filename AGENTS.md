@@ -8,8 +8,9 @@ The Figma twin of [`../ai-website-cloner-template/`](../ai-website-cloner-templa
 
 **Status:** R0 and the full R1 Importer MVP are shipped. R2.2 added the green Astro
 foundation; R2.3 added the fail-closed `--build none|astro` gate and programmatic
-brand-seam owner. The Astro page itself is not assembled yet; R2.4 freezes the SYD
-desktop/mobile topology before section code. Open
+brand-seam owner. R2.4 froze the cached SYD desktop/mobile topology, copy, assets,
+responsive mappings, and behavior gaps before section code. The Astro page itself
+is not assembled yet; close the frozen asset gaps before authoring it. Open
 [`TASKS.md`](TASKS.md) first for the live implementation state, then use
 [`docs/BUILD-PLAN.md`](docs/BUILD-PLAN.md) for the original rationale and
 contracts.

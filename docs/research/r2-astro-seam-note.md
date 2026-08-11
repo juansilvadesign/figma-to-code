@@ -139,7 +139,8 @@ file makes multi-package routing real; the migration is then a move, not a rewri
 
 ## What this note does not decide
 
-- SYD page topology, section specs, and the desktop/mobile frame family (R2.3).
+- SYD page topology, section specs, and the desktop/mobile frame family
+  (subsequently R2.4).
 - The `--build none|astro` flag's implementation (R2.2), beyond assigning it
   ownership of the brand `@import` line.
 - Whether Astro 7.1.3 installs and builds clean on Node 24.18.0 — untested here. It
@@ -149,4 +150,6 @@ file makes multi-package routing real; the migration is then a move, not a rewri
 > **Follow-up, 2026-08-10:** R2.2 proved the Astro foundation and R2.3 implemented
 > the flag plus its in-process validation decision. See
 > [`r2-foundation-note.md`](r2-foundation-note.md) and
-> [`r2-brand-seam-note.md`](r2-brand-seam-note.md).
+> [`r2-brand-seam-note.md`](r2-brand-seam-note.md). R2.4 then froze the cached SYD
+> frame family before section code; see
+> [`r2-topology-note.md`](r2-topology-note.md).

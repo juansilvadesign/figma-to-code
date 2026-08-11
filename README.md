@@ -13,10 +13,11 @@ Figma   ──▶ Figma MCP extraction  ───┘        the shared contract
 The cloner infers tokens from `getComputedStyle()` — lossy, requires clustering. Figma **declares** them as variables and styles. Same destination, better input, different extraction problem.
 
 > **Status: Importer MVP shipped; Astro foundation + validated brand seam shipped
-> 2026-08-10.** A real Figma capture replays offline into a quality-100 OpenDesign
-> package. `--build astro` now revalidates that package in-process, selects its
-> token import, and runs the static Astro build. Page topology and section fidelity
-> remain R2 work. Follow [`TASKS.md`](TASKS.md) for current work; use
+> 2026-08-10; cached SYD topology frozen in R2.4.** A real Figma capture replays
+> offline into a quality-100 OpenDesign package. `--build astro` revalidates that
+> package in-process, selects its token import, and runs the static Astro build. The
+> 12 desktop/mobile section contracts now exist; targeted asset readiness, section
+> implementation, and visual fidelity remain R2 work. Follow [`TASKS.md`](TASKS.md) for current work; use
 > [`docs/BUILD-PLAN.md`](docs/BUILD-PLAN.md) for the original rationale.
 
 ## Scope (v1)

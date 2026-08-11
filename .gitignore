@@ -15,6 +15,10 @@ docs/research/*/raw/
 docs/research/*/screenshots/
 docs/research/*/normalized/
 
+# Human-authored topology freezes inherit the capture's privacy because they quote
+# client copy, node ids, asset evidence, and exact responsive relationships.
+docs/research/*/page-topology.md
+
 # Legacy raw-response naming.
 docs/research/**/*.raw.json
 

@@ -85,3 +85,6 @@ The mechanism selects and proves a package; it does not invent page structure. T
 next R2 slice freezes SYD's desktop/mobile topology, copy, assets, responsive
 relationships, and known behavior gaps from the cached capture before any section
 components are authored.
+
+> **Follow-up, 2026-08-10:** R2.4 completed that freeze without authoring a section.
+> See [`r2-topology-note.md`](r2-topology-note.md).

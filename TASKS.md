@@ -153,7 +153,7 @@ only the next release. Later releases stay coarse until the preceding checkpoint
 
 There are no throwing stubs left. `scripts/extract-figma-tokens.ts` is implemented.
 
-## ▶ Next session — R2.4, freeze the SYD page topology
+## ▶ Next session — R2.5, close frozen asset gaps before section code
 
 The package → Astro seam is closed (steps 1, 2, and 4 below). R2.3 chose
 **in-process revalidation**, not a receipt: `--build astro` now emits the current
@@ -162,9 +162,19 @@ retargets `src/styles/global.css` and runs Astro. Six focused checks include the
 failure-order negative; an isolated emitter CLI smoke also reached a real Astro build. Evidence:
 [`docs/research/r2-brand-seam-note.md`](docs/research/r2-brand-seam-note.md).
 
-The next task is step 3. Work only from the cached SYD frame family; do not write
-page components until one desktop/mobile section spec records topology, verbatim
-copy and assets, responsive relationships, and known behavior gaps.
+R2.4 froze the cached Paciente frame family into 12 paired component contracts with
+verbatim copy, asset evidence, responsive relationships, source conflicts, and known
+behavior gaps. Evidence:
+[`docs/research/r2-topology-note.md`](docs/research/r2-topology-note.md). The detailed
+spec stays private-local at `docs/research/syd/page-topology.md` and is hash-locked in
+that note.
+
+The next risk is asset sufficiency, not topology. The capture exported only the two
+whole page frames; child image nodes have geometry but no bytes, and the business CTA
+background is an image fill on the section root beneath its copy. Resolve only the
+asset gaps named in the frozen spec with targeted, read-only child exports (or a
+provenance-checked authorized match) before writing page components. Do not recapture
+the page or reopen token heuristics.
 
 R1 is closed. Do not recapture or revisit token heuristics unless R2 exposes an
 actual evidence failure. Start the page MVP by retiring its next riskiest
@@ -184,15 +194,20 @@ Start here, in order:
    validator in-process, fails before mutation on any violation, retargets the exact
    first `@import`, and invokes Astro's build API. Evidence:
    [`docs/research/r2-brand-seam-note.md`](docs/research/r2-brand-seam-note.md).
-3. **Next — freeze SYD page topology from the cached frames.** Record one section spec per
-   desktop/mobile pair, verbatim copy/assets, responsive relationships, and known
-   behavior gaps before writing `.astro` components.
+3. [x] **SYD page topology frozen 2026-08-10.** Twelve direct desktop/mobile
+   section pairs map to twelve semantic component contracts. The private spec
+   represents 275/275 captured text nodes, classifies 61 image fills, maps all 13
+   captured reactions, and preserves four cross-view source conflicts. Evidence:
+   [`docs/research/r2-topology-note.md`](docs/research/r2-topology-note.md).
 4. [x] **Foundation proven 2026-08-10.** The static shell typechecks and builds
    against the committed `psiativa` package; `dist/index.html` carries all 56 token
    declarations, both scopes, and zero undeclared references. Run against `psiativa`,
    never `syd` — `design-systems/syd/` is gitignored, so a `syd`-pinned import cannot
    build on a clean clone or ever become a CI gate. Evidence:
    [`docs/research/r2-foundation-note.md`](docs/research/r2-foundation-note.md).
+5. **Next — make the frozen assets code-ready, then assemble.** Export only the
+   child assets the spec proves are required, settle the recorded copy conflicts,
+   and then author the twelve semantic sections without re-deriving their topology.
 
 **R0 retrospective:** the source-agnostic emitter/validator transferred with zero
 functional changes, the pinned OpenDesign schema currently resolves 56 slots, and the
@@ -223,6 +238,14 @@ mislabeling it. `SYD-Next` confirmed the core violet/ink/green decisions but als
 diverged in component metrics, topology, and behavior, validating its role as an
 oracle rather than an input. The next risk is the package → static Astro seam, not
 more Figma reads.
+
+**R2.4 retrospective:** a complete frame export is enough to freeze section order,
+copy, geometry, responsive composition, and visible state, but it is not an asset
+bundle. The node payload identifies 61 image fills without supplying their bytes,
+and the CTA background cannot be isolated from the rendered page because the image
+fill belongs to the text-bearing section root. The next smallest risk-reducing slice
+is targeted asset recovery against the frozen inventory, not component authoring or
+a whole-page recapture.
 
 ---
 
@@ -561,10 +584,12 @@ do not retire the package → Astro → visual-evidence path:
       [`docs/research/r2-foundation-note.md`](docs/research/r2-foundation-note.md).
 - [x] Require a validated `design-systems/<slug>/` before any page component work;
       the Astro build route cannot touch the seam until that exact package passes.
-- [ ] Choose one coherent desktop/mobile frame family and write page topology plus
+- [x] Choose one coherent desktop/mobile frame family and write page topology plus
       one evidence-backed component spec per section.
-- [ ] Extract verbatim text, exported assets, responsive relationships, and known
+- [x] Extract verbatim text, exported assets, responsive relationships, and known
       interactions from the cached Figma bundle; document unsupported behavior.
+- [ ] Resolve only the standalone asset gaps enumerated by the frozen topology;
+      prefer targeted read-only child exports and never rewrite the cached frames.
 - [ ] Build semantic `.astro` sections with scoped vanilla CSS consuming
       `var(--…)`; hydrate only genuine interactions and keep content server-rendered.
 - [ ] Run the Astro typecheck/build after the foundation and after assembly.
@@ -666,8 +691,9 @@ Keep coarse until R2 is complete:
 
 ## Inputs needed only when their phase starts
 
-- **R2:** no new Figma session is required unless the cached SYD bundle lacks a
-  page asset or interaction that the frozen topology explicitly requires.
+- **R2:** R2.4 proved the cached SYD bundle lacks standalone bytes for assets the
+  frozen topology explicitly requires, especially the CTA background. A narrowly
+  scoped read-only child-export session is now justified; a topology recapture is not.
 - **R3 generalization:** a second unrelated authorized file.
 - **Any calendar commitment:** a deadline/capacity decision; until then the project
   remains backlog-paced and scope-open.
