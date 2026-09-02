@@ -14,6 +14,7 @@ docs/research/*/slot-overrides.json
 docs/research/*/raw/
 docs/research/*/screenshots/
 docs/research/*/normalized/
+docs/research/*/asset-exports/
 
 # Human-authored topology freezes inherit the capture's privacy because they quote
 # client copy, node ids, asset evidence, and exact responsive relationships.

@@ -74,7 +74,7 @@ the Astro page MVP has not.
 
 | Project | Relationship | Baseline inspected 2026-07-28 | Contract used here |
 | --- | --- | --- | --- |
-| [`talk-to-figma-fork`](../talk-to-figma-fork/) | **Independent runtime dependency** | `5e0c869` (was `956a6af` → `3546719`; both advances docs-only, executable hashes verified identical) | Read-only MCP tools: `get_pages`, bounded `get_document_info`, `set_current_page`, `get_variables`, `get_styles`, scoped/summary `get_local_components`, `get_node_info`, `get_node_variables`, `get_reactions`, and `export_node_as_image` |
+| [`talk-to-figma-fork`](../talk-to-figma-fork/) | **Independent runtime dependency** | Historical R1 capture: `5e0c869` (immutable); R2.5 targeted asset lane: `63e3055` | Historical capture reads plus R2.5's exact, read-only `export_image_fill` source-byte tool |
 | [`ai-website-cloner-template`](../ai-website-cloner-template/) | **Vendored generic-code/workflow baseline** | `b7b4dda` (`0.4.0`) — held; its `HEAD` has since grown a `src/clones/<slug>/` multi-clone architecture this project does not need until R3 | Emitter/validator, Astro scaffold, design-system-first order, component specs, static-first rules, and 1440px/390px QA |
 | [`open-design`](../../skills/open-design/) | **Schema/validation dependency** | `3447f60a3` | Live token schema and guard/rendering contracts; code discovers the contract rather than encoding the observed 56/26 counts |
 
@@ -205,9 +205,15 @@ Start here, in order:
    never `syd` — `design-systems/syd/` is gitignored, so a `syd`-pinned import cannot
    build on a clean clone or ever become a CI gate. Evidence:
    [`docs/research/r2-foundation-note.md`](docs/research/r2-foundation-note.md).
-5. **Next — make the frozen assets code-ready, then assemble.** Export only the
-   child assets the spec proves are required, settle the recorded copy conflicts,
-   and then author the twelve semantic sections without re-deriving their topology.
+5. [ ] **R2.5 — make the frozen assets code-ready.** The generic image-fill reader is
+   pinned separately from the historical R1 capture, and
+   [`docs/R2.5-ASSET-EXPORT.md`](docs/R2.5-ASSET-EXPORT.md) specifies a private-local,
+   fail-closed exporter. Its offline contract is green; live acceptance begins with the
+   exact business-CTA background fills named by the frozen private topology. Do not mark
+   this complete until the byte receipts, placement metadata, and before/after node
+   observations agree in a new private export bundle.
+6. **Then assemble.** Settle the recorded copy conflicts and author the twelve semantic
+   sections without re-deriving their topology.
 
 **R0 retrospective:** the source-agnostic emitter/validator transferred with zero
 functional changes, the pinned OpenDesign schema currently resolves 56 slots, and the
