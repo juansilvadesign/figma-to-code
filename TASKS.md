@@ -45,16 +45,19 @@ Hard rules:
 - **Importer MVP — the original goal, SHIPPED 2026-08-10.** An authorized Figma
   file was captured once through the local plugin, replayed offline, and emitted as
   a guard-green OpenDesign package at `design-systems/syd/`.
-- **Astro page MVP — the expanded goal, NOT shipped.** Select a desktop/mobile frame
-  family from that same capture and produce a static-first Astro page that consumes
-  the validated package, builds cleanly, and has final 1440px/390px visual evidence.
+- **Astro page MVP — the expanded goal, SHIPPED private-local 2026-09-26.** Select a desktop/mobile frame
+  family and produce a static-first Astro page that consumes the validated package,
+  builds cleanly, and has final desktop/mobile visual evidence. **Re-targeted
+  2026-09-24 from SYD to the Banco Lucrativo landing page** (owner decision). That
+  file needs its own capture and package first, so R2 now runs the R1 pipeline on
+  it before any page work.
 
 The package remains at `0.0.0` because generalization is still ahead, but **R1 is
 complete**. The immutable SYD capture replays offline, extraction resolves 26/26
 A1 slots deterministically, and R1.5 emits the first Figma-derived rich package:
 56 schema slots, 65 component selectors, seven detected groups, zero undeclared
 token references, and OpenDesign package quality 100. The Importer MVP has shipped;
-the Astro page MVP has not.
+the Astro page MVP shipped on 2026-09-26 as a private-local route.
 
 ## Planning frame
 
@@ -74,7 +77,7 @@ the Astro page MVP has not.
 
 | Project | Relationship | Baseline inspected 2026-07-28 | Contract used here |
 | --- | --- | --- | --- |
-| [`talk-to-figma-fork`](../talk-to-figma-fork/) | **Independent runtime dependency** | Historical R1 capture: `5e0c869` (immutable); R2.5 targeted asset lane: `63e3055` | Historical capture reads plus R2.5's exact, read-only `export_image_fill` source-byte tool |
+| [`talk-to-figma-fork`](../talk-to-figma-fork/) | **Independent runtime dependency** | Historical SYD capture: `5e0c869` (immutable, still replayable). New captures and both export lanes: `01ab491` (R3.3.1, since 2026-09-25), run from an isolated detached worktree. R3.2.1 (`e136177`) stays pinned but has no bundle | `CAPTURE_FORK_PINS` checks each capture against its own pin; new captures also require a matching `get_runtime_info` pair before the first read |
 | [`ai-website-cloner-template`](../ai-website-cloner-template/) | **Vendored generic-code/workflow baseline** | `b7b4dda` (`0.4.0`) — held; its `HEAD` has since grown a `src/clones/<slug>/` multi-clone architecture this project does not need until R3 | Emitter/validator, Astro scaffold, design-system-first order, component specs, static-first rules, and 1440px/390px QA |
 | [`open-design`](../../skills/open-design/) | **Schema/validation dependency** | `3447f60a3` | Live token schema and guard/rendering contracts; code discovers the contract rather than encoding the observed 56/26 counts |
 
@@ -153,7 +156,46 @@ only the next release. Later releases stay coarse until the preceding checkpoint
 
 There are no throwing stubs left. `scripts/extract-figma-tokens.ts` is implemented.
 
-## ▶ Next session — R2.5, close frozen asset gaps before section code
+## ▶ Next session — R2 on Banco Lucrativo: page built and accepted (2026-09-26)
+
+**State:** R2's acceptance is met on the Banco Lucrativo landing page. The record is
+[`docs/research/r2-banco-lucrativo-page-note.md`](docs/research/r2-banco-lucrativo-page-note.md).
+Everything client-derived stays private-local, and the committed seam stays `psiativa`. The
+local retarget of `src/styles/global.css` is never staged.
+
+**Decisions still in force (owner interview, 2026-09-24):**
+- static first, motion next;
+- only the 1280 and 375 frames;
+- captures run from an isolated worktree at the pinned fork commit.
+
+**Pinned runtime:** R3.3.1 (`01ab491`), from `.claude/worktrees/talk-to-figma-fork-r3.3.1`, which
+lives outside this repo. `CAPTURE_FORK_PINS` holds three runtimes:
+- R1 (SYD's bundle);
+- R3.2.1 (no bundle ever used it);
+- R3.3.1 (new captures, plus the node and image-fill exporters).
+
+**Open, in order:**
+
+1. **The video URL.** The design's link is dead (YouTube oEmbed 404). Swap the embed in
+   `src/components/private/banco-lucrativo/VideoSection.astro` once the owner supplies a live
+   URL. Record it as owner-provided, not as Figma evidence.
+2. **The motion follow-up:**
+   - the differential `header_component` variants (a 0.8 s delay, a 0.3 s smart-animate, two sizes);
+   - the nav hover.
+   The hidden title and subtitle are already in the DOM, visually hidden, as in the captured
+   initial frame.
+3. **Tooling defects:**
+   - The fork's `export_image_fill` exceeds the relay's 16 MiB message cap on large originals, so
+     the image-fill exporter's live acceptance stays blocked. The fork's
+     `docs/CONSUMER-BUG-2026-09-26-IMAGE-FILL-PAYLOAD-CAP.md` is uncommitted, for the fork to own.
+   - The consumer's `join_channel` start-up race, in `capture-figma.ts` and both exporters: wait
+     for the relay socket first.
+4. **Gaps that a later capture could close:**
+   - the mixed-style text ranges (the payload reports uniform fills);
+   - the newsletter watermark (it needs a bounded original-bytes path).
+5. Then **R3**. SYD's parked package remains the second fixture.
+
+## ⏸ Parked — SYD R2.5 (superseded by the 2026-09-24 pivot; kept for R3)
 
 The package → Astro seam is closed (steps 1, 2, and 4 below). R2.3 chose
 **in-process revalidation**, not a receipt: `--build astro` now emits the current
@@ -590,26 +632,33 @@ do not retire the package → Astro → visual-evidence path:
       [`docs/research/r2-foundation-note.md`](docs/research/r2-foundation-note.md).
 - [x] Require a validated `design-systems/<slug>/` before any page component work;
       the Astro build route cannot touch the seam until that exact package passes.
-- [x] Choose one coherent desktop/mobile frame family and write page topology plus
-      one evidence-backed component spec per section.
+- [x] **Banco Lucrativo capture and package (2026-09-25).** Run the R1 pipeline on the new fixture:
+      capture from the pinned worktree, then extract, author, emit, and validate
+      `design-systems/banco-lucrativo/`. It was captured on R3.3.1, and the package validates at quality 100.
+- [x] Choose the desktop/mobile frame family and write the page topology, plus one
+      evidence-backed component spec per section. *(Done for SYD on 2026-08-10; redo it
+      for Banco Lucrativo against that file's own capture.)*
 - [x] Extract verbatim text, exported assets, responsive relationships, and known
-      interactions from the cached Figma bundle; document unsupported behavior.
-- [ ] Resolve only the standalone asset gaps enumerated by the frozen topology;
-      prefer targeted read-only child exports and never rewrite the cached frames.
-- [ ] Build semantic `.astro` sections with scoped vanilla CSS consuming
+      interactions from the cached bundle. Document unsupported behavior, including the
+      hero's variant animation (static first; motion is a follow-up).
+- [x] Resolve only the standalone asset gaps the frozen topology enumerates. Prefer
+      targeted read-only child exports (image fills, plus SVG for the vector icons and
+      logos that `get_node_info` filters out), and never rewrite the cached frames.
+- [x] Build semantic `.astro` sections with scoped vanilla CSS consuming
       `var(--…)`; hydrate only genuine interactions and keep content server-rendered.
-- [ ] Run the Astro typecheck/build after the foundation and after assembly.
-- [ ] Capture the implementation at 1440px and 390px and create final side-by-side
-      comparisons against the corresponding Figma exports.
-- [ ] For SYD, also compare the generated result with the existing human-authored
-      Next.js landing page at `workspace/spaceapps/projects/syd/website/` at the
-      same viewports. Figma is the visual-intent source;
-      `SYD-Next` is the implementation/behavior reference.
-- [ ] Re-run the design-system guard after the last page correction.
+      The page and its assets live on a gitignored private route.
+- [x] Run the Astro typecheck/build after the foundation and after assembly.
+- [x] Capture the implementation at 1280px and 375px (the source frame widths) and
+      create final side-by-side comparisons against the corresponding Figma exports.
+- [x] Re-run the design-system guard after the last page correction. Evidence:
+      [`docs/research/r2-banco-lucrativo-page-note.md`](docs/research/r2-banco-lucrativo-page-note.md).
 
-**R2 acceptance:** the selected page is present as static HTML, imports the validated
-token source of truth, passes the production build, and has current 1440px/390px visual
-evidence plus documented behavior gaps.
+The SYD-Next comparison moved with SYD to the parked block; it applies again whenever
+SYD's page is built.
+
+**R2 acceptance:** the selected page is present as static HTML on its private-local
+route, imports the validated token source of truth, passes the production build, and has
+current 1280px/375px visual evidence plus documented behavior gaps.
 
 ---
 
@@ -692,14 +741,20 @@ Keep coarse until R2 is complete:
       and a canonical fingerprint over the 10 required tools' `inputSchema` — all
       implemented in `scripts/preflight-capture.ts`. A formal `get_runtime_info`
       handshake would replace the filesystem probes but is not required for MVP.
-- [ ] **Fork adapter policy:** support one strict runtime pin for MVP, or retain an
-      adapter for the immediately previous pin after the first upgrade?
+- [x] **Fork adapter policy:** *Answered 2026-09-24: retain every pin that a kept
+      capture names.* `CAPTURE_FORK_PINS` validates each manifest against its own commit's
+      pin, so SYD stays on `5e0c869` while new captures use R3.2.1. Payload validators
+      stay shared until a pin actually changes a payload shape; add a per-pin adapter
+      only then, from observed replies.
 
 ## Inputs needed only when their phase starts
 
-- **R2:** R2.4 proved the cached SYD bundle lacks standalone bytes for assets the
-  frozen topology explicitly requires, especially the CTA background. A narrowly
-  scoped read-only child-export session is now justified; a topology recapture is not.
+- **R2:** a fork release that fixes the remote-TEXT-style `get_node_variables` crash
+  under a new plugin build id. After that, one owner session in Figma: re-import the
+  plugin from the new worktree and provide the channel name.
+- **SYD (parked):** R2.4 proved its cached bundle lacks standalone bytes for assets the
+  frozen topology requires, especially the CTA background. A narrowly scoped read-only
+  child-export session is justified; a topology recapture is not.
 - **R3 generalization:** a second unrelated authorized file.
 - **Any calendar commitment:** a deadline/capacity decision; until then the project
   remains backlog-paced and scope-open.

@@ -118,19 +118,34 @@ fields inside raw fork replies remain allowed and preserved.
 
 ## Runtime fingerprint
 
-R1 uses a strict runtime pin:
+Every manifest names exactly one supported pin, and it is checked against that pin, never
+against whichever pin is current. `CAPTURE_FORK_PINS` in
+[`capture-contract.ts`](../scripts/lib/capture-contract.ts) holds the table; `PINNED_FORK`
+is the one new captures must use.
 
-| Item | Expected |
-| --- | --- |
-| Fork commit | `5e0c869b0409f196de1b73c9f849736dfb114e48` |
-| Package version | `0.3.5` |
-| `dist/server.js` SHA-256 | `d8cf09aad16559b618884616aca3b927ca495c86a7048992d3ad1ab192a5422c` |
-| Plugin | `Talk to Figma (fork)` / `1485687494525374295` |
-| Plugin API | `1.0.0`, `documentAccess: dynamic-page` |
-| Plugin manifest SHA-256 | `6c7e43e9a3d2abfbcd809d8adb9174f89d2b1fd3a1a00800b4f30946adab3738` |
-| Plugin `code.js` SHA-256 | `4188c501dd2f15502a00c10df7c7c5069dde5c2b1345165d82da64810c5955fe` |
+| Item | `R1_CAPTURE_FORK` (SYD's capture) | `R3_2_1_FORK` (new captures, 2026-09-24–2026-09-25) | `R3_3_1_FORK` (new captures, since 2026-09-25) |
+| --- | --- | --- | --- |
+| Fork commit | `5e0c869b0409f196de1b73c9f849736dfb114e48` | `e136177eb3a8007288126381d1cdb145a387137d` | `01ab4916f9e41180664b997e4a601b9cef930417` |
+| Package version | `0.3.5` | `0.3.5` | `0.3.5` |
+| `dist/server.js` SHA-256 | `d8cf09aad16559b618884616aca3b927ca495c86a7048992d3ad1ab192a5422c` | `35bbb280ff5a0a945fd54a1ea98ec2e9d6864c451b9d81ad9b342f76d431b69f` | `f99c3e4470f3d9a913dc87b1c978df55a729f4495b540c3b2bdfcfc9185f87bb` |
+| Plugin | `Talk to Figma (fork)` / `1485687494525374295` | same | same |
+| Plugin API | `1.0.0`, `documentAccess: dynamic-page` | same | same |
+| Plugin manifest SHA-256 | `6c7e43e9a3d2abfbcd809d8adb9174f89d2b1fd3a1a00800b4f30946adab3738` | same | same |
+| Plugin `code.js` SHA-256 | `4188c501dd2f15502a00c10df7c7c5069dde5c2b1345165d82da64810c5955fe` | `6d6215beed6a4b680a7beefcd189107644e6cc3f206a0b4e3c5af1aced8d270c` | `58dd025b2e894771f98d93e4e0175bcda3646d782430cc05a6c23ba29f02afb7` |
+| Connected identity | none (predates `get_runtime_info`) | `R3.2.1`, `r3.2.1-server-798028241619` ↔ `r3.2.1-plugin-d9b64d2ac562`, schema/API `1.21.0`, `sha256:f6f9c2bb…` | `R3.3.1`, `r3.3.1-server-9c8cb843a656` ↔ `r3.3.1-plugin-41fd0e925b27`, schema/API `1.23.0`, `sha256:541d14db…` |
 
-**Pin advanced 956a6af → 3546719 → 5e0c869**, each a deliberately accepted
+**Why the connected identity matters.** The file hashes describe a checkout on disk, not
+the plugin Figma actually launched. A development plugin imported from a second checkout
+carries the same name and id, so the Figma menu cannot tell the two apart. On 2026-09-24
+the handshake refused exactly that: a work-in-progress plugin launched from the fork's own
+tree. Run captures from an isolated, detached worktree at the pin, and preflight it with
+`--fork-root`.
+
+**Adding a pin.** Add a new entry and leave the old ones in place while any kept capture
+names them. A kept capture is never re-stamped: it replays against the runtime that
+produced it.
+
+**Historical: pin advanced 956a6af → 3546719 → 5e0c869**, each a deliberately accepted
 compatible release rather than a read fix. Preflight found the drift and failed
 closed both times, which is the intended behaviour. Each earlier pin is a verified
 ancestor, and both deltas touch only `ROADMAP.md` / `TASKS.md` — no change to
