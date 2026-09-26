@@ -22,6 +22,7 @@
     "test:extract": "node --import tsx scripts/test-extract-tokens.ts",
     "test:r2:build": "node --import tsx scripts/test-build-target.ts",
     "test:r2.5:asset-export": "node --import tsx scripts/test-image-fill-export-contract.ts",
+    "test:r2.5:node-export": "node --import tsx scripts/test-node-export-contract.ts",
     "preflight:capture": "node --import tsx scripts/preflight-capture.ts",
     "check:r1:preflight": "npm run typecheck:scripts && npm run preflight:capture",
     "check:r1:extract": "npm run typecheck:scripts && npm run test:extract",
@@ -29,8 +30,10 @@
     "check:r1:contract": "npm run typecheck:scripts && npm run test:capture-contract",
     "check:r2:build": "npm run test:r2:build && npm run check:vendor && npm run check:astro",
     "check:r2.5:asset-export": "npm run typecheck:scripts && npm run test:r2.5:asset-export",
+    "check:r2.5:node-export": "npm run typecheck:scripts && npm run test:r2.5:node-export",
     "capture": "node --import tsx scripts/capture-figma.ts",
-    "export:image-fills": "node --import tsx scripts/export-figma-image-fills.ts"
+    "export:image-fills": "node --import tsx scripts/export-figma-image-fills.ts",
+    "export:nodes": "node --import tsx scripts/export-figma-nodes.ts"
   },
   "dependencies": {
     "astro": "^7.1.3"
