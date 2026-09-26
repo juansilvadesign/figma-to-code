@@ -166,7 +166,9 @@ local retarget of `src/styles/global.css` is never staged.
 **Decisions still in force (owner interview, 2026-09-24):**
 - static first, motion next;
 - only the 1280 and 375 frames;
-- captures run from an isolated worktree at the pinned fork commit.
+- captures run from an isolated worktree at the pinned fork commit;
+- the differential motion starts on scroll into view, not on hover, so touch and keyboard
+  visitors see it too (2026-09-26).
 
 **Pinned runtime:** R3.3.1 (`01ab491`), from `.claude/worktrees/talk-to-figma-fork-r3.3.1`, which
 lives outside this repo. `CAPTURE_FORK_PINS` holds three runtimes:
@@ -176,20 +178,27 @@ lives outside this repo. `CAPTURE_FORK_PINS` holds three runtimes:
 
 **Open, in order:**
 
-1. **The video URL.** The design's link is dead (YouTube oEmbed 404). Swap the embed in
-   `src/components/private/banco-lucrativo/VideoSection.astro` once the owner supplies a live
-   URL. Record it as owner-provided, not as Figma evidence.
+1. **The video.** The design's link is dead (YouTube oEmbed 404). Since 2026-09-26 the embed
+   plays an owner-provided placeholder. The final video is the owner's own portfolio video, still
+   to be produced, and it will be swapped into `src/components/private/banco-lucrativo/VideoSection.astro`.
 2. **The motion follow-up:**
-   - the differential `header_component` variants (a 0.8 s delay, a 0.3 s smart-animate, two sizes);
-   - the nav hover.
-   The hidden title and subtitle are already in the DOM, visually hidden, as in the captured
-   initial frame.
+   - ✅ **The differential `header_component` (2026-09-26).** Its three missing 1280 variant states
+     were captured read-only, and the band now animates with CSS transitions and one small script.
+     Every figure was re-checked in the verifier's own runs. The record is
+     [`docs/research/r2-banco-lucrativo-motion-note.md`](docs/research/r2-banco-lucrativo-motion-note.md).
+     The 1920 variants stay out of scope, with the 1920 frame.
+   - The nav hover is still open.
 3. **Tooling defects:**
    - The fork's `export_image_fill` exceeds the relay's 16 MiB message cap on large originals, so
      the image-fill exporter's live acceptance stays blocked. The fork's
      `docs/CONSUMER-BUG-2026-09-26-IMAGE-FILL-PAYLOAD-CAP.md` is uncommitted, for the fork to own.
    - The consumer's `join_channel` start-up race, in `capture-figma.ts` and both exporters: wait
      for the relay socket first.
+   - The image-fill cap also blocks a clean original of the motion card's photo. Until it's fixed,
+     a thin ring arc can show at its bottom corners for part of the 0.3 s shrink.
+   - `get_node_info` returns no `opacity`, `visible` or `strokeWeight`. Hidden layers are
+     inferred from null render bounds, and a stroke weight has only a lower bound. This is a
+     generic read gap, so the fork owns it.
 4. **Gaps that a later capture could close:**
    - the mixed-style text ranges (the payload reports uniform fills);
    - the newsletter watermark (it needs a bounded original-bytes path).

@@ -16,7 +16,7 @@ capture, package, topology, assets, page, and QA images.
 | Package | 26/26 A1 slots and 14 authored overrides. The overrides assign roles only, and every value is measured in the capture. 56 slots were emitted, and OpenDesign quality is 100. |
 | Topology | 14/14 bands, 235/235 TEXT nodes, 42/42 image fills, 24/24 reactions. See [`r2-banco-lucrativo-topology-note.md`](r2-banco-lucrativo-topology-note.md). |
 | Assets | 117 published files, all from bounded node exports. See [`../R2.5-ASSET-EXPORT.md`](../R2.5-ASSET-EXPORT.md) § Live acceptance. |
-| Page | 14 section components. It has no client JavaScript, no hard-coded colours, and 0 placeholders. |
+| Page | 14 section components. At acceptance it had no client JavaScript, no hard-coded colours, and 0 placeholders. Since the motion follow-up (2026-09-26), one small bundled script animates the differential band; see [`r2-banco-lucrativo-motion-note.md`](r2-banco-lucrativo-motion-note.md). |
 
 ## Gates (Node 24.18.0), final run
 
@@ -59,7 +59,7 @@ There were six QA rounds. The first two measured the instrument, not the page:
 ## Gaps and deviations (documented, not guessed)
 
 - **Video.** The URL captured in the design is dead: YouTube oEmbed returns 404. The embed is wired and waits for an owner-supplied URL.
-- **Static by design:** motion (the variant transitions and hover animation), the simulator logic, the carousel, form submission, and every destination the design doesn't define.
+- **Static by design:** the nav hover, the simulator logic, the carousel, form submission, and every destination the design doesn't define. The differential band's variant motion shipped on 2026-09-26; see [`r2-banco-lucrativo-motion-note.md`](r2-banco-lucrativo-motion-note.md).
 - **Text emphasis ranges.** The capture reports uniform fills for mixed-style text nodes, so no range is applied rather than guessing one.
 - **Newsletter watermark.** Its root fill can't be rendered without baking in visible copy, and the original-bytes path is blocked by the fork defect below.
 - **Typefaces.** The source's nav and legal typefaces render in the body token.

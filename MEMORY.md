@@ -26,9 +26,17 @@ type: project
   ledger's `rendered` flag: text that is hidden in the captured state is safe to render.
 - ⛔ **The QA instrument lies unless every image is decoded.** Force eager loading, call
   `decode()`, and capture with a viewport as tall as the page.
+- ✅ **The differential motion shipped (2026-09-26).** It starts on scroll into view. The record
+  is `docs/research/r2-banco-lucrativo-motion-note.md`.
+- ⛔ **A fake clock hides CSS transitions.** Stepping the page with Playwright's `page.clock`
+  captured one step with zero running transitions, and its "mid-transition" frames were the
+  settled state. Capture mid-frames in real time: pause and seek the running `CSSTransition`s. A
+  step that captures zero transitions must fail loudly.
+- ⛔ **Settled-state comparisons can't see mid-transition defects.** Review 25/50/75% frames
+  of every transition too.
 - **Open:**
-  - a live video URL (the design's link is dead);
-  - the motion follow-up;
+  - the owner's final video (a placeholder plays since 2026-09-26);
+  - the nav hover;
   - the `join_channel` start-up race;
   - the fork's image-fill payload cap.
 - All client content stays private-local, and the committed seam stays `psiativa`.
@@ -51,7 +59,7 @@ Captured and locked:
 
 ### Next
 
-The video URL swap once the owner supplies it, then the motion follow-up (see `TASKS.md` § Next session). SYD's parked R2.5 resumes only when SYD's page is built.
+The nav hover, which is the rest of the motion follow-up. Then the owner's final video replaces the placeholder (see `TASKS.md` § Next session). SYD's parked R2.5 resumes only when SYD's page is built.
 
 ## ⛔ Pinned toolchain
 
