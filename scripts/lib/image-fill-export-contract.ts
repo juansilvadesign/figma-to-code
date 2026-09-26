@@ -12,6 +12,7 @@ import { createHash } from "node:crypto";
 import {
   canonicalJson,
   computeCapabilityFingerprint,
+  R3_3_1_FORK,
   type CapabilityRecord,
 } from "./capture-contract.js";
 import type { JsonObject, JsonValue } from "./fork-payload-contracts.js";
@@ -22,34 +23,14 @@ export const IMAGE_FILL_EXPORT_CAPABILITY_SCOPE =
   "image-fill-export-tools" as const;
 
 /**
- * The R2.5 asset lane has its own pin. `PINNED_FORK` remains the immutable R1
- * capture pin, so old raw evidence stays independently replayable.
+ * The asset lane uses the same frozen runtime as new captures, so one DEV
+ * plugin serves both passes — now R3.3.1. It first shipped pinned to
+ * `63e3055`, an earlier build that already reported the R3.2.1 label before
+ * that release was frozen, then moved to the frozen R3.2.1 release itself. No
+ * export manifest was ever written under either earlier pin, so nothing needs
+ * to stay replayable against them.
  */
-export const IMAGE_FILL_EXPORT_FORK = {
-  commit: "63e305503c83b686329e6f3fa41b928a5d00da62",
-  packageVersion: "0.3.5",
-  serverBundleSha256:
-    "52ebf5c96f9abcd8790dac9d14ffcd6ce461f902cd96a4563ba73d3f8ad69e46",
-  plugin: {
-    name: "Talk to Figma (fork)",
-    id: "1485687494525374295",
-    api: "1.0.0",
-    documentAccess: "dynamic-page",
-    manifestSha256:
-      "6c7e43e9a3d2abfbcd809d8adb9174f89d2b1fd3a1a00800b4f30946adab3738",
-    codeSha256:
-      "2dfd799cff500c541685bacc16123d6ec9584f867eb6108795f7adcffb769c08",
-  },
-  runtime: {
-    release: "R3.2.1",
-    serverBuildId: "r3.2.1-server-cbd2531f8a0e",
-    pluginBuildId: "r3.2.1-plugin-ad75ba5fe779",
-    serverSchemaVersion: "1.21.0",
-    pluginApiVersion: "1.21.0",
-    capabilityFingerprint:
-      "sha256:f6f9c2bb7f12264f754f81afb2715fa3ba613208bec65b5713da639bc979902d",
-  },
-} as const;
+export const IMAGE_FILL_EXPORT_FORK = R3_3_1_FORK;
 
 export const IMAGE_FILL_EXPORT_REQUIRED_TOOLS = [
   "join_channel",

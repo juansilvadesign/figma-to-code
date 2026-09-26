@@ -238,13 +238,15 @@
           "const": "talk-to-figma-fork"
         },
         "forkCommit": {
-          "const": "5e0c869b0409f196de1b73c9f849736dfb114e48"
+          "type": "string",
+          "pattern": "^[a-f0-9]{40}$"
         },
         "packageVersion": {
           "const": "0.3.5"
         },
         "serverBundleSha256": {
-          "const": "d8cf09aad16559b618884616aca3b927ca495c86a7048992d3ad1ab192a5422c"
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
         },
         "connection": {
           "type": "object",
@@ -291,7 +293,8 @@
               "const": "6c7e43e9a3d2abfbcd809d8adb9174f89d2b1fd3a1a00800b4f30946adab3738"
             },
             "codeSha256": {
-              "const": "4188c501dd2f15502a00c10df7c7c5069dde5c2b1345165d82da64810c5955fe"
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
             }
           }
         },
@@ -337,7 +340,61 @@
             }
           }
         }
-      }
+      },
+      "$comment": "A capture names one supported fork pin; its commit, server bundle and plugin code must all belong to that same pin (scripts/lib/capture-contract.ts CAPTURE_FORK_PINS).",
+      "oneOf": [
+        {
+          "properties": {
+            "forkCommit": {
+              "const": "5e0c869b0409f196de1b73c9f849736dfb114e48"
+            },
+            "serverBundleSha256": {
+              "const": "d8cf09aad16559b618884616aca3b927ca495c86a7048992d3ad1ab192a5422c"
+            },
+            "plugin": {
+              "properties": {
+                "codeSha256": {
+                  "const": "4188c501dd2f15502a00c10df7c7c5069dde5c2b1345165d82da64810c5955fe"
+                }
+              }
+            }
+          }
+        },
+        {
+          "properties": {
+            "forkCommit": {
+              "const": "e136177eb3a8007288126381d1cdb145a387137d"
+            },
+            "serverBundleSha256": {
+              "const": "35bbb280ff5a0a945fd54a1ea98ec2e9d6864c451b9d81ad9b342f76d431b69f"
+            },
+            "plugin": {
+              "properties": {
+                "codeSha256": {
+                  "const": "6d6215beed6a4b680a7beefcd189107644e6cc3f206a0b4e3c5af1aced8d270c"
+                }
+              }
+            }
+          }
+        },
+        {
+          "properties": {
+            "forkCommit": {
+              "const": "01ab4916f9e41180664b997e4a601b9cef930417"
+            },
+            "serverBundleSha256": {
+              "const": "f99c3e4470f3d9a913dc87b1c978df55a729f4495b540c3b2bdfcfc9185f87bb"
+            },
+            "plugin": {
+              "properties": {
+                "codeSha256": {
+                  "const": "58dd025b2e894771f98d93e4e0175bcda3646d782430cc05a6c23ba29f02afb7"
+                }
+              }
+            }
+          }
+        }
+      ]
     },
     "coverage": {
       "type": "object",

@@ -9,10 +9,14 @@ import { fileURLToPath } from "node:url";
 import {
   type CaptureArtifact,
   type CaptureManifest,
+  R1_CAPTURE_FORK,
+  R3_2_1_FORK,
+  R3_3_1_FORK,
   computeCapabilityFingerprint,
   computeJsonSha256,
   loadCaptureBundle,
   parseCaptureManifest,
+  runtimeIdentityIssues,
   sanitizeNodeId,
   sha256,
 } from "./lib/capture-contract.js";
@@ -219,6 +223,131 @@ async function main(): Promise<void> {
     },
     /runtime\.forkCommit.*5e0c869/s,
   );
+
+  await check("the historical R1 pin keeps validating its own capture", () => {
+    assert.equal(base.runtime.forkCommit, R1_CAPTURE_FORK.commit);
+  });
+
+  await check("a capture made on the current pin validates against that pin", () => {
+    const manifest = structuredClone(base);
+    manifest.runtime.forkCommit = R3_2_1_FORK.commit;
+    manifest.runtime.serverBundleSha256 = R3_2_1_FORK.serverBundleSha256;
+    manifest.runtime.plugin = { ...R3_2_1_FORK.plugin };
+    assert.equal(
+      parseCaptureManifest(manifest).runtime.forkCommit,
+      R3_2_1_FORK.commit,
+    );
+  });
+
+  await expectFailure(
+    "a runtime cannot pair one pin's commit with another pin's bytes",
+    () => {
+      const manifest = structuredClone(base);
+      manifest.runtime.forkCommit = R3_2_1_FORK.commit;
+      parseCaptureManifest(manifest);
+    },
+    /runtime\.serverBundleSha256.*35bbb280/s,
+  );
+
+  await check("a manifest naming R3.3.1 loads", () => {
+    const manifest = structuredClone(base);
+    manifest.runtime.forkCommit = R3_3_1_FORK.commit;
+    manifest.runtime.serverBundleSha256 = R3_3_1_FORK.serverBundleSha256;
+    manifest.runtime.plugin = { ...R3_3_1_FORK.plugin };
+    assert.equal(
+      parseCaptureManifest(manifest).runtime.forkCommit,
+      R3_3_1_FORK.commit,
+    );
+  });
+
+  await expectFailure(
+    "R3.3.1's commit paired with R3.2.1's bytes fails",
+    () => {
+      const manifest = structuredClone(base);
+      manifest.runtime.forkCommit = R3_3_1_FORK.commit;
+      manifest.runtime.serverBundleSha256 = R3_2_1_FORK.serverBundleSha256;
+      parseCaptureManifest(manifest);
+    },
+    /runtime\.serverBundleSha256.*f99c3e44/s,
+  );
+
+  const runtimeReply = (pluginBuildId: string) => ({
+    server: {
+      release: R3_2_1_FORK.runtime.release,
+      buildId: R3_2_1_FORK.runtime.serverBuildId,
+      schemaVersion: R3_2_1_FORK.runtime.serverSchemaVersion,
+      capabilityFingerprint: R3_2_1_FORK.runtime.capabilityFingerprint,
+    },
+    plugin: {
+      release: R3_2_1_FORK.runtime.release,
+      buildId: pluginBuildId,
+      apiVersion: R3_2_1_FORK.runtime.pluginApiVersion,
+      serverSchemaVersion: R3_2_1_FORK.runtime.serverSchemaVersion,
+      capabilityFingerprint: R3_2_1_FORK.runtime.capabilityFingerprint,
+    },
+    compatibility: { status: "compatible", checkedAt: null, issues: [] },
+  });
+
+  await check("the pinned server/plugin pair passes the connected-runtime check", () => {
+    assert.deepEqual(
+      runtimeIdentityIssues(
+        runtimeReply(R3_2_1_FORK.runtime.pluginBuildId),
+        R3_2_1_FORK.runtime,
+      ),
+      [],
+    );
+  });
+
+  await check("a different plugin build is refused even when everything else matches", () => {
+    const issues = runtimeIdentityIssues(
+      runtimeReply("r3.3-plugin-000000000000"),
+      R3_2_1_FORK.runtime,
+    );
+    assert.equal(issues.length, 1);
+    assert.match(issues[0] ?? "", /^plugin build: expected r3\.2\.1-plugin-/);
+  });
+
+  const runtimeReplyR331 = (pluginBuildId: string) => ({
+    server: {
+      release: R3_3_1_FORK.runtime.release,
+      buildId: R3_3_1_FORK.runtime.serverBuildId,
+      schemaVersion: R3_3_1_FORK.runtime.serverSchemaVersion,
+      capabilityFingerprint: R3_3_1_FORK.runtime.capabilityFingerprint,
+    },
+    plugin: {
+      release: R3_3_1_FORK.runtime.release,
+      buildId: pluginBuildId,
+      apiVersion: R3_3_1_FORK.runtime.pluginApiVersion,
+      serverSchemaVersion: R3_3_1_FORK.runtime.serverSchemaVersion,
+      capabilityFingerprint: R3_3_1_FORK.runtime.capabilityFingerprint,
+    },
+    compatibility: { status: "compatible", checkedAt: null, issues: [] },
+  });
+
+  await check("runtimeIdentityIssues accepts an R3.3.1 reply against R3_3_1_FORK.runtime", () => {
+    assert.deepEqual(
+      runtimeIdentityIssues(
+        runtimeReplyR331(R3_3_1_FORK.runtime.pluginBuildId),
+        R3_3_1_FORK.runtime,
+      ),
+      [],
+    );
+  });
+
+  await check("it rejects the R3.2.1 plugin build id against that runtime", () => {
+    const issues = runtimeIdentityIssues(
+      runtimeReplyR331(R3_2_1_FORK.runtime.pluginBuildId),
+      R3_3_1_FORK.runtime,
+    );
+    assert.equal(issues.length, 1);
+    assert.match(issues[0] ?? "", /^plugin build: expected r3\.3\.1-plugin-/);
+  });
+
+  await check("a reply without the compatibility block is refused", () => {
+    assert.deepEqual(runtimeIdentityIssues({}, R3_2_1_FORK.runtime), [
+      "get_runtime_info: incomplete server/plugin compatibility reply",
+    ]);
+  });
 
   await expectFailure(
     "capability fingerprint mismatches fail closed",

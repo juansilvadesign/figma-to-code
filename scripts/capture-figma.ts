@@ -10,15 +10,16 @@
  * The fork is invoked only through its MCP interface. Nothing from its `src/`,
  * plugin, or bundled modules is imported here.
  *
- * Usage:
+ * Usage (the fork root must be a checkout of the pinned commit, not a live tree):
  *   npm run capture -- --channel <name> --brand <slug> --out docs/research/<slug> \
+ *     --fork-root <pinned-fork-worktree> --captured-by <operator> \
  *     --page <pageId> \
  *     --node <nodeId>=desktop-frame,interactive-root,token-measurement \
  *     --node <nodeId>=mobile-frame,token-measurement
  */
 
 import { spawn, type ChildProcessWithoutNullStreams } from "node:child_process";
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, readdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -34,6 +35,7 @@ import {
   computeCapabilityFingerprint,
   computeJsonSha256,
   loadCaptureBundle,
+  runtimeIdentityIssues,
   sanitizeNodeId,
   sha256,
 } from "./lib/capture-contract.js";
@@ -365,6 +367,17 @@ function coverageOf(
 async function main(): Promise<void> {
   const options = parseArgs(process.argv.slice(2));
 
+  // Raw evidence is immutable: a new capture never lands on top of an old one.
+  const existing = await readdir(options.outDir).catch((error: unknown) => {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return [];
+    throw error;
+  });
+  if (existing.length > 0) {
+    throw new Error(
+      `--out must be a new or empty directory; ${options.outDir} holds ${existing.length} entry(s)`,
+    );
+  }
+
   // Fail closed: never capture against an unverified runtime.
   const report = await preflight(options.forkRoot, options.relayPort);
   if (!report.ok || !report.capabilityFingerprint) {
@@ -400,6 +413,22 @@ async function main(): Promise<void> {
         `connected runtime fingerprint ${liveFingerprint} does not match preflight ${report.capabilityFingerprint.value}`,
       );
     }
+
+    // Preflight hashed the worktree on disk; only the connected pair says which
+    // plugin build Figma is actually running. Refuse before the first read.
+    const runtimeInfo = await client.call("get_runtime_info", {});
+    if (runtimeInfo === null || typeof runtimeInfo !== "object" || Array.isArray(runtimeInfo)) {
+      throw new Error("get_runtime_info: expected a JSON object reply");
+    }
+    const runtimeIssues = runtimeIdentityIssues(runtimeInfo as JsonObject, PINNED_FORK.runtime);
+    if (runtimeIssues.length > 0) {
+      throw new Error(
+        `connected runtime is not the pinned pair:\n${runtimeIssues.map((issue) => `  - ${issue}`).join("\n")}`,
+      );
+    }
+    console.log(
+      `runtime ok — ${PINNED_FORK.runtime.serverBuildId} ↔ ${PINNED_FORK.runtime.pluginBuildId}`,
+    );
 
     const at = (): string => `${new Date().toISOString().slice(0, 19)}Z`;
 
@@ -678,6 +707,7 @@ async function main(): Promise<void> {
       operator: "scripts/capture-figma.ts",
       notes: [
         `fork ${PINNED_FORK.commit} via ${options.channel}`,
+        `get_runtime_info matched ${PINNED_FORK.runtime.serverBuildId} ↔ ${PINNED_FORK.runtime.pluginBuildId} before the first document read.`,
         "Raw replies written verbatim; screenshots decoded from the stored export blocks.",
       ],
     },

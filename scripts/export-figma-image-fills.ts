@@ -25,6 +25,7 @@ import {
   type CapabilityRecord,
   computeCapabilityFingerprint,
   computeJsonSha256,
+  runtimeIdentityIssues,
 } from "./lib/capture-contract.js";
 import {
   IMAGE_FILL_EXPORT_CAPABILITY_SCOPE,
@@ -509,30 +510,7 @@ function receiptStringOrNull(value: unknown, field: string): string | null {
 }
 
 function ensureRuntime(runtime: JsonObject): void {
-  const server = runtime.server;
-  const plugin = runtime.plugin;
-  const compatibility = runtime.compatibility;
-  if (!isJsonObject(server) || !isJsonObject(plugin) || !isJsonObject(compatibility)) {
-    throw new Error("get_runtime_info: incomplete server/plugin compatibility reply");
-  }
-  const checks: Array<[string, unknown, string]> = [
-    ["server release", server.release, IMAGE_FILL_EXPORT_FORK.runtime.release],
-    ["server build", server.buildId, IMAGE_FILL_EXPORT_FORK.runtime.serverBuildId],
-    ["server schema", server.schemaVersion, IMAGE_FILL_EXPORT_FORK.runtime.serverSchemaVersion],
-    ["server fingerprint", server.capabilityFingerprint, IMAGE_FILL_EXPORT_FORK.runtime.capabilityFingerprint],
-    ["plugin release", plugin.release, IMAGE_FILL_EXPORT_FORK.runtime.release],
-    ["plugin build", plugin.buildId, IMAGE_FILL_EXPORT_FORK.runtime.pluginBuildId],
-    ["plugin API", plugin.apiVersion, IMAGE_FILL_EXPORT_FORK.runtime.pluginApiVersion],
-    ["plugin schema", plugin.serverSchemaVersion, IMAGE_FILL_EXPORT_FORK.runtime.serverSchemaVersion],
-    ["plugin fingerprint", plugin.capabilityFingerprint, IMAGE_FILL_EXPORT_FORK.runtime.capabilityFingerprint],
-    ["runtime compatibility", compatibility.status, "compatible"],
-  ];
-  const failures = checks
-    .filter(([, actual, expected]) => actual !== expected)
-    .map(([label, actual, expected]) => `${label}: expected ${expected}, received ${String(actual)}`);
-  if (!Array.isArray(compatibility.issues) || compatibility.issues.length !== 0) {
-    failures.push("runtime compatibility: expected no compatibility issues");
-  }
+  const failures = runtimeIdentityIssues(runtime, IMAGE_FILL_EXPORT_FORK.runtime);
   if (failures.length > 0) {
     throw new Error(`R2.5 runtime mismatch:\n${failures.map((failure) => `  - ${failure}`).join("\n")}`);
   }

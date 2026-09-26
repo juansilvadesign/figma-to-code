@@ -24,7 +24,12 @@ export const CAPTURE_SCHEMA_VERSION =
 export const SLOT_OVERRIDES_SCHEMA_VERSION =
   "figma-to-code/slot-overrides/v1" as const;
 
-export const PINNED_FORK = {
+/**
+ * The R1 runtime. The SYD capture was made against it and stays bound to it, so
+ * that bundle keeps replaying after new captures move to a later pin. It predates
+ * `get_runtime_info`, so it carries no connected-runtime identity.
+ */
+export const R1_CAPTURE_FORK = {
   commit: "5e0c869b0409f196de1b73c9f849736dfb114e48",
   packageVersion: "0.3.5",
   serverBundleSha256:
@@ -39,7 +44,83 @@ export const PINNED_FORK = {
     codeSha256:
       "4188c501dd2f15502a00c10df7c7c5069dde5c2b1345165d82da64810c5955fe",
   },
+  runtime: null,
 } as const;
+
+/**
+ * The frozen R3.2.1 release. Run it from an isolated worktree: the fork's own
+ * tree carries in-progress work whose plugin and bundle bytes differ. `runtime`
+ * is the identity `get_runtime_info` must report for the connected server and
+ * plugin before the first document read.
+ */
+export const R3_2_1_FORK = {
+  commit: "e136177eb3a8007288126381d1cdb145a387137d",
+  packageVersion: "0.3.5",
+  serverBundleSha256:
+    "35bbb280ff5a0a945fd54a1ea98ec2e9d6864c451b9d81ad9b342f76d431b69f",
+  plugin: {
+    name: "Talk to Figma (fork)",
+    id: "1485687494525374295",
+    api: "1.0.0",
+    documentAccess: "dynamic-page",
+    manifestSha256:
+      "6c7e43e9a3d2abfbcd809d8adb9174f89d2b1fd3a1a00800b4f30946adab3738",
+    codeSha256:
+      "6d6215beed6a4b680a7beefcd189107644e6cc3f206a0b4e3c5af1aced8d270c",
+  },
+  runtime: {
+    release: "R3.2.1",
+    serverBuildId: "r3.2.1-server-798028241619",
+    pluginBuildId: "r3.2.1-plugin-d9b64d2ac562",
+    serverSchemaVersion: "1.21.0",
+    pluginApiVersion: "1.21.0",
+    capabilityFingerprint:
+      "sha256:f6f9c2bb7f12264f754f81afb2715fa3ba613208bec65b5713da639bc979902d",
+  },
+} as const;
+
+/**
+ * The frozen R3.3.1 release: it names every Symbol in style and variable
+ * reads, so a remote TEXT style's `fontName` now reads `null` inside
+ * `unreadableFields` instead of crashing `get_node_variables`. Run it from its
+ * own isolated worktree: the fork's own tree carries in-progress work whose
+ * plugin and bundle bytes differ. `runtime` is the identity `get_runtime_info`
+ * must report for the connected server and plugin before the first document
+ * read.
+ */
+export const R3_3_1_FORK = {
+  commit: "01ab4916f9e41180664b997e4a601b9cef930417",
+  packageVersion: "0.3.5",
+  serverBundleSha256:
+    "f99c3e4470f3d9a913dc87b1c978df55a729f4495b540c3b2bdfcfc9185f87bb",
+  plugin: {
+    name: "Talk to Figma (fork)",
+    id: "1485687494525374295",
+    api: "1.0.0",
+    documentAccess: "dynamic-page",
+    manifestSha256:
+      "6c7e43e9a3d2abfbcd809d8adb9174f89d2b1fd3a1a00800b4f30946adab3738",
+    codeSha256:
+      "58dd025b2e894771f98d93e4e0175bcda3646d782430cc05a6c23ba29f02afb7",
+  },
+  runtime: {
+    release: "R3.3.1",
+    serverBuildId: "r3.3.1-server-9c8cb843a656",
+    pluginBuildId: "r3.3.1-plugin-41fd0e925b27",
+    serverSchemaVersion: "1.23.0",
+    pluginApiVersion: "1.23.0",
+    capabilityFingerprint:
+      "sha256:541d14db086baaf326b751b2d2ebbbdd3dcacd81a68e5674584fcc19d204b2a1",
+  },
+} as const;
+
+/** Every runtime a capture manifest may name. A bundle is checked against its own. */
+export const CAPTURE_FORK_PINS = [R1_CAPTURE_FORK, R3_2_1_FORK, R3_3_1_FORK] as const;
+export type CaptureForkPin = (typeof CAPTURE_FORK_PINS)[number];
+export type ForkRuntimeIdentity = NonNullable<CaptureForkPin["runtime"]>;
+
+/** The runtime new captures must use. */
+export const PINNED_FORK = R3_3_1_FORK;
 
 export const REQUIRED_READ_CAPABILITIES = [
   "export_node_as_image",
@@ -287,6 +368,18 @@ function exactAt(
   return actual;
 }
 
+function captureForkPinAt(value: unknown, pathLabel: string): CaptureForkPin {
+  const commit = stringAt(value, pathLabel);
+  const pin = CAPTURE_FORK_PINS.find((candidate) => candidate.commit === commit);
+  if (!pin) {
+    fail(
+      pathLabel,
+      `expected one of ${CAPTURE_FORK_PINS.map((candidate) => JSON.stringify(candidate.commit)).join(", ")}, received ${JSON.stringify(commit)}`,
+    );
+  }
+  return pin;
+}
+
 function hashAt(value: unknown, pathLabel: string): string {
   const hash = stringAt(value, pathLabel);
   if (!HASH_PATTERN.test(hash)) {
@@ -442,6 +535,12 @@ export function parseCaptureManifest(value: unknown): CaptureManifest {
     "capture-manifest.provenance",
   );
   const runtime = recordAt(root.runtime, "capture-manifest.runtime");
+  // Resolve the pin first, so every other runtime field is checked against the
+  // runtime this capture claims, never against whichever pin is current.
+  const pin = captureForkPinAt(
+    runtime.forkCommit,
+    "capture-manifest.runtime.forkCommit",
+  );
   const connection = recordAt(
     runtime.connection,
     "capture-manifest.runtime.connection",
@@ -565,19 +664,15 @@ export function parseCaptureManifest(value: unknown): CaptureManifest {
         "talk-to-figma-fork",
         "capture-manifest.runtime.provider",
       ) as "talk-to-figma-fork",
-      forkCommit: exactAt(
-        runtime.forkCommit,
-        PINNED_FORK.commit,
-        "capture-manifest.runtime.forkCommit",
-      ),
+      forkCommit: pin.commit,
       packageVersion: exactAt(
         runtime.packageVersion,
-        PINNED_FORK.packageVersion,
+        pin.packageVersion,
         "capture-manifest.runtime.packageVersion",
       ),
       serverBundleSha256: exactAt(
         runtime.serverBundleSha256,
-        PINNED_FORK.serverBundleSha256,
+        pin.serverBundleSha256,
         "capture-manifest.runtime.serverBundleSha256",
       ),
       connection: {
@@ -594,32 +689,32 @@ export function parseCaptureManifest(value: unknown): CaptureManifest {
       plugin: {
         name: exactAt(
           plugin.name,
-          PINNED_FORK.plugin.name,
+          pin.plugin.name,
           "capture-manifest.runtime.plugin.name",
         ),
         id: exactAt(
           plugin.id,
-          PINNED_FORK.plugin.id,
+          pin.plugin.id,
           "capture-manifest.runtime.plugin.id",
         ),
         api: exactAt(
           plugin.api,
-          PINNED_FORK.plugin.api,
+          pin.plugin.api,
           "capture-manifest.runtime.plugin.api",
         ),
         documentAccess: exactAt(
           plugin.documentAccess,
-          PINNED_FORK.plugin.documentAccess,
+          pin.plugin.documentAccess,
           "capture-manifest.runtime.plugin.documentAccess",
         ),
         manifestSha256: exactAt(
           plugin.manifestSha256,
-          PINNED_FORK.plugin.manifestSha256,
+          pin.plugin.manifestSha256,
           "capture-manifest.runtime.plugin.manifestSha256",
         ),
         codeSha256: exactAt(
           plugin.codeSha256,
-          PINNED_FORK.plugin.codeSha256,
+          pin.plugin.codeSha256,
           "capture-manifest.runtime.plugin.codeSha256",
         ),
       },
@@ -1361,6 +1456,49 @@ export function computeCapabilityFingerprint(
       inputSchemaSha256: tool.inputSchemaSha256,
     }));
   return computeJsonSha256(canonical);
+}
+
+/**
+ * Compare a `get_runtime_info` reply with a pin's expected identity. File hashes
+ * prove what is on disk; only this reply says which plugin build is running in
+ * Figma. An empty result means the connected pair is the pinned one.
+ */
+export function runtimeIdentityIssues(
+  reply: JsonObject,
+  expected: ForkRuntimeIdentity,
+): string[] {
+  const objectAt = (value: JsonValue | undefined): JsonObject | undefined =>
+    value !== null && typeof value === "object" && !Array.isArray(value)
+      ? value
+      : undefined;
+  const server = objectAt(reply.server);
+  const plugin = objectAt(reply.plugin);
+  const compatibility = objectAt(reply.compatibility);
+  if (!server || !plugin || !compatibility) {
+    return ["get_runtime_info: incomplete server/plugin compatibility reply"];
+  }
+  const checks: Array<[string, JsonValue | undefined, string]> = [
+    ["server release", server.release, expected.release],
+    ["server build", server.buildId, expected.serverBuildId],
+    ["server schema", server.schemaVersion, expected.serverSchemaVersion],
+    ["server fingerprint", server.capabilityFingerprint, expected.capabilityFingerprint],
+    ["plugin release", plugin.release, expected.release],
+    ["plugin build", plugin.buildId, expected.pluginBuildId],
+    ["plugin API", plugin.apiVersion, expected.pluginApiVersion],
+    ["plugin schema", plugin.serverSchemaVersion, expected.serverSchemaVersion],
+    ["plugin fingerprint", plugin.capabilityFingerprint, expected.capabilityFingerprint],
+    ["runtime compatibility", compatibility.status, "compatible"],
+  ];
+  const issues = checks
+    .filter(([, actual, wanted]) => actual !== wanted)
+    .map(
+      ([label, actual, wanted]) =>
+        `${label}: expected ${wanted}, received ${JSON.stringify(actual ?? null)}`,
+    );
+  if (!Array.isArray(compatibility.issues) || compatibility.issues.length !== 0) {
+    issues.push("runtime compatibility: expected no compatibility issues");
+  }
+  return issues;
 }
 
 export function computeJsonSha256(value: JsonValue): string {
