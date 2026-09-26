@@ -36,7 +36,7 @@ The implementation is one small bundled script (no framework, no island) plus sc
 
 ## Verification (the verifier's own runs)
 
-- **Schedule:** 803, 1903 and 3003 ms after intersection, against the specified 800, 1900 and 3000.
+- **Schedule:** 803–811, 1903–1911 and 3003–3011 ms after intersection across two runs, against the specified 800, 1900 and 3000.
 - **Transitions:** 2, 18 and 6 running transitions per step. They were captured in real time, with the transitions paused and seeked to 25, 50 and 75%.
 - **Settled states against the Figma renders:** the mean absolute difference per channel is at most 3.61, and at most 4.37% of pixels differ by more than 16.
 
@@ -45,7 +45,7 @@ The implementation is one small bundled script (no framework, no island) plus sc
   | initial | 3.360 | 2.405 | 3.609 | 4.367% |
   | 2 | 3.122 | 2.351 | 3.329 | 3.478% |
   | 3 | 1.069 | 0.905 | 1.165 | 1.698% |
-  | final | 3.500 | 2.811 | 3.562 | 4.331% |
+  | final | 3.451 | 2.748 | 3.490 | 4.301% |
 - **Other modes:** reduced motion lands on the final state with 0 running animations. No-JS stays on the initial state. The final-state click resets within one frame and replays.
 - **Regressions:**
   - the 375 px band is pixel-identical to QA round 6;
@@ -61,7 +61,7 @@ The implementation is one small bundled script (no framework, no island) plus sc
 - **A fake clock can hide CSS transitions.** The first QA pass stepped the page with Playwright's `page.clock`. It recorded the 2 → 3 step with **zero** running transitions, so its "mid-transition" strip was three copies of the settled state. It still read as clean. The capture now pauses the transitions in real time, and exits non-zero whenever a step captures none.
 - **A settled-state comparison can't see mid-transition defects.** The first derived photo for the focused card filled its corners from a render with the chip baked in. The live chip covers that spot at rest. Mid-shrink, it showed as white crescents. The corners now come from the background composite. It is measured as aligned with the card's photo: a mean difference of 3.5–4.3, against 15.5–72 when shifted by 12 px.
 - **The capture schema records no `opacity`, `visible` or `strokeWeight`.** Hidden layers are inferred from null render bounds, and the wipe weight has only a lower bound. This is a generic read gap, so it belongs to the fork.
-- **The exported final-state render wraps the subtitle onto two lines, but Figma's own layout has it on one:** render bounds of 575 × 18 inside a 588 × 27 box. The export environment is the outlier, not the layout.
+- **A 1 px font drift wrapped the subtitle.** Figma renders the final-state subtitle on one line, both in its layout (render bounds 575 × 18 inside a 588 × 27 box) and in its export. The web Inter measures the same line at 589 px, so the page wrapped its last word onto a second line. Whether it wrapped then depended on sub-pixel details. It is now pinned to one line (`white-space: nowrap`), which matches the design's single-line box. The first diagnosis blamed the export: the side-by-side panels had been read the wrong way round (Figma is on the left).
 
 ## Known limitation
 
