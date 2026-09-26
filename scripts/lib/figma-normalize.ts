@@ -223,6 +223,29 @@ export function normalizeName(name: string): string {
     .replace(/^-+|-+$/g, "");
 }
 
+const MODE_AXIS_WORDS = new Set(["mode", "modo", "theme", "tema"]);
+
+/**
+ * `THEME_MODE_NAMES` / `BREAKPOINT_MODE_NAMES` key off the bare role word
+ * ("light", "escuro"), but files routinely suffix or prefix the axis word
+ * itself ("Light Mode", "Modo Escuro", "Dark Theme"). This strips exactly one
+ * leading or trailing `mode`/`modo`/`theme`/`tema` token before a role lookup.
+ * A name that is only the axis word, or that carries no such token, comes
+ * back unchanged. Every other use of a mode's name — ids, error text,
+ * provenance `source` strings — stays on `normalizeName()` or the raw display
+ * name; only the role lookup itself uses this.
+ */
+export function modeRoleKey(name: string): string {
+  const normalized = normalizeName(name);
+  const tokens = normalized.split("-");
+  if (tokens.length < 2) return normalized;
+  if (MODE_AXIS_WORDS.has(tokens[0])) return tokens.slice(1).join("-");
+  if (MODE_AXIS_WORDS.has(tokens[tokens.length - 1])) {
+    return tokens.slice(0, -1).join("-");
+  }
+  return normalized;
+}
+
 function toHex(component: number): string {
   const clamped = Math.min(255, Math.max(0, Math.round(component * 255)));
   return clamped.toString(16).padStart(2, "0");
@@ -300,10 +323,10 @@ function classifyModes(
     };
   }
   const themeHits = modeNames.filter(
-    (name) => THEME_MODE_NAMES[normalizeName(name)] !== undefined,
+    (name) => THEME_MODE_NAMES[modeRoleKey(name)] !== undefined,
   );
   const breakpointHits = modeNames.filter(
-    (name) => BREAKPOINT_MODE_NAMES[normalizeName(name)] !== undefined,
+    (name) => BREAKPOINT_MODE_NAMES[modeRoleKey(name)] !== undefined,
   );
   if (themeHits.length === modeNames.length && breakpointHits.length === 0) {
     return {
@@ -522,7 +545,7 @@ export function normalizeCaptureBundle(
     const { axis, reason } = classifyModes(name, modeNames);
     const modes: NormalizedMode[] = rawModes.map((mode) => {
       const modeName = typeof mode.name === "string" ? mode.name : "";
-      const key = normalizeName(modeName);
+      const key = modeRoleKey(modeName);
       const variables: NormalizedVariable[] = [];
       for (const variableEntry of asArray(mode.variables)) {
         const variable = normalizeVariable(variableEntry);

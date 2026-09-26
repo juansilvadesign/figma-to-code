@@ -28,7 +28,7 @@ import type {
   NormalizedFrame,
   NormalizedNode,
 } from "./lib/figma-normalize.js";
-import { NormalizeError, normalizeCaptureBundle } from "./lib/figma-normalize.js";
+import { NormalizeError, modeRoleKey, normalizeCaptureBundle } from "./lib/figma-normalize.js";
 import type { JsonObject } from "./lib/fork-payload-contracts.js";
 import { loadTokenSchema } from "./extract-figma-tokens.js";
 
@@ -686,6 +686,91 @@ async function main(): Promise<void> {
       }),
     /cannot measure: --section-y-ultrawide/,
   );
+
+  // 12 ── modeRoleKey strips exactly one leading/trailing axis word before a
+  //       role lookup; everything else — including a name that merely
+  //       contains "mode" as an unrelated token — is unaffected.
+  check("modeRoleKey strips a leading or trailing axis word for role lookups", () => {
+    assert.equal(modeRoleKey("Light Mode"), "light");
+    assert.equal(modeRoleKey("Dark mode"), "dark");
+    assert.equal(modeRoleKey("Modo Escuro"), "escuro");
+    assert.equal(modeRoleKey("Tema Claro"), "claro");
+    assert.equal(modeRoleKey("Dark Theme"), "dark");
+    assert.equal(modeRoleKey("Mode 1"), "1", 'no role matches "1", so stripping is harmless');
+    assert.equal(modeRoleKey("light"), "light", "no axis word present: unchanged");
+    assert.equal(modeRoleKey("Mode"), "mode", "only the axis word: unchanged, not emptied");
+  });
+
+  // 13 ── a "Light Mode"/"Dark Mode" collection now classifies as a theme
+  //       axis instead of falling through to "brand".
+  check('a "Light Mode"/"Dark Mode" collection classifies as a theme axis', () => {
+    const normalized = normalizeCaptureBundle(
+      bundle({
+        variables: {
+          collections: [
+            {
+              id: "c1",
+              name: "Modes",
+              defaultModeId: "m0",
+              modes: [
+                { id: "m0", name: "Light Mode", variables: [] },
+                { id: "m1", name: "Dark Mode", variables: [] },
+              ],
+            },
+          ],
+        },
+      }),
+    );
+    const [collection] = normalized.collections;
+    assert.equal(collection.axis, "theme");
+    assert.equal(collection.modes[0].themeRole, "light");
+    assert.equal(collection.modes[1].themeRole, "dark");
+  });
+
+  // 14 ── the Portuguese pair works the same way.
+  check('a "Modo Claro"/"Modo Escuro" collection classifies as a theme axis', () => {
+    const normalized = normalizeCaptureBundle(
+      bundle({
+        variables: {
+          collections: [
+            {
+              id: "c1",
+              name: "Modos",
+              defaultModeId: "m0",
+              modes: [
+                { id: "m0", name: "Modo Claro", variables: [] },
+                { id: "m1", name: "Modo Escuro", variables: [] },
+              ],
+            },
+          ],
+        },
+      }),
+    );
+    const [collection] = normalized.collections;
+    assert.equal(collection.axis, "theme");
+    assert.equal(collection.modes[0].themeRole, "light");
+    assert.equal(collection.modes[1].themeRole, "dark");
+  });
+
+  // 15 ── a single "Mode 1" collection stays unclassified (the single-mode
+  //       short circuit runs before any role lookup), exactly as before.
+  check('a single "Mode 1" collection stays unclassified', () => {
+    const normalized = normalizeCaptureBundle(
+      bundle({
+        variables: {
+          collections: [
+            {
+              id: "c1",
+              name: "Brand",
+              defaultModeId: "m0",
+              modes: [{ id: "m0", name: "Mode 1", variables: [] }],
+            },
+          ],
+        },
+      }),
+    );
+    assert.equal(normalized.collections[0].axis, "single");
+  });
 
   console.log(`\n${passed} checks passed.`);
 }
