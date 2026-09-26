@@ -15,6 +15,7 @@ docs/research/*/raw/
 docs/research/*/screenshots/
 docs/research/*/normalized/
 docs/research/*/asset-exports/
+docs/research/*/qa/
 
 # Human-authored topology freezes inherit the capture's privacy because they quote
 # client copy, node ids, asset evidence, and exact responsive relationships.
@@ -30,5 +31,12 @@ docs/research/**/*.raw.json
 # it just read is private-local; add the brand here when it is.
 # (design-systems/psiativa/ is Juan's own and stays committed as the R0 fixture.)
 design-systems/syd/
+design-systems/banco-lucrativo/
 .env
 .env.*
+
+# Private-local page work built from private captures: its route, components, and
+# exported assets quote client copy and ship client images, so none of it is committed.
+src/pages/private/
+src/components/private/
+src/assets/private/
