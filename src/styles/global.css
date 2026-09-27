@@ -5,7 +5,7 @@
  * @import below is the brand seam; `--build astro --brand <slug>` retargets it.
  */
 
-@import "../../design-systems/psiativa/tokens.css";
+@import "../../design-systems/banco-lucrativo/tokens.css";
 
 *,
 *::before,
